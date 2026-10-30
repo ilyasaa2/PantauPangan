@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PantauPangan - IoT Cold Chain & HACCP Audit</title>
+  <meta name="description" content="Dashboard pemantauan suhu dan kelembapan cold chain berbasis ESP-12E, MQTT, dan AI untuk audit kepatuhan HACCP & BPOM.">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CDN Pustaka Ekspor & Grafik -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header Minimalis & Terpadu -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-dot" aria-hidden="true" id="live-indicator-dot"></div>
+        <div>
+          <div class="brand-name-row">
+            <h1 class="brand-name">PantauPangan</h1>
+            <span class="brand-badge" id="data-source-badge">Simulasi</span>
+          </div>
+          <span class="brand-desc">ESP-12E &bull; MQTT &bull; AI Anomaly &bull; BPOM Audit Trail</span>
+        </div>
+      </div>
+
+      <!-- Zona Kritis Terpadu di Header -->
+      <nav class="zone-nav" aria-label="Pemilihan Zona Kritis">
+        <button class="zone-tab active" data-zone="chilled_room">
+          Chilled Room <span class="tab-target">(0–5°C)</span>
+        </button>
+        <button class="zone-tab" data-zone="frozen_room">
+          Frozen Room <span class="tab-target">(-18°C)</span>
+        </button>
+        <button class="zone-tab" data-zone="dry_storage">
+          Dry Storage <span class="tab-target">(&lt;30°C)</span>
+        </button>
+      </nav>
+
+      <!-- Aksi Header: Koneksi USB Perangkat, Skenario, Tema, & Ekspor -->
+      <div class="header-actions">
+        <!-- Tombol Koneksi USB Fisik -->
+        <button id="btn-toggle-usb" class="btn btn-usb" title="Hubungkan perangkat ESP-12E yang dicolokkan ke port USB laptop">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span id="usb-btn-text">Sambungkan USB Perangkat</span>
+        </button>
+
+        <div class="scenario-select-wrap">
+          <label for="select-sim-scenario" class="sr-only">Simulasi Skenario</label>
+          <select id="select-sim-scenario" class="select-scenario" title="Uji respons sistem saat tidak menggunakan perangkat fisik">
+            <option value="NORMAL">Mode Uji: Normal</option>
+            <option value="DOOR_OPEN">Mode Uji: Pintu Terbuka</option>
+            <option value="COMPRESSOR_FAILURE">Mode Uji: Rusak Kompresor</option>
+            <option value="SENSOR_FAULT">Mode Uji: Sensor Rusak</option>
+          </select>
+        </div>
+
+        <button id="btn-theme-toggle" class="btn-icon" aria-label="Ganti Tema Tampilan" title="Ganti Tema">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          </svg>
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button id="btn-open-export" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Ekspor Laporan
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama Dashboard -->
+  <main class="main-content">
+    <!-- Baris 1: 4 Metrik Inti Bersih -->
+    <section class="metrics-grid" aria-label="Metrik Telemetri Utama">
+      <!-- Metrik 1: Suhu Ruang -->
+      <div class="card metric-card">
+        <div class="metric-top">
+          <span class="metric-label">SUHU RUANG KRITIS (CCP)</span>
+          <span class="status-badge normal" id="temp-compliance-badge">Normal</span>
+        </div>
+        <div class="metric-middle">
+          <span class="metric-value font-mono" id="val-current-temp">3.8</span>
+          <span class="metric-unit">°C</span>
+        </div>
+        <div class="metric-bottom">
+          <span class="subtext-muted">Batas Aman HACCP:</span>
+          <span class="subtext-value font-mono" id="val-target-temp">0.0°C – 5.0°C</span>
+        </div>
+      </div>
+
+      <!-- Metrik 2: Kelembapan -->
+      <div class="card metric-card">
+        <div class="metric-top">
+          <span class="metric-label">KELEMBAPAN RELATIF (RH)</span>
+          <span class="status-badge normal" id="rh-compliance-badge">Normal</span>
+        </div>
+        <div class="metric-middle">
+          <span class="metric-value font-mono" id="val-current-rh">84.2</span>
+          <span class="metric-unit">% RH</span>
+        </div>
+        <div class="metric-bottom">
+          <span class="subtext-muted">Target Standar:</span>
+          <span class="subtext-value font-mono" id="val-target-rh">80.0% – 90.0%</span>
+        </div>
+      </div>
+
+      <!-- Metrik 3: AI Anomaly & Resiko -->
+      <div class="card metric-card">
+        <div class="metric-top">
+          <span class="metric-label">AI DETEKSI ANOMALI</span>
+          <span class="status-badge normal" id="ai-status-badge">Z-Score Normal</span>
+        </div>
+        <div class="metric-middle">
+          <span class="metric-value font-mono" id="val-ai-score">0.25</span>
+          <span class="metric-unit">|Z|</span>
+        </div>
+        <div class="metric-bottom">
+          <span class="subtext-muted">Prediksi 15 Mnt:</span>
+          <span class="subtext-value font-mono" id="val-ai-prediction">4.0°C (Aman)</span>
+        </div>
+      </div>
+
+      <!-- Metrik 4: Hardware & Koneksi Port USB / MQTT -->
+      <div class="card metric-card">
+        <div class="metric-top">
+          <span class="metric-label">KONEKSI PERANGKAT (IoT)</span>
+          <span class="status-badge normal" id="node-status-badge">Simulator Aktif</span>
+        </div>
+        <div class="hardware-compact-list">
+          <div class="hardware-row">
+            <span>Jalur Masuk:</span>
+            <span class="font-mono text-highlight" id="port-status-label">Simulasi Otomatis</span>
+          </div>
+          <div class="hardware-row">
+            <span>Baterai 18650:</span>
+            <span class="font-mono" id="battery-status">4.08V (94%)</span>
+          </div>
+          <div class="hardware-row">
+            <span>Aktuator Alarm:</span>
+            <span class="font-mono" id="actuator-status">Buzzer OFF &bull; LED Hijau</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Baris 2: Visualisasi Grafik & Panel Diagnostik AI -->
+    <section class="visuals-grid">
+      <!-- Grafik Monitoring Utama -->
+      <div class="card chart-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Tren Suhu & Kelembapan vs Batas Kritis HACCP</h2>
+            <p class="card-desc">Monitoring kontinu setiap interval sampling dengan garis batas toleransi BPOM</p>
+          </div>
+          <div class="chart-summary-tags">
+            <span class="summary-tag">Rata-rata: <strong id="avg-temp" class="font-mono">3.74°C</strong></span>
+            <span class="summary-tag">Deviasi (σ): <strong id="std-dev-temp" class="font-mono">±0.28°C</strong></span>
+            <span class="summary-tag">Kepatuhan: <strong id="compliance-rate" class="font-mono text-success">100.0%</strong></span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="sensorTelemetryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Panel Diagnostik AI & CAPA Sederhana -->
+      <div class="card ai-card">
+        <div class="card-header">
+          <h2 class="card-title">Diagnostik AI & Tindakan Korektif (CAPA)</h2>
+        </div>
+
+        <div class="ai-box" id="ai-alert-box">
+          <div class="ai-box-header">
+            <span class="ai-box-title" id="ai-diagnosis-title">Kondisi Pendinginan Normal</span>
+            <span class="status-pill-small normal" id="ai-box-badge">Stabil</span>
+          </div>
+          <p class="ai-box-desc" id="ai-diagnosis-desc">
+            Sirkulasi udara dan siklus kompresor berada dalam batas toleransi. Tidak terdeteksi risiko kerusakan bahan pangan.
+          </p>
+          <div class="ai-time-countdown font-mono" id="ai-time-countdown">Estimasi Aman</div>
+        </div>
+
+        <div class="capa-box">
+          <span class="capa-label">Rekomendasi Petugas QC (HACCP):</span>
+          <p class="capa-text" id="capa-action-text">Lanjutkan pemantauan berkala. Tidak diperlukan intervensi mekanis saat ini.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Baris 3: Tabel Audit Trail Digital (Read-Only) -->
+    <section class="card audit-card">
+      <div class="audit-card-header">
+        <div>
+          <div class="audit-title-line">
+            <h2 class="card-title">Buku Besar Audit Trail Digital (Read-Only)</h2>
+            <span class="seal-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              Segel Hash SHA-256
+            </span>
+          </div>
+          <p class="card-desc">Catatan historis tidak dapat diubah secara manual, memenuhi syarat integritas data BPOM</p>
+        </div>
+
+        <div class="audit-toolbar">
+          <input type="text" id="filter-audit-search" placeholder="Cari ID, zona, nilai..." class="input-filter">
+          <select id="filter-audit-status" class="select-filter">
+            <option value="all">Semua Status</option>
+            <option value="NORMAL">Normal</option>
+            <option value="WARNING">Peringatan</option>
+            <option value="CRITICAL">Kritis</option>
+          </select>
+          <button id="btn-verify-integrity" class="btn btn-secondary">
+            Verifikasi Hash
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID Log</th>
+              <th>Waktu (WIB)</th>
+              <th>Titik Kritis (CCP)</th>
+              <th style="text-align: right;">Suhu</th>
+              <th style="text-align: right;">Kelembapan</th>
+              <th style="text-align: right;">Skor AI</th>
+              <th>Status</th>
+              <th>Tanda Tangan Digital (SHA-256)</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <!-- Entri log dimuat secara dinamis -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="audit-footer">
+        <span id="audit-count-info" class="subtext-muted">Menampilkan entri log audit...</span>
+        <div class="page-buttons">
+          <button class="btn-page" id="btn-prev-page" disabled>&larr; Sebelumnya</button>
+          <span class="font-mono page-label" id="page-num">Hal 1</span>
+          <button class="btn-page" id="btn-next-page" disabled>Berikutnya &rarr;</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Ekspor Laporan Resmi BPOM / HACCP -->
+  <div class="modal-backdrop" id="export-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Ekspor Laporan Kepatuhan Audit HACCP</h3>
+        <button id="btn-close-modal" class="btn-close" aria-label="Tutup">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="export-zone-select">Pilih Titik Kritis CCP:</label>
+            <select id="export-zone-select" class="form-select">
+              <option value="chilled_room">Chilled Room (Produk Segar)</option>
+              <option value="frozen_room">Frozen Room (Produk Beku)</option>
+              <option value="dry_storage">Dry Storage (Bahan Baku Kering)</option>
+              <option value="all">Seluruh Zona Cold Chain (Lengkap)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="export-auditor-name">Nama Petugas QA / Lead Auditor:</label>
+            <input type="text" id="export-auditor-name" class="form-input" value="Tim QA / Auditor BPOM">
+          </div>
+          <div class="form-field">
+            <label for="export-date-range">Periode Audit:</label>
+            <select id="export-date-range" class="form-select">
+              <option value="current_shift">Shift Berjalan (Hari Ini)</option>
+              <option value="last_7_days">7 Hari Terakhir</option>
+              <option value="full_audit">Audit Trail Lengkap (Bulan Ini)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="export-format">Format Dokumen:</label>
+            <select id="export-format" class="form-select">
+              <option value="pdf">Dokumen Resmi PDF (Bersertifikasi Digital)</option>
+              <option value="xlsx">Lembar Kerja Excel (.xlsx)</option>
+              <option value="csv">Data Mentah CSV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-summary-box">
+          <div>Sampel Terverifikasi: <strong id="preview-log-count" class="font-mono">150 Data</strong></div>
+          <div>Kepatuhan Batas: <strong id="preview-compliance-pct" class="font-mono text-success">100.0%</strong></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-cancel-modal" class="btn btn-secondary">Batal</button>
+        <button id="btn-execute-export" class="btn btn-primary">Unduh Laporan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Script Aplikasi -->
+  <script src="js/data-store.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/audit-trail.js"></script>
+  <script src="js/mqtt-service.js"></script>
+  <script src="js/serial-service.js"></script>
+  <script src="js/export-service.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
