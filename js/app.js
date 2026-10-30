@@ -308,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tombol Sambungkan USB di Header
   const btnToggleUsb = document.getElementById('btn-toggle-usb');
   const usbBtnText = document.getElementById('usb-btn-text');
+  const scenarioWrap = document.querySelector('.scenario-select-wrap');
 
   btnToggleUsb.addEventListener('click', async () => {
     if (serialService.isConnected) {
@@ -316,19 +317,27 @@ document.addEventListener('DOMContentLoaded', () => {
       isPhysicalConnected = false;
       btnToggleUsb.classList.remove('connected');
       usbBtnText.textContent = 'Sambungkan USB Perangkat';
+      if (scenarioWrap) scenarioWrap.style.display = ''; // Tampilkan kembali mode uji
       document.getElementById('data-source-badge').textContent = 'Simulasi';
       document.getElementById('data-source-badge').style.borderColor = '';
       document.getElementById('data-source-badge').style.color = '';
       document.getElementById('port-status-label').textContent = 'Simulasi Otomatis';
       document.getElementById('node-status-badge').textContent = 'Simulator Aktif';
-      showToast('Koneksi USB Perangkat diputus. Kembali ke mode simulasi.');
+      showToast('Koneksi USB Perangkat diputus. Mode Uji Simulasi diaktifkan kembali.');
     } else {
       // Buka dialog koneksi USB Serial (Web Serial API)
       try {
         await serialService.connectUSB();
         isPhysicalConnected = true;
         btnToggleUsb.classList.add('connected');
-        usbBtnText.textContent = 'USB Terhubung (Putus)';
+        usbBtnText.textContent = '● USB Terhubung (Putuskan)';
+        if (scenarioWrap) scenarioWrap.style.display = 'none'; // Sembunyikan mode uji saat fisik aktif
+        document.getElementById('data-source-badge').textContent = 'USB Fisik Real-Time';
+        document.getElementById('data-source-badge').style.borderColor = 'var(--status-normal)';
+        document.getElementById('data-source-badge').style.color = 'var(--status-normal)';
+        document.getElementById('port-status-label').textContent = 'USB Serial Live (COM)';
+        document.getElementById('node-status-badge').textContent = 'ESP-12E Terhubung';
+        document.getElementById('node-status-badge').className = 'status-badge normal';
         showToast('Berhasil terhubung ke ESP-12E via USB! Menangkap data real-time...', 'success');
       } catch (err) {
         if (err.name !== 'NotFoundError') {
