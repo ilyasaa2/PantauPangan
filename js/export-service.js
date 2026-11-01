@@ -13,7 +13,7 @@ class PantauPanganExportService {
   /**
    * Ekspor dokumen PDF resmi standar audit HACCP / BPOM
    */
-  exportToPDF(zoneFilter, auditorName, dateRange) {
+  exportToPDF(zoneFilter, auditorName, dateRange, periodKey = 'current_shift') {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       alert('Pustaka jsPDF belum dimuat sempurna.');
       return;
@@ -62,13 +62,26 @@ class PantauPanganExportService {
     doc.text(`Rentang Waktu: ${dateRange}`, 14, 48);
 
     doc.text(`Waktu Penerbitan: ${printDate} WIB`, 180, 38);
-    doc.text(`Hardware Node: ESP-12E (DHT11 Sensor) &bull; MQTT Ingestion`, 180, 43);
+    doc.text(`Hardware Node: ESP-12E / ESP32 (DHT11 Sensor) &bull; MQTT Ingestion`, 180, 43);
     doc.text(`Integritas Data: SHA-256 Cryptographic Sealed (Read-Only)`, 180, 48);
 
-    // 3. Rekapitulasi Kepatuhan
+    // 3. Rekapitulasi Kepatuhan & Optimasi Ukuran Dokumen
     let logs = this.store.auditLogs;
     if (zoneFilter !== 'all') {
       logs = logs.filter(l => l.zoneId === zoneFilter);
+    }
+
+    // Sampling periode terukur agar rendering PDF responsif & ringan (<100ms)
+    let periodNote = '';
+    if (periodKey === 'current_shift') {
+      logs = logs.slice(0, 50);
+      periodNote = '(Sampel Shift Berjalan)';
+    } else if (periodKey === 'last_7_days') {
+      logs = logs.slice(0, 120);
+      periodNote = '(Sampel 7 Hari)';
+    } else {
+      logs = logs.slice(0, 200);
+      periodNote = '(Sampel Audit Terkini)';
     }
 
     const totalLogs = logs.length;
@@ -81,7 +94,7 @@ class PantauPanganExportService {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.text(`Ringkasan Kepatuhan: Total Sampel: ${totalLogs} Titik | Normal: ${normalLogs} | Deviasi/Kritis: ${totalLogs - normalLogs} | Tingkat Kepatuhan: ${complianceRate}%`, 18, 62);
+    doc.text(`Ringkasan Kepatuhan: Total Sampel: ${totalLogs} Titik ${periodNote} | Normal: ${normalLogs} | Deviasi: ${totalLogs - normalLogs} | Kepatuhan: ${complianceRate}%`, 18, 62);
 
     // 4. Tabel Log Data Audit (Menggunakan jspdf-autotable)
     const tableHeaders = [

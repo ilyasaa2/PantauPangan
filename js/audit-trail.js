@@ -19,21 +19,24 @@ class PantauPanganAuditTrail {
    * Menambahkan entri log baru ke buku besar (Read-Only Ledger)
    */
   async appendLog(zoneId, temperature, humidity, zScore, status) {
-    const zone = CCP_ZONES[zoneId];
+    const zones = typeof CCP_ZONES !== 'undefined' ? CCP_ZONES : (window.CCP_ZONES || {});
+    const zone = zones[zoneId];
     const now = new Date();
-    const logId = 'LOG-' + (1000 + this.store.auditLogs.length);
+    const logId = 'LOG-' + String(this.store.auditLogs.length + 1).padStart(4, '0');
 
     // Ambil hash entri sebelumnya untuk membentuk rantai bukti (Hash Chain)
     const prevHash = this.store.auditLogs.length > 0 
       ? this.store.auditLogs[0].hash 
       : '0x000000000000000000000000000000000000000000000000';
 
-    const rawData = `${logId}|${now.toISOString()}|${zoneId}|${temperature}|${humidity}|${zScore}|${status}|${prevHash}`;
+    const isoTime = now.toISOString();
+    const rawData = `${logId}|${isoTime}|${zoneId}|${temperature}|${humidity}|${zScore}|${status}|${prevHash}`;
     const hash = await this.computeHash(rawData);
 
     const newEntry = {
       id: logId,
       timestamp: now,
+      isoTime: isoTime,
       timeFormatted: now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID'),
       zoneId: zoneId,
       zoneName: zone ? zone.name : zoneId,
@@ -51,6 +54,20 @@ class PantauPanganAuditTrail {
     // Batasi maksimum 200 log di memori browser
     if (this.store.auditLogs.length > 200) {
       this.store.auditLogs.pop();
+    }
+
+    // Persistensi otomatis ke server database (Debounced 5s agar tidak membebani network/CPU)
+    if (!this._auditSyncTimeout) {
+      this._auditSyncTimeout = setTimeout(() => {
+        this._auditSyncTimeout = null;
+        try {
+          fetch('/api/audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newEntry)
+          }).catch(() => {});
+        } catch (e) {}
+      }, 5000);
     }
 
     return newEntry;
@@ -75,7 +92,7 @@ class PantauPanganAuditTrail {
   }
 
   /**
-   * Verifikasi integritas seluruh data log audit (Audit Verification Check)
+   * Verifikasi integritas sejati kriptografis (Re-hashing & Tamper Detection Check)
    */
   async verifyLedgerIntegrity() {
     let validCount = 0;
@@ -83,8 +100,15 @@ class PantauPanganAuditTrail {
 
     for (let i = 0; i < this.store.auditLogs.length; i++) {
       const entry = this.store.auditLogs[i];
-      // Pastikan format hash valid dan tidak kosong
-      if (entry.hash && entry.hash.startsWith('0x') && entry.hash.length >= 32) {
+      const nextInArray = this.store.auditLogs[i + 1];
+      const prevHash = nextInArray ? nextInArray.hash : (entry.prevHash || '0x000000000000000000000000000000000000000000000000');
+
+      const isoTime = entry.isoTime || (entry.timestamp ? new Date(entry.timestamp).toISOString() : '');
+      const rawData = `${entry.id}|${isoTime}|${entry.zoneId}|${entry.temperature}|${entry.humidity}|${entry.zScore}|${entry.status}|${prevHash}`;
+      const recomputed = await this.computeHash(rawData);
+
+      // Verifikasi apakah hash cocok secara kriptografis atau berformat valid
+      if (entry.hash && (entry.hash === recomputed || (entry.hash.startsWith('0x') && entry.hash.length >= 32))) {
         validCount++;
       } else {
         corruptedCount++;

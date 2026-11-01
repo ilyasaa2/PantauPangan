@@ -47,10 +47,10 @@ class PantauPanganMQTTService {
 
     const jsonString = JSON.stringify(payload, null, 2);
 
-    // Tampilkan di terminal inspector TST
-    this.logToTerminal(`[MQTT PUB] Topic: ${this.telemetryTopic} | QoS: 1 | Size: ${new Blob([jsonString]).size} bytes\n${jsonString}`);
+    // Tampilkan di terminal inspector TST secara efisien tanpa alokasi Blob
+    this.logToTerminal(`[MQTT PUB] Topic: ${this.telemetryTopic} | QoS: 1 | Size: ${jsonString.length} bytes\n${jsonString}`);
 
-    // Trigger callback subsriber ingestion
+    // Trigger callback subscriber ingestion jika ada
     if (this.onMessageCallback) {
       this.onMessageCallback(payload);
     }
@@ -59,7 +59,7 @@ class PantauPanganMQTTService {
   }
 
   /**
-   * Menambahkan entri ke terminal log
+   * Menambahkan entri ke terminal log (Dioptimalkan agar tidak memicu layout thrashing di background)
    */
   logToTerminal(text) {
     const timeStr = new Date().toLocaleTimeString('id-ID');
@@ -70,6 +70,14 @@ class PantauPanganMQTTService {
       this.terminalLines.shift();
     }
 
+    // Hanya sentuh DOM jika tab gateway sedang terbuka dan terlihat
+    const gatewayView = document.getElementById('view-gateway');
+    if (gatewayView && gatewayView.style.display !== 'none') {
+      this.refreshTerminalUI();
+    }
+  }
+
+  refreshTerminalUI() {
     const terminalEl = document.getElementById('mqtt-log-terminal');
     if (terminalEl) {
       terminalEl.textContent = this.terminalLines.join('\n\n');

@@ -1,46 +1,63 @@
 /**
  * DataStore - PantauPangan
- * Menyimpan konfigurasi batas kritis HACCP per zona, data time-series historis, dan status sistem.
+ * Menyimpan konfigurasi batas kritis HACCP per zona, data time-series historis,
+ * log telemetri streaming SCADA real-time, dan status perangkat keras.
  */
 
 const CCP_ZONES = {
   chilled_room: {
     id: 'chilled_room',
-    name: 'Chilled Room (Produk Segar)',
+    name: 'Chilled Room 1',
+    fullName: 'Chilled Room 1 (Produk Segar)',
     tempMin: 0.0,
     tempMax: 5.0,
     rhMin: 80.0,
     rhMax: 90.0,
     tempTargetNominal: 3.5,
     rhTargetNominal: 85.0,
+    sensorDefault: 'ESP-CR01-A',
+    limitLabel: '0.0°C ~ 5.0°C',
+    dotClass: 'dot-cyan',
     description: 'Rentang aman untuk menekan laju pertumbuhan bakteri patogen (Listeria, Salmonella). Bahaya jika >5°C.',
     icon: '❄️'
   },
   frozen_room: {
     id: 'frozen_room',
-    name: 'Frozen Room (Produk Beku)',
-    tempMin: -25.0,
+    name: 'Deep Freezer Room',
+    fullName: 'Deep Freezer Room (Produk Beku)',
+    tempMin: -22.0,
     tempMax: -18.0,
-    rhMin: 0.0,
-    rhMax: 100.0,
-    tempTargetNominal: -20.5,
-    rhTargetNominal: 70.0,
+    rhMin: 55.0,
+    rhMax: 75.0,
+    tempTargetNominal: -19.5,
+    rhTargetNominal: 62.0,
+    sensorDefault: 'ESP-FZ02-B',
+    limitLabel: '-18.0°C ~ -22.0°C',
+    dotClass: 'dot-blue',
     description: 'Kandungan air seluler membeku total. Aktivitas enzim dan mikroorganisme terhenti sempurna. Bahaya jika > -18°C.',
     icon: '🧊'
   },
   dry_storage: {
     id: 'dry_storage',
-    name: 'Dry Storage (Bahan Baku Kering)',
-    tempMin: 20.0,
+    name: 'Dry Storage Room',
+    fullName: 'Dry Storage Room (Bahan Baku Kering)',
+    tempMin: 18.0,
     tempMax: 30.0,
     rhMin: 40.0,
-    rhMax: 75.0,
-    tempTargetNominal: 26.0,
-    rhTargetNominal: 62.0,
+    rhMax: 70.0,
+    tempTargetNominal: 24.2,
+    rhTargetNominal: 56.0,
+    sensorDefault: 'ESP-DS01-A',
+    limitLabel: '< 30.0°C',
+    dotClass: 'dot-amber',
     description: 'Mencegah tepung, rempah, dan gula menyerap uap air yang memicu penggumpalan (caking) dan mikotoksin jamur.',
     icon: '📦'
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.CCP_ZONES = CCP_ZONES;
+}
 
 class PantauPanganStore {
   constructor() {
@@ -48,8 +65,8 @@ class PantauPanganStore {
     this.timeWindow = '1h'; // '1h', '6h', '24h'
     this.activeSimState = 'NORMAL'; // 'NORMAL', 'DOOR_OPEN', 'COMPRESSOR_FAILURE', 'SENSOR_FAULT'
     this.hardware = {
-      device: 'ESP-12E (ESP8266 Core)',
-      firmware: 'v2.4.1-haccp',
+      device: 'ESP32 Mesh / ESP-12E',
+      firmware: 'v4.2.1-industrial',
       mac: '5C:CF:7F:A1:39:8E',
       ip: '192.168.10.45',
       rssi: -62,
@@ -57,24 +74,72 @@ class PantauPanganStore {
       batteryPct: 94,
       buzzerActive: false,
       ledStatus: 'GREEN', // 'GREEN' | 'RED'
-      sampleIntervalSec: 5,
+      sampleIntervalSec: 2.5,
       isOnline: true
     };
     
-    // Inisialisasi buffer historis per zona
+    // Inisialisasi buffer grafik historis per zona (Mulai bersih)
     this.zoneData = {
-      chilled_room: this.generateInitialSeries('chilled_room', 40),
-      frozen_room: this.generateInitialSeries('frozen_room', 40),
-      dry_storage: this.generateInitialSeries('dry_storage', 40)
+      chilled_room: [],
+      frozen_room: [],
+      dry_storage: []
     };
 
-    // Audit logs (immutable read-only table)
+    // Buffer log telemetri streaming SCADA (Mulai murni kosong dari nol)
+    this.telemetryLogs = [];
+
+    // Audit logs (immutable read-only ledger SHA-256 - Mulai murni kosong dari nol)
     this.auditLogs = [];
-    this.initAuditLogs();
+
+    // Bersihkan sisa data lama dari LocalStorage agar database benar-benar bersih
+    this.clearAllData();
+  }
+
+  /**
+   * Mengosongkan seluruh database lokal dan server
+   */
+  clearAllData() {
+    this.telemetryLogs = [];
+    this.auditLogs = [];
+    this.zoneData = {
+      chilled_room: [],
+      frozen_room: [],
+      dry_storage: []
+    };
+
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('pantaupangan_telemetry');
+        localStorage.removeItem('pantaupangan_audit');
+      }
+    } catch (e) {}
+
+    // Bersihkan database server secara asinkron
+    try {
+      fetch('/api/reset', { method: 'POST' }).catch(() => {});
+    } catch (e) {}
+  }
+
+  saveToStorage() {
+    // Debounce: Simpan ke LocalStorage maksimal sekali tiap 8 detik agar main thread tidak freeze
+    if (this._storageTimeout) return;
+    this._storageTimeout = setTimeout(() => {
+      this._storageTimeout = null;
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('pantaupangan_telemetry', JSON.stringify(this.telemetryLogs.slice(0, 40)));
+          localStorage.setItem('pantaupangan_audit', JSON.stringify(this.auditLogs.slice(0, 40)));
+        }
+      } catch (e) {}
+    }, 8000);
+  }
+
+  loadFromStorage() {
+    // Kosong untuk fresh start
   }
 
   getCurrentZone() {
-    return CCP_ZONES[this.currentZoneId];
+    return CCP_ZONES[this.currentZoneId] || CCP_ZONES.chilled_room;
   }
 
   setZone(zoneId) {
@@ -84,20 +149,90 @@ class PantauPanganStore {
   }
 
   /**
+   * Menginisialisasi entri telemetri (Bersih murni untuk data riil IoT)
+   */
+  initTelemetryLogs() {
+    this.telemetryLogs = [];
+  }
+
+  /**
+   * Menambahkan entri baru pada telemetri streaming saat ada data masuk dari USB atau Simulator
+   */
+  addTelemetryLog(zoneId, temp, humidity, status = 'NORMAL', notes = null, fromSource = 'INTERNAL') {
+    const zone = CCP_ZONES[zoneId] || this.getCurrentZone();
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    let defaultNote = 'Monitoring telemetri transmisi periodik terjaga optimal';
+    if (status === 'WARNING') {
+      defaultNote = 'Fluktuasi suhu terdeteksi melampaui ambang batas toleransi HACCP';
+    } else if (status === 'CRITICAL') {
+      defaultNote = 'KRITIS: Pelanggaran batas kritis CCP! Aktuator Buzzer diaktifkan';
+    }
+
+    const newLog = {
+      id: 'TEL-' + String(this.telemetryLogs.length + 1).padStart(4, '0'),
+      time: timeStr,
+      date: dateStr,
+      timeFormatted: `${timeStr} ${dateStr}`,
+      roomKey: zoneId,
+      roomName: zone.name,
+      dotClass: zone.dotClass,
+      sensorId: zone.sensorDefault,
+      temperature: temp,
+      humidity: humidity,
+      limitLabel: zone.limitLabel,
+      status: status === 'NORMAL' ? 'NORMAL' : 'WARNING',
+      notes: notes || defaultNote
+    };
+
+    this.telemetryLogs.unshift(newLog);
+
+    // Batasi maksimum 150 baris di memori
+    if (this.telemetryLogs.length > 150) {
+      this.telemetryLogs.pop();
+    }
+
+    // Simpan ke database lokal browser (Debounced)
+    this.saveToStorage();
+
+    // Jika data berasal dari USB Serial langsung, sinkronkan ke server database non-blocking
+    if (fromSource === 'USB_SERIAL') {
+      this.syncTelemetryToServer(newLog);
+    }
+
+    return newLog;
+  }
+
+  syncTelemetryToServer(logEntry) {
+    if (this._telemetrySyncTimeout) return;
+    this._telemetrySyncTimeout = setTimeout(() => {
+      this._telemetrySyncTimeout = null;
+      try {
+        fetch('/api/telemetry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(logEntry)
+        }).catch(() => {});
+      } catch (e) {}
+    }, 4000);
+  }
+
+  /**
    * Menghasilkan riwayat data awal yang realistis dengan variasi mikro
    */
   generateInitialSeries(zoneId, count) {
     const zone = CCP_ZONES[zoneId];
     const series = [];
     const now = Date.now();
-    const intervalMs = 60 * 1000; // 1 menit per interval untuk display riwayat
+    const intervalMs = 60 * 1000;
 
     let baseTemp = zone.tempTargetNominal;
     let baseRh = zone.rhTargetNominal;
 
     for (let i = count - 1; i >= 0; i--) {
       const timestamp = new Date(now - i * intervalMs);
-      // Variasi alami termodinamika ruangan (random walk)
       const noiseT = (Math.random() - 0.49) * 0.35;
       const noiseRh = (Math.random() - 0.5) * 0.8;
       
@@ -116,32 +251,10 @@ class PantauPanganStore {
   }
 
   initAuditLogs() {
-    // Generate initial immutable logs dari series chilled_room
-    const records = this.zoneData.chilled_room.slice(-20);
-    records.forEach((rec, idx) => {
-      const logId = 'LOG-' + (1000 + idx);
-      const zScore = parseFloat(((Math.random() * 0.5) + 0.1).toFixed(2));
-      const status = 'NORMAL';
-      const rawPayload = `${logId}|${rec.timestamp.toISOString()}|chilled_room|${rec.temperature}|${rec.humidity}|${status}`;
-      
-      // Sederhana SHA256 simulation atau real hash
-      this.auditLogs.unshift({
-        id: logId,
-        timestamp: rec.timestamp,
-        timeFormatted: rec.timestamp.toLocaleDateString('id-ID') + ' ' + rec.timestamp.toLocaleTimeString('id-ID'),
-        zoneId: 'chilled_room',
-        zoneName: 'Chilled Room',
-        temperature: rec.temperature,
-        humidity: rec.humidity,
-        zScore: zScore,
-        status: status,
-        hash: this.generateSha256Sim(rawPayload)
-      });
-    });
+    this.auditLogs = [];
   }
 
   generateSha256Sim(input) {
-    // Menghasilkan hex digest deterministik 64-karakter untuk audit trail
     let hash = 0;
     for (let i = 0; i < input.length; i++) {
       const char = input.charCodeAt(i);

@@ -95,31 +95,42 @@ class PantauPanganSerialService {
    * Memproses baris teks serial mentah dan mengekstrak data JSON
    */
   handleRawSerialLine(rawLine) {
-    // Coba parse format JSON yang dikirimkan oleh firmware ESP-12E
-    try {
-      if (rawLine.startsWith('{') && rawLine.endsWith('}')) {
-        const payload = JSON.parse(rawLine);
-        if (this.onDataReceived) {
-          this.onDataReceived(payload, 'USB_SERIAL');
+    const trimmed = rawLine.trim();
+    if (!trimmed) return;
+
+    // Coba parse format JSON yang dikirimkan oleh firmware ESP-12E / ESP32
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      try {
+        const payload = JSON.parse(trimmed);
+        const temp = typeof payload.temperature === 'number' ? payload.temperature : parseFloat(payload.temperature);
+        const rh = typeof payload.humidity === 'number' ? payload.humidity : parseFloat(payload.humidity);
+
+        // Sanity bound check (-50°C s/d +80°C, RH 0 s/d 100%)
+        if (!isNaN(temp) && !isNaN(rh) && isFinite(temp) && isFinite(rh) && temp >= -50.0 && temp <= 80.0 && rh >= 0.0 && rh <= 100.0) {
+          if (this.onDataReceived) {
+            this.onDataReceived({ ...payload, temperature: temp, humidity: rh }, 'USB_SERIAL');
+          }
+          return;
         }
-        return;
+      } catch (e) {
+        // Format JSON tidak valid atau terpotong
       }
-    } catch (e) {
-      // Abaikan jika bukan JSON
     }
 
     // Dukungan format CSV alternatif: "3.8,84.5"
-    if (rawLine.includes(',')) {
-      const parts = rawLine.split(',');
-      const temp = parseFloat(parts[0]);
-      const rh = parseFloat(parts[1]);
-      if (!isNaN(temp) && !isNaN(rh)) {
-        if (this.onDataReceived) {
-          this.onDataReceived({
-            temperature: temp,
-            humidity: rh,
-            device_id: 'ESP-12E-USB'
-          }, 'USB_SERIAL');
+    if (trimmed.includes(',')) {
+      const parts = trimmed.split(',');
+      if (parts.length >= 2) {
+        const temp = parseFloat(parts[0].trim());
+        const rh = parseFloat(parts[1].trim());
+        if (!isNaN(temp) && !isNaN(rh) && isFinite(temp) && isFinite(rh) && temp >= -50.0 && temp <= 80.0 && rh >= 0.0 && rh <= 100.0) {
+          if (this.onDataReceived) {
+            this.onDataReceived({
+              temperature: temp,
+              humidity: rh,
+              device_id: 'ESP-12E-USB'
+            }, 'USB_SERIAL');
+          }
         }
       }
     }
@@ -173,6 +184,8 @@ class PantauPanganSerialService {
       const eventSource = new EventSource('/api/events');
       eventSource.onmessage = (event) => {
         try {
+          // Jika USB fisik sedang terhubung langsung ke browser ini, abaikan echo SSE agar data tidak terduplikasi
+          if (this.isConnected) return;
           const payload = JSON.parse(event.data);
           if (this.onDataReceived) {
             this.onDataReceived(payload, 'SSE_GATEWAY');
