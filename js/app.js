@@ -1312,6 +1312,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Tombol Toggle Pengaturan Lanjutan Cloud
+  const btnToggleCloudSettings = document.getElementById('btn-toggle-cloud-settings');
+  const cloudSettingsDrawer = document.getElementById('cloud-settings-drawer');
+  if (btnToggleCloudSettings && cloudSettingsDrawer) {
+    btnToggleCloudSettings.addEventListener('click', () => {
+      const isHidden = cloudSettingsDrawer.style.display === 'none';
+      cloudSettingsDrawer.style.display = isHidden ? 'block' : 'none';
+      btnToggleCloudSettings.textContent = isHidden ? '✕ Tutup Pengaturan' : '⚙️ Pengaturan Endpoint (Lanjutan)';
+    });
+  }
+
   // Tombol Refresh Cloud Logs
   const btnRefreshCloud = document.getElementById('btn-refresh-cloud-logs');
   if (btnRefreshCloud) {

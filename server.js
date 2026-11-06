@@ -105,14 +105,12 @@ function pushToExternalCloudDB(dataRecord, callback) {
 
   const startTime = Date.now();
   const payloadStr = JSON.stringify({
-    source: 'PantauPangan-Edge-ESP12E',
     device_id: dataRecord.device_id || 'ESP-12E-CCP-01',
-    temperature: dataRecord.temperature,
-    humidity: dataRecord.humidity,
-    status: dataRecord.status,
-    alarm: dataRecord.alarm,
-    haccp_compliant: dataRecord.status === 'NORMAL',
-    timestamp: dataRecord.received_at || new Date().toISOString()
+    temperature: parseFloat(dataRecord.temperature) || 0.0,
+    humidity: parseFloat(dataRecord.humidity) || 0.0,
+    status: dataRecord.status || 'NORMAL',
+    alarm: dataRecord.alarm === true,
+    haccp_compliant: dataRecord.status === 'NORMAL'
   });
 
   // Jika endpoint eksternal adalah URL HTTPS valid

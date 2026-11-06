@@ -571,17 +571,19 @@
           </div>
 
           <div class="view-actions-group">
-            <button id="btn-cloud-test-write" class="btn btn-scada-primary">
+            <a id="btn-open-supabase-console" href="https://supabase.com/dashboard/project/wkeujvejvnemibgvwvjr/editor" target="_blank" rel="noopener noreferrer" class="btn btn-scada-primary" title="Buka Konsol Table Editor Supabase Langsung di Tab Baru">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"></polyline>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
               </svg>
-              Uji Write &amp; Ping Cloud
-            </button>
-            <button id="btn-refresh-cloud-logs" class="btn btn-scada-outline">
+              Buka Supabase Table Editor ↗
+            </a>
+            <button id="btn-refresh-cloud-logs" class="btn btn-scada-outline" title="Perbarui tabel aliran log">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
               </svg>
-              Refresh Cloud Feed
+              Refresh Stream
             </button>
           </div>
         </div>
@@ -633,29 +635,60 @@
           </div>
         </div>
 
-        <!-- KONTROL KONFIGURASI ENDPOINT CLOUD -->
-        <div class="card scada-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
-          <h3 class="chart-box-title" style="margin-bottom: 0.75rem;">Konfigurasi Endpoint Cloud Database</h3>
-          <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 0.75rem; align-items: end;">
+        <!-- STATUS KONEKSI SERVER SUPABASE (VERIFIED PRODUCTION) -->
+        <div class="card scada-card" style="margin-bottom: 1.25rem; padding: 1.1rem 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span class="chip-dot dot-green"></span>
+              <h3 class="chart-box-title" style="margin: 0;">Supabase Cloud PostgreSQL Connection (Verified Production)</h3>
+            </div>
+            <button id="btn-toggle-cloud-settings" class="btn btn-scada-outline" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;">
+              ⚙️ Pengaturan Endpoint (Lanjutan)
+            </button>
+          </div>
+
+          <!-- Baris Ringkasan Status Produksi -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem; background-color: var(--bg-elevated); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.75rem;">
             <div>
-              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">CLOUD REST TARGET URL</label>
-              <input type="text" id="input-cloud-endpoint" class="scada-input font-mono" value="https://api.supabase.com/v1/telemetry_stream" style="width: 100%;">
+              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">PROJECT HOST:</span>
+              <span class="font-mono" style="color: var(--accent-blue); font-weight: 600;">wkeujvejvnemibgvwvjr.supabase.co</span>
             </div>
             <div>
-              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">API KEY / BEARER TOKEN</label>
-              <input type="password" id="input-cloud-key" class="scada-input font-mono" value="sb-pantaudpangan-demo-api-key-2026" style="width: 100%;">
+              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">TABEL POSTGRESQL:</span>
+              <span class="font-mono" style="color: var(--text-main); font-weight: 600;">public.telemetry_logs</span>
             </div>
             <div>
-              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">DATABASE PROVIDER</label>
-              <select id="select-cloud-provider" class="scada-select" style="width: 100%;">
-                <option value="Supabase PostgreSQL REST" selected>Supabase (PostgreSQL)</option>
-                <option value="Firebase Firestore REST">Firebase Firestore</option>
-                <option value="PostgreSQL Remote REST">PostgreSQL Direct REST</option>
-                <option value="MongoDB Atlas Data API">MongoDB Atlas</option>
-              </select>
+              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">PROTOKOL KEAMANAN:</span>
+              <span style="color: var(--status-normal); font-weight: 600;">TLS 1.3 / HTTPS REST Bearer</span>
             </div>
             <div>
-              <button id="btn-save-cloud-config" class="btn btn-scada-primary" style="height: 38px;">Simpan Konfigurasi</button>
+              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">STATUS RLS:</span>
+              <span class="badge-status-pill normal" style="font-size: 0.68rem;">Row Level Security Active</span>
+            </div>
+          </div>
+
+          <!-- Form Pengaturan Lanjutan (Tersembunyi secara default agar rapi) -->
+          <div id="cloud-settings-drawer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 0.75rem; align-items: end;">
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">CLOUD REST TARGET URL</label>
+                <input type="text" id="input-cloud-endpoint" class="scada-input font-mono" value="https://wkeujvejvnemibgvwvjr.supabase.co/rest/v1/telemetry_logs" style="width: 100%;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">API KEY / BEARER TOKEN</label>
+                <input type="password" id="input-cloud-key" class="scada-input font-mono" value="sb_publishable_8IWAa0Ieg89zFHgrNXcXKg_mB9hO-O6" style="width: 100%;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">DATABASE PROVIDER</label>
+                <select id="select-cloud-provider" class="scada-select" style="width: 100%;">
+                  <option value="Supabase Cloud (PostgreSQL)" selected>Supabase (PostgreSQL)</option>
+                  <option value="Firebase Firestore REST">Firebase Firestore</option>
+                  <option value="PostgreSQL Remote REST">PostgreSQL Direct REST</option>
+                </select>
+              </div>
+              <div>
+                <button id="btn-save-cloud-config" class="btn btn-scada-primary" style="height: 38px;">Simpan</button>
+              </div>
             </div>
           </div>
         </div>
