@@ -667,6 +667,12 @@ document.addEventListener('DOMContentLoaded', () => {
           const topGatewayText = document.getElementById('top-gateway-text');
           if (topGatewayText) topGatewayText.innerHTML = `ESP-12E: <strong class="font-mono text-success">USB Live (COM)</strong>`;
           showToast('Berhasil terhubung ke perangkat via USB Serial (115200 Baud)!', 'success');
+
+          // Sinkronisasi otomatis ambang batas aktif ke ESP saat pertama kali tersambung
+          setTimeout(() => {
+            const currentZone = window.appStore.getCurrentZone();
+            serialService.sendCommand(`SET_ZONE:${currentZone.id},${currentZone.tempMin},${currentZone.tempMax}`);
+          }, 400);
         } catch (err) {
           if (err.name !== 'NotFoundError') {
             showToast(`Gagal koneksi USB: ${err.message}`, 'danger');
@@ -813,6 +819,35 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(`Preset ${zoneObj.name} aktif & dikirim ke ESP8266!`);
           }
         });
+      }
+    });
+  }
+
+  // Tombol Kendali Mute / Silence Buzzer Fisik
+  let isBuzzerMuted = false;
+  const btnBuzzerMute = document.getElementById('btn-toggle-buzzer-mute');
+  const buzzerIcon = document.getElementById('buzzer-btn-icon');
+  const buzzerText = document.getElementById('buzzer-btn-text');
+
+  if (btnBuzzerMute) {
+    btnBuzzerMute.addEventListener('click', () => {
+      isBuzzerMuted = !isBuzzerMuted;
+      if (isBuzzerMuted) {
+        if (buzzerIcon) buzzerIcon.textContent = '🔊';
+        if (buzzerText) buzzerText.textContent = 'Unmute Buzzer';
+        btnBuzzerMute.classList.add('active');
+        if (serialService && serialService.isConnected) {
+          serialService.sendCommand('MUTE_BUZZER');
+        }
+        showToast('🔇 Buzzer fisik di-mute (senyap)');
+      } else {
+        if (buzzerIcon) buzzerIcon.textContent = '🔇';
+        if (buzzerText) buzzerText.textContent = 'Mute Buzzer';
+        btnBuzzerMute.classList.remove('active');
+        if (serialService && serialService.isConnected) {
+          serialService.sendCommand('UNMUTE_BUZZER');
+        }
+        showToast('🔊 Buzzer fisik aktif normal');
       }
     });
   }

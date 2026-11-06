@@ -56,13 +56,15 @@ float lastTemp = 0.0;
 float lastRh = 0.0;
 bool isSensorReady = false;
 
-// Batas Kritis HACCP Default (Chilled Room: 0.0°C s/d 5.0°C)
-float limitMaxTemp = 5.0;
-float limitMinTemp = 0.0;
-float warnThreshold = 4.2; // Suhu mendekati batas kritis memicu lampu kuning
+// Batas Kritis HACCP Default (Standar Pameran: Ruang Kering/Ambient 18.0°C s/d 32.0°C)
+// Agar saat pertama kali dinyalakan di suhu ruangan (~28°C-30.5°C), status langsung NORMAL (LED Hijau)
+float limitMinTemp = 18.0;
+float limitMaxTemp = 32.0;
+float warnThreshold = 30.8; // Suhu mendekati batas kritis memicu lampu kuning
 
-// Kendali alarm jarak jauh dari AI Dashboard
+// Kendali alarm & status mute buzzer
 bool remoteAlarmActive = false;
+bool buzzerMuted = false;
 
 // Parameter Animasi & Pergantian Halaman Layar LCD
 unsigned long lastPageSwitch = 0;
@@ -198,14 +200,19 @@ void loop() {
       remoteAlarmActive = true;
     } else if (cmd == "ALARM_OFF") {
       remoteAlarmActive = false;
+    } else if (cmd == "MUTE_BUZZER" || cmd == "BUZZER_MUTE") {
+      buzzerMuted = true;
+      digitalWrite(BUZZER_PIN, LOW); // Langsung senyap
+    } else if (cmd == "UNMUTE_BUZZER" || cmd == "BUZZER_UNMUTE") {
+      buzzerMuted = false;
     } else if (cmd.startsWith("SET_ZONE:")) {
-      // Contoh: SET_ZONE:chilled_room,0.0,5.0
+      // Contoh: SET_ZONE:dry_storage,18.0,32.0
       int firstComma = cmd.indexOf(',');
       int secondComma = cmd.indexOf(',', firstComma + 1);
       if (firstComma > 0 && secondComma > firstComma) {
         limitMinTemp = cmd.substring(firstComma + 1, secondComma).toFloat();
         limitMaxTemp = cmd.substring(secondComma + 1).toFloat();
-        warnThreshold = limitMaxTemp - 0.8;
+        warnThreshold = limitMaxTemp - 1.2;
       }
     }
   }
@@ -242,20 +249,20 @@ void loop() {
     // 3. Evaluasi Kondisi & Kendali Indikator 3 Warna + Buzzer
     // ========================================================================
     bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
-    bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 90.0 || humidity < 75.0));
+    bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 85.0 || humidity < 35.0));
 
     if (isCritical) {
       digitalWrite(PIN_LED_GRN, LOW);
       digitalWrite(PIN_LED_YEL, LOW);
       digitalWrite(PIN_LED_RED, HIGH);   // LED Merah ON
-      digitalWrite(BUZZER_PIN, HIGH);    // Buzzer Aktif berbunyi
+      digitalWrite(BUZZER_PIN, buzzerMuted ? LOW : HIGH); // Buzzer aktif jika tidak di-mute
     } else if (isWarning) {
       digitalWrite(PIN_LED_GRN, LOW);
       digitalWrite(PIN_LED_YEL, HIGH);   // LED Kuning ON
       digitalWrite(PIN_LED_RED, LOW);
       digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF saat warning
     } else {
-      digitalWrite(PIN_LED_GRN, HIGH);   // LED Hijau ON
+      digitalWrite(PIN_LED_GRN, HIGH);   // LED Hijau ON (Kondisi NORMAL / AMAN)
       digitalWrite(PIN_LED_YEL, LOW);
       digitalWrite(PIN_LED_RED, LOW);
       digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF

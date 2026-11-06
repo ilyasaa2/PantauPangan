@@ -1437,6 +1437,12 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   white-space: nowrap;
 }
 
+#btn-toggle-buzzer-mute.active {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: var(--status-critical);
+  color: var(--status-critical);
+}
+
 @media (max-width: 1200px) {
   .metrics-scada-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -39,18 +39,18 @@ const CCP_ZONES = {
   },
   dry_storage: {
     id: 'dry_storage',
-    name: 'Dry Storage Room',
-    fullName: 'Dry Storage Room (Bahan Baku Kering)',
+    name: 'Ruang Kering & Ambient',
+    fullName: 'Ruang Penyimpanan Kering / Ambient (18.0°C ~ 32.0°C)',
     tempMin: 18.0,
-    tempMax: 30.0,
-    rhMin: 40.0,
-    rhMax: 70.0,
-    tempTargetNominal: 24.2,
-    rhTargetNominal: 56.0,
-    sensorDefault: 'ESP-DS01-A',
-    limitLabel: '< 30.0°C',
-    dotClass: 'dot-amber',
-    description: 'Mencegah tepung, rempah, dan gula menyerap uap air yang memicu penggumpalan (caking) dan mikotoksin jamur.',
+    tempMax: 32.0,
+    rhMin: 35.0,
+    rhMax: 75.0,
+    tempTargetNominal: 25.0,
+    rhTargetNominal: 58.0,
+    sensorDefault: 'ESP-12E-CCP-01',
+    limitLabel: '18.0°C ~ 32.0°C',
+    dotClass: 'dot-green',
+    description: 'Rentang suhu aman penyimpanan bahan baku kering (tepung, beras, gula, biskuit) sesuai standar BPOM. Suhu ruangan pameran berada di rentang aman ini.',
     icon: '📦'
   }
 };
@@ -61,7 +61,7 @@ if (typeof window !== 'undefined') {
 
 class PantauPanganStore {
   constructor() {
-    this.currentZoneId = 'chilled_room';
+    this.currentZoneId = 'dry_storage';
     this.timeWindow = '1h'; // '1h', '6h', '24h'
     this.activeSimState = 'NORMAL'; // 'NORMAL', 'DOOR_OPEN', 'COMPRESSOR_FAILURE', 'SENSOR_FAULT'
     this.hardware = {
