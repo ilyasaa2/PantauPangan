@@ -2,14 +2,14 @@
  * PantauPangan - Firmware Node ESP8266 (ESP-12E NodeMCU V3)
  * Mata Kuliah: Internet of Things & Sistem Terintegrasi
  *
- * Konfigurasi Perangkat Keras Terbaru:
+ * Konfigurasi Perangkat Keras:
  * 1. Board & Shield    : NodeMCU ESP-12E V3 + Expansion Baseboard Shield (HW-389)
  * 2. Catu Daya Utama   : Adaptor Eksternal 5V 3A (Jack DC pada Expansion Shield)
- * 3. Display           : LCD 1602 Biru + Adapter Backpack I2C (PCF8574)
+ * 3. Display           : LCD 1602 Biru + Adapter Backpack I2C (PCF8574T 0x27)
  * 4. Sensor Suhu/RH    : DHT11
  * 5. Indikator Visual  : Lampu LED 3 Warna (Hijau = Normal, Kuning = Warning, Merah = Kritis)
  * 6. Indikator Audio   : Buzzer Aktif 5V
- * 7. Komunikasi        : USB Serial UART 115200 Baud ke Web Dashboard PantauPangan
+ * 7. Komunikasi        : Hybrid Dual-Mode (Nirkabel Wi-Fi Hotspot + Backup USB Serial UART 115200)
  *
  * Pemetaan Pin NodeMCU Expansion Shield:
  * - LCD I2C SDA        : Pin D2 (GPIO 4)
@@ -26,9 +26,27 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <DHT.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
+#include <WiFiUdp.h>
 
 // ============================================================================
-// 1. Definisi Pin Fisik pada NodeMCU ESP8266 Shield
+// 1. Konfigurasi Nirkabel Wi-Fi Hotspot
+// ============================================================================
+const char* WIFI_SSID = "000";
+const char* WIFI_PASS = "00000000";
+
+// Alamat IP Gateway Laptop (Akan diperbarui otomatis via UDP Beacon jika terdeteksi)
+String laptopServerIP = "192.168.0.104";
+const int SERVER_PORT = 3000;
+bool isWiFiConnected = false;
+bool hasDiscoveredServer = false;
+WiFiUDP udpBeacon;
+const int UDP_BEACON_PORT = 3001;
+
+// ============================================================================
+// 2. Definisi Pin Fisik pada NodeMCU ESP8266 Shield
 // ============================================================================
 #define PIN_SDA      4    // Pin D2 -> SDA LCD 1602 I2C
 #define PIN_SCL      5    // Pin D1 -> SCL LCD 1602 I2C
@@ -41,9 +59,8 @@
 #define DHTTYPE      DHT11
 
 // ============================================================================
-// 2. Inisialisasi Objek & Parameter
+// 3. Inisialisasi Objek & Parameter
 // ============================================================================
-// Alamat I2C umum: 0x27 (standar PCF8574T) atau 0x3F (PCF8574AT)
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -86,30 +103,6 @@ byte degreeChar[8] = {
   0b00000
 };
 
-// Custom Char: Ikon Panah Kanan (>)
-byte arrowChar[8] = {
-  0b00000,
-  0b00100,
-  0b00010,
-  0b11111,
-  0b00010,
-  0b00100,
-  0b00000,
-  0b00000
-};
-
-// Custom Char: Ikon Tanda Bahaya (!)
-byte alertChar[8] = {
-  0b00100,
-  0b00100,
-  0b00100,
-  0b00100,
-  0b00000,
-  0b00100,
-  0b00000,
-  0b00000
-};
-
 // ============================================================================
 // Helper: Cetak Teks Rata 16 Karakter (Mencegah Karakter Sisa/Ghosting)
 // ============================================================================
@@ -124,15 +117,16 @@ void lcdPrintLine(int row, String text) {
   lcd.print(text);
 }
 
-// Prototype Fungsi Render Layar
+// Prototype Fungsi
 void renderLCDPage(float temperature, float humidity);
+void handleServerFeedback(String resp);
 
 // ============================================================================
-// 3. Setup Hardware
+// 4. Setup Hardware
 // ============================================================================
 void setup() {
   Serial.begin(115200);
-  delay(500);
+  delay(300);
 
   // Inisialisasi Pin Output LED & Buzzer
   pinMode(PIN_LED_GRN, OUTPUT);
@@ -165,33 +159,65 @@ void setup() {
 
   // Uji singkat indikator LED (Self-Test 600ms)
   digitalWrite(PIN_LED_GRN, HIGH);
-  delay(200);
+  delay(150);
   digitalWrite(PIN_LED_GRN, LOW);
   digitalWrite(PIN_LED_YEL, HIGH);
-  delay(200);
+  delay(150);
   digitalWrite(PIN_LED_YEL, LOW);
   digitalWrite(PIN_LED_RED, HIGH);
-  delay(200);
+  delay(150);
   digitalWrite(PIN_LED_RED, LOW);
 
   // Inisialisasi Sensor DHT11
   dht.begin();
-  delay(500);
 
+  // Koneksi Nirkabel Wi-Fi Hotspot HP
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print(F("Sistem Siap..."));
+  lcd.print(F("WiFi: Hotspot "));
   lcd.setCursor(0, 1);
-  lcd.print(F("Menunggu Sensor "));
+  lcd.print(F("Menghubungkan..."));
 
-  Serial.println(F("{\"status\":\"READY\",\"device\":\"ESP-12E-V3\",\"display\":\"LCD_1602_I2C\",\"msg\":\"Node PantauPangan Online\"}"));
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+  unsigned long wifiStart = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - wifiStart < 7000)) {
+    delay(300);
+    digitalWrite(PIN_LED_YEL, !digitalRead(PIN_LED_YEL)); // Kedip kuning saat mencari sinyal
+  }
+  digitalWrite(PIN_LED_YEL, LOW);
+
+  if (WiFi.status() == WL_CONNECTED) {
+    isWiFiConnected = true;
+    udpBeacon.begin(UDP_BEACON_PORT);
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(F("WiFi Terhubung! "));
+    lcd.setCursor(0, 1);
+    lcd.print(WiFi.localIP().toString());
+    digitalWrite(PIN_LED_GRN, HIGH);
+    delay(1200);
+    digitalWrite(PIN_LED_GRN, LOW);
+  } else {
+    isWiFiConnected = false;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(F("WiFi Offline    "));
+    lcd.setCursor(0, 1);
+    lcd.print(F("Mode Standalone "));
+    delay(800);
+  }
+
+  Serial.println(F("{\"status\":\"READY\",\"device\":\"ESP-12E-V3\",\"display\":\"LCD_1602_I2C\",\"mode\":\"HYBRID_WIFI_SERIAL\"}"));
 }
 
 // ============================================================================
-// 4. Loop Utama
+// 5. Loop Utama
 // ============================================================================
 void loop() {
-  // 1. Memeriksa perintah kendali dari Dashboard Laptop via Web Serial
+  // 1. Memeriksa perintah kendali dari Dashboard Laptop via USB Serial (Jika dicolok)
   if (Serial.available() > 0) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
@@ -206,7 +232,6 @@ void loop() {
     } else if (cmd == "UNMUTE_BUZZER" || cmd == "BUZZER_UNMUTE") {
       buzzerMuted = false;
     } else if (cmd.startsWith("SET_ZONE:")) {
-      // Contoh: SET_ZONE:dry_storage,18.0,32.0
       int firstComma = cmd.indexOf(',');
       int secondComma = cmd.indexOf(',', firstComma + 1);
       if (firstComma > 0 && secondComma > firstComma) {
@@ -217,7 +242,22 @@ void loop() {
     }
   }
 
-  // 2. Pembacaan Sensor & Pembaruan Display Berkala
+  // 2. Auto-Discovery IP Laptop via UDP Beacon (Port 3001)
+  if (isWiFiConnected) {
+    int packetSize = udpBeacon.parsePacket();
+    if (packetSize > 0) {
+      char packetBuf[64];
+      int len = udpBeacon.read(packetBuf, 63);
+      if (len > 0) packetBuf[len] = 0;
+      String msg = String(packetBuf);
+      if (msg.startsWith("PANTAUPANGAN_GATEWAY:")) {
+        laptopServerIP = udpBeacon.remoteIP().toString();
+        hasDiscoveredServer = true;
+      }
+    }
+  }
+
+  // 3. Pembacaan Sensor & Transmisi Berkala (Tiap 2.5 Detik)
   unsigned long currentMillis = millis();
   if (currentMillis - lastReadTime >= INTERVAL_MS) {
     lastReadTime = currentMillis;
@@ -229,11 +269,9 @@ void loop() {
     if (isnan(humidity) || isnan(temperature)) {
       Serial.println(F("{\"error\":\"DHT11_READ_FAILED\",\"msg\":\"Gagal membaca sensor DHT11 di Pin D5\"}"));
       
-      // Indikator LCD Sensor Error
       lcdPrintLine(0, F("SENSOR DHT ERROR"));
       lcdPrintLine(1, F("Periksa Kabel D5"));
 
-      // Nyalakan LED Kuning & Merah berkedip sebagai peringatan hardware
       digitalWrite(PIN_LED_GRN, LOW);
       digitalWrite(PIN_LED_YEL, HIGH);
       digitalWrite(PIN_LED_RED, HIGH);
@@ -245,9 +283,7 @@ void loop() {
     lastRh = humidity;
     isSensorReady = true;
 
-    // ========================================================================
-    // 3. Evaluasi Kondisi & Kendali Indikator 3 Warna + Buzzer
-    // ========================================================================
+    // Evaluasi Kondisi Kepatuhan HACCP
     bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
     bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 85.0 || humidity < 35.0));
 
@@ -268,9 +304,7 @@ void loop() {
       digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF
     }
 
-    // ========================================================================
-    // 4. Transmisi Data JSON ke Laptop via USB Serial (Web Serial API)
-    // ========================================================================
+    // A. Transmisi Serial UART (Selalu Aktif untuk Backup USB)
     Serial.print(F("{\"device_id\":\"ESP-12E-CCP-01\""));
     Serial.print(F(",\"temperature\":"));
     Serial.print(temperature, 1);
@@ -282,11 +316,39 @@ void loop() {
     Serial.print(F(",\"alarm\":"));
     Serial.print(isCritical ? F("true") : F("false"));
     Serial.println(F("}"));
+
+    // B. Transmisi Nirkabel Wi-Fi HTTP POST ke Laptop (Jika Terhubung)
+    if (WiFi.status() == WL_CONNECTED) {
+      isWiFiConnected = true;
+      WiFiClient client;
+      HTTPClient http;
+      String endpointUrl = "http://" + laptopServerIP + ":" + String(SERVER_PORT) + "/api/telemetry";
+
+      if (http.begin(client, endpointUrl)) {
+        http.addHeader(F("Content-Type"), F("application/json"));
+        http.setTimeout(1200); // 1.2 detik timeout agar loop display tetap responsif
+
+        String jsonPayload = "{\"device_id\":\"ESP-12E-CCP-01\""
+                             ",\"temperature\":" + String(temperature, 1) +
+                             ",\"humidity\":" + String(humidity, 1) +
+                             ",\"status\":\"" + (isCritical ? "CRITICAL" : (isWarning ? "WARNING" : "NORMAL")) + "\""
+                             ",\"alarm\":" + (isCritical ? "true" : "false") +
+                             ",\"wifi\":true" +
+                             ",\"ip\":\"" + WiFi.localIP().toString() + "\"}";
+
+        int httpCode = http.POST(jsonPayload);
+        if (httpCode > 0) {
+          String resp = http.getString();
+          handleServerFeedback(resp);
+        }
+        http.end();
+      }
+    } else {
+      isWiFiConnected = false;
+    }
   }
 
-  // ==========================================================================
-  // 5. Animasi Pergantian Halaman Layar LCD 1602 (Non-Blocking Carousel)
-  // ==========================================================================
+  // 4. Animasi Pergantian Halaman Layar LCD 1602 (Non-Blocking Carousel)
   if (isSensorReady) {
     unsigned long now = millis();
 
@@ -309,7 +371,46 @@ void loop() {
 }
 
 // ============================================================================
-// 6. Mesin Render Layar LCD Multi-Halaman & Penanganan Anomali
+// 6. Penanganan Respon Kontrol dari Server Laptop (Nirkabel Bi-Directional)
+// ============================================================================
+void handleServerFeedback(String resp) {
+  // Parsing ambang batas suhu baru
+  int minIdx = resp.indexOf("\"tempMin\":");
+  int maxIdx = resp.indexOf("\"tempMax\":");
+  if (minIdx > 0 && maxIdx > minIdx) {
+    float newMin = resp.substring(minIdx + 10, resp.indexOf(',', minIdx)).toFloat();
+    float newMax = resp.substring(maxIdx + 10, resp.indexOf(',', maxIdx)).toFloat();
+    if (newMax > newMin) {
+      limitMinTemp = newMin;
+      limitMaxTemp = newMax;
+      warnThreshold = limitMaxTemp - 1.2;
+    }
+  }
+
+  // Parsing status mute buzzer
+  int mutedIdx = resp.indexOf("\"buzzerMuted\":");
+  if (mutedIdx > 0) {
+    String mutedVal = resp.substring(mutedIdx + 14, mutedIdx + 19);
+    buzzerMuted = (mutedVal.startsWith("true"));
+    if (buzzerMuted) digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  // Parsing perintah antrean
+  int cmdIdx = resp.indexOf("\"pendingCmd\":\"");
+  if (cmdIdx > 0) {
+    int endQuote = resp.indexOf('\"', cmdIdx + 14);
+    if (endQuote > cmdIdx) {
+      String cmd = resp.substring(cmdIdx + 14, endQuote);
+      if (cmd == "ALARM_ON") remoteAlarmActive = true;
+      else if (cmd == "ALARM_OFF") remoteAlarmActive = false;
+      else if (cmd == "MUTE_BUZZER") { buzzerMuted = true; digitalWrite(BUZZER_PIN, LOW); }
+      else if (cmd == "UNMUTE_BUZZER") buzzerMuted = false;
+    }
+  }
+}
+
+// ============================================================================
+// 7. Mesin Render Layar LCD Multi-Halaman & Penanganan Anomali
 // ============================================================================
 void renderLCDPage(float temperature, float humidity) {
   bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
@@ -319,10 +420,10 @@ void renderLCDPage(float temperature, float humidity) {
   // HALAMAN 0: TELEMETRI REAL-TIME & STATUS KEPATUHAN
   // --------------------------------------------------------------------------
   if (currentPage == 0) {
-    // Baris 1: "T: 23.0°C H:49.0%"
+    // Baris 1: "T: 28.5°C H:58.0%"
     String line1 = "T:" + String(temperature, 1) + (char)0 + "C H:" + String(humidity, 1) + "%";
     
-    // Baris 2: "Status: KRITIS !" / "Status: AMAN   "
+    // Baris 2: "Status: AMAN  W1" (W = WiFi Mode, S = Serial Mode)
     String line2 = "Status: ";
     if (isCritical) {
       line2 += "KRITIS !";
@@ -331,7 +432,7 @@ void renderLCDPage(float temperature, float humidity) {
     } else {
       line2 += "AMAN    ";
     }
-    line2 += " [1]"; // Indikator Halaman 1
+    line2 += isWiFiConnected ? " [W1]" : " [S1]";
 
     lcdPrintLine(0, line1);
     lcdPrintLine(1, line2);
@@ -351,7 +452,6 @@ void renderLCDPage(float temperature, float humidity) {
       line1 = "Suhu Aman/Ideal ";
     }
 
-    // Baris 2: Menampilkan Batas Standar HACCP
     String line2 = "Limit: " + String(limitMinTemp, 0) + "-" + String(limitMaxTemp, 0) + (char)0 + "C [2]";
 
     lcdPrintLine(0, line1);
@@ -381,7 +481,6 @@ void renderLCDPage(float temperature, float humidity) {
       actionMsg = "PENYIMPANAN AMAN & SESUAI STANDAR HACCP ";
     }
 
-    // Efek Animasi Teks Berjalan (Marquee Scrolling) di Baris 2
     String scrollText = "";
     int msgLen = actionMsg.length();
     for (int i = 0; i < 16; i++) {

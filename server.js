@@ -1,5 +1,6 @@
 const http = require('http');
 const https = require('https');
+const dgram = require('dgram');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
@@ -13,6 +14,32 @@ const CLOUD_CONFIG_PATH = path.join(DATA_DIR, 'cloud_config.json');
 // Pastikan direktori database lokal tersedia
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// State Kontrol Nirkabel (Wireless Wi-Fi ESP8266)
+let pendingESPCommands = [];
+let wirelessControlState = {
+  zone: 'dry_storage',
+  tempMin: 18.0,
+  tempMax: 32.0,
+  buzzerMuted: false
+};
+
+// UDP Beacon Auto-Discovery: Membantu ESP8266 mendeteksi IP laptop secara otomatis
+try {
+  const udpBeacon = dgram.createSocket('udp4');
+  udpBeacon.bind(() => {
+    try { udpBeacon.setBroadcast(true); } catch (e) {}
+  });
+
+  setInterval(() => {
+    try {
+      const msg = Buffer.from('PANTAUPANGAN_GATEWAY:3000');
+      udpBeacon.send(msg, 0, msg.length, 3001, '255.255.255.255', () => {});
+    } catch (e) {}
+  }, 2500);
+} catch (err) {
+  console.warn('[UDP BEACON WARNING]', err.message);
 }
 
 // In-Memory Database Cache (Menghilangkan Disk I/O Blocking)
@@ -279,10 +306,48 @@ const server = http.createServer((req, res) => {
           }
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ status: 'SUCCESS' }));
+          res.end(JSON.stringify({
+            status: 'SUCCESS',
+            zone: wirelessControlState.zone,
+            tempMin: wirelessControlState.tempMin,
+            tempMax: wirelessControlState.tempMax,
+            buzzerMuted: wirelessControlState.buzzerMuted,
+            pendingCmd: pendingESPCommands.shift() || null
+          }));
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ERROR', message: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // 2B. Endpoint REST: Kendali Perangkat Nirkabel ESP8266 (Wi-Fi Command Gateway)
+  if (req.url === '/api/esp/command') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(wirelessControlState));
+      return;
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          if (data.command) pendingESPCommands.push(data.command);
+          if (typeof data.buzzerMuted === 'boolean') wirelessControlState.buzzerMuted = data.buzzerMuted;
+          if (data.tempMin !== undefined) wirelessControlState.tempMin = data.tempMin;
+          if (data.tempMax !== undefined) wirelessControlState.tempMax = data.tempMax;
+          if (data.zone) wirelessControlState.zone = data.zone;
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'QUEUED', state: wirelessControlState }));
+        } catch (e) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ERROR' }));
         }
       });
       return;

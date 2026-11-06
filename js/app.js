@@ -809,17 +809,31 @@ document.addEventListener('DOMContentLoaded', () => {
     selectRoomFilter.addEventListener('change', (e) => {
       const selected = e.target.value;
       setActiveZone(selected);
+      const zoneObj = window.appStore.getCurrentZone();
 
-      // Sinkronisasi otomatis ke ESP8266 via USB Serial
+      // 1. Sinkronisasi via Web Serial jika USB dicolok
       if (serialService && serialService.isConnected) {
-        const zoneObj = window.appStore.getCurrentZone();
         const cmd = `SET_ZONE:${selected},${zoneObj.tempMin},${zoneObj.tempMax}`;
         serialService.sendCommand(cmd).then(success => {
           if (success) {
-            showToast(`Preset ${zoneObj.name} aktif & dikirim ke ESP8266!`);
+            showToast(`Preset ${zoneObj.name} aktif & dikirim ke ESP8266 (USB)!`);
           }
         });
       }
+
+      // 2. Sinkronisasi via Wi-Fi HTTP Gateway (Wireless Mode)
+      fetch('/api/esp/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command: `SET_ZONE:${selected},${zoneObj.tempMin},${zoneObj.tempMax}`,
+          zone: selected,
+          tempMin: zoneObj.tempMin,
+          tempMax: zoneObj.tempMax
+        })
+      }).then(() => {
+        showToast(`Preset ${zoneObj.name} aktif (Wi-Fi Wireless)!`);
+      }).catch(() => {});
     });
   }
 
@@ -832,23 +846,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnBuzzerMute) {
     btnBuzzerMute.addEventListener('click', () => {
       isBuzzerMuted = !isBuzzerMuted;
+      const cmdStr = isBuzzerMuted ? 'MUTE_BUZZER' : 'UNMUTE_BUZZER';
+
       if (isBuzzerMuted) {
         if (buzzerIcon) buzzerIcon.textContent = '🔊';
         if (buzzerText) buzzerText.textContent = 'Unmute Buzzer';
         btnBuzzerMute.classList.add('active');
-        if (serialService && serialService.isConnected) {
-          serialService.sendCommand('MUTE_BUZZER');
-        }
         showToast('🔇 Buzzer fisik di-mute (senyap)');
       } else {
         if (buzzerIcon) buzzerIcon.textContent = '🔇';
         if (buzzerText) buzzerText.textContent = 'Mute Buzzer';
         btnBuzzerMute.classList.remove('active');
-        if (serialService && serialService.isConnected) {
-          serialService.sendCommand('UNMUTE_BUZZER');
-        }
         showToast('🔊 Buzzer fisik aktif normal');
       }
+
+      // Kirim via USB jika terhubung
+      if (serialService && serialService.isConnected) {
+        serialService.sendCommand(cmdStr);
+      }
+
+      // Kirim via Wi-Fi HTTP Gateway
+      fetch('/api/esp/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          buzzerMuted: isBuzzerMuted,
+          command: cmdStr
+        })
+      }).catch(() => {});
     });
   }
 
