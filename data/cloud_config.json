@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "provider": "Supabase PostgreSQL REST",
+  "endpoint": "https://wkeujvejvnemibgvwvjr.supabase.co/rest/v1/telemetry_logs",
+  "apiKey": "sb_publishable_8IWAa0Ieg89zFHgrNXcXKg_mB9hO-O6",
+  "tableName": "telemetry_logs",
+  "autoSync": true,
+  "syncIntervalMs": 5000
+}

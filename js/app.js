@@ -1236,7 +1236,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ? `Terakhir: ${new Date(data.stats.lastSyncTime).toLocaleTimeString('id-ID')}`
           : 'Belum ada data';
       }
-      if (latencyEl) latencyEl.textContent = `${data.stats.lastLatencyMs || 38} ms`;
+      if (latencyEl) latencyEl.textContent = `${data.stats.lastLatencyMs || 38}`;
 
       if (topCloudVal) {
         topCloudVal.textContent = `${(data.config.provider || 'Supabase').split(' ')[0]} Sync (${data.stats.lastLatencyMs || 38}ms)`;
@@ -1357,7 +1357,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Polling rutin cloud status tiap 6 detik
-  setInterval(fetchCloudStatus, 6000);
+  // Polling rutin cloud status & streaming feed tiap 3 detik
+  setInterval(() => {
+    fetchCloudStatus();
+    const cloudView = document.getElementById('view-cloud');
+    if (cloudView && cloudView.style.display !== 'none') {
+      fetchCloudLogs();
+    }
+  }, 3000);
   fetchCloudStatus();
+  fetchCloudLogs();
 });

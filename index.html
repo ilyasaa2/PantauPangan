@@ -590,96 +590,128 @@
 
         <!-- 4 KARTU METRIK CLOUD DATABASE -->
         <div class="metrics-scada-grid" style="margin-bottom: 1.25rem;">
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title">CLOUD PROVIDER</span>
+          <!-- Kartu 1: Cloud Provider -->
+          <div class="card scada-card">
+            <div class="card-kpi-header">
+              <span class="kpi-label">CLOUD PROVIDER</span>
               <span class="badge-status-pill normal">PostgreSQL REST</span>
             </div>
-            <div class="metric-body">
-              <div class="metric-val" id="cloud-metric-provider" style="font-size: 1.35rem;">Supabase REST</div>
-              <div class="metric-sub">Target Table: <span class="font-mono" id="cloud-metric-table">telemetry_logs</span></div>
+            <div class="card-kpi-body">
+              <span class="kpi-value-text font-bold" id="cloud-metric-provider" style="font-size: 1.3rem; color: var(--text-main);">Supabase REST</span>
+            </div>
+            <div class="card-kpi-footer">
+              <span class="kpi-footer-muted">Tabel:</span>
+              <span class="kpi-footer-val font-mono" id="cloud-metric-table">telemetry_logs</span>
             </div>
           </div>
 
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title">STATUS SINKRONISASI</span>
+          <!-- Kartu 2: Status Sinkronisasi -->
+          <div class="card scada-card">
+            <div class="card-kpi-header">
+              <span class="kpi-label">STATUS SINKRONISASI</span>
               <span class="chip-dot dot-green"></span>
             </div>
-            <div class="metric-body">
-              <div class="metric-val" id="cloud-metric-status" style="color: var(--status-normal);">SYNCHRONIZED</div>
-              <div class="metric-sub">Arsitektur: Dual-Persistence</div>
+            <div class="card-kpi-body">
+              <span class="kpi-value-text font-bold" id="cloud-metric-status" style="font-size: 1.3rem; color: var(--status-normal);">SYNCHRONIZED</span>
+            </div>
+            <div class="card-kpi-footer">
+              <span class="kpi-footer-muted">Arsitektur:</span>
+              <span class="kpi-footer-val">Dual-Persistence</span>
             </div>
           </div>
 
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title">TOTAL DATA TERSIMPAN</span>
-              <span class="subtext-muted">Cloud Rows</span>
+          <!-- Kartu 3: Total Data Tersimpan -->
+          <div class="card scada-card">
+            <div class="card-kpi-header">
+              <span class="kpi-label">TOTAL DATA TERSIMPAN</span>
+              <span class="badge-status-pill blue">Cloud Rows</span>
             </div>
-            <div class="metric-body">
-              <div class="metric-val font-mono" id="cloud-metric-count">0</div>
-              <div class="metric-sub" id="cloud-metric-last-sync">Belum ada sinkronisasi</div>
+            <div class="card-kpi-body">
+              <span class="kpi-value font-mono" id="cloud-metric-count">0</span>
+              <span class="kpi-unit">baris</span>
+            </div>
+            <div class="card-kpi-footer">
+              <span class="kpi-footer-muted">Waktu:</span>
+              <span class="kpi-footer-val font-mono" id="cloud-metric-last-sync">Sinkronisasi Aktif</span>
             </div>
           </div>
 
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title">ROUND-TRIP LATENCY</span>
-              <span class="subtext-muted">HTTPS Ping</span>
+          <!-- Kartu 4: Round-Trip Latency -->
+          <div class="card scada-card">
+            <div class="card-kpi-header">
+              <span class="kpi-label">ROUND-TRIP LATENCY</span>
+              <span class="badge-status-pill normal font-mono">HTTPS Ping</span>
             </div>
-            <div class="metric-body">
-              <div class="metric-val font-mono" id="cloud-metric-latency" style="color: var(--accent-blue);">38 ms</div>
-              <div class="metric-sub">Kecepatan streaming ke cloud</div>
+            <div class="card-kpi-body">
+              <span class="kpi-value font-mono" id="cloud-metric-latency" style="color: var(--accent-blue);">38</span>
+              <span class="kpi-unit">ms</span>
+            </div>
+            <div class="card-kpi-footer">
+              <span class="kpi-footer-muted">Koneksi:</span>
+              <span class="kpi-footer-val" style="color: var(--status-normal);">Real-Time Streaming</span>
             </div>
           </div>
         </div>
 
         <!-- STATUS KONEKSI SERVER SUPABASE (VERIFIED PRODUCTION) -->
-        <div class="card scada-card" style="margin-bottom: 1.25rem; padding: 1.1rem 1.25rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <span class="chip-dot dot-green"></span>
-              <h3 class="chart-box-title" style="margin: 0;">Supabase Cloud PostgreSQL Connection (Verified Production)</h3>
+        <div class="card scada-card cloud-conn-card">
+          <div class="cloud-conn-header">
+            <div class="cloud-conn-title-group">
+              <div class="cloud-db-badge-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="cloud-conn-title">
+                  <span>Supabase Cloud PostgreSQL Connection</span>
+                  <span class="badge-status-pill normal" style="font-size: 0.68rem; font-weight: 600;">Verified Production</span>
+                </h3>
+                <span class="subtext-muted" style="font-size: 0.72rem;">Koneksi cloud external terverifikasi aktif untuk pameran stand expo</span>
+              </div>
             </div>
-            <button id="btn-toggle-cloud-settings" class="btn btn-scada-outline" style="font-size: 0.72rem; padding: 0.25rem 0.65rem;">
+            <button id="btn-toggle-cloud-settings" class="btn btn-scada-outline" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
               ⚙️ Pengaturan Endpoint (Lanjutan)
             </button>
           </div>
 
           <!-- Baris Ringkasan Status Produksi -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem; background-color: var(--bg-elevated); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.75rem;">
-            <div>
-              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">PROJECT HOST:</span>
-              <span class="font-mono" style="color: var(--accent-blue); font-weight: 600;">wkeujvejvnemibgvwvjr.supabase.co</span>
+          <div class="cloud-props-grid">
+            <div class="cloud-prop-item">
+              <span class="cloud-prop-label">PROJECT HOST</span>
+              <span class="cloud-prop-val font-mono" style="color: var(--accent-blue);">wkeujvejvnemibgvwvjr.supabase.co</span>
             </div>
-            <div>
-              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">TABEL POSTGRESQL:</span>
-              <span class="font-mono" style="color: var(--text-main); font-weight: 600;">public.telemetry_logs</span>
+            <div class="cloud-prop-item">
+              <span class="cloud-prop-label">TABEL POSTGRESQL</span>
+              <span class="cloud-prop-val font-mono">public.telemetry_logs</span>
             </div>
-            <div>
-              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">PROTOKOL KEAMANAN:</span>
-              <span style="color: var(--status-normal); font-weight: 600;">TLS 1.3 / HTTPS REST Bearer</span>
+            <div class="cloud-prop-item">
+              <span class="cloud-prop-label">PROTOKOL KEAMANAN</span>
+              <span class="cloud-prop-val" style="color: var(--status-normal);">TLS 1.3 / HTTPS REST Bearer</span>
             </div>
-            <div>
-              <span style="color: var(--text-dim); display: block; font-size: 0.68rem; font-weight: 700;">STATUS RLS:</span>
-              <span class="badge-status-pill normal" style="font-size: 0.68rem;">Row Level Security Active</span>
+            <div class="cloud-prop-item">
+              <span class="cloud-prop-label">SECURITY &amp; RLS</span>
+              <span class="cloud-prop-val">
+                <span class="badge-status-pill normal" style="font-size: 0.7rem;">Row Level Security Active</span>
+              </span>
             </div>
           </div>
 
           <!-- Form Pengaturan Lanjutan (Tersembunyi secara default agar rapi) -->
-          <div id="cloud-settings-drawer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-            <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 0.75rem; align-items: end;">
+          <div id="cloud-settings-drawer" class="cloud-drawer" style="display: none;">
+            <div class="cloud-drawer-grid">
               <div>
-                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">CLOUD REST TARGET URL</label>
+                <label class="cloud-drawer-label">CLOUD REST TARGET URL</label>
                 <input type="text" id="input-cloud-endpoint" class="scada-input font-mono" value="https://wkeujvejvnemibgvwvjr.supabase.co/rest/v1/telemetry_logs" style="width: 100%;">
               </div>
               <div>
-                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">API KEY / BEARER TOKEN</label>
+                <label class="cloud-drawer-label">API KEY / BEARER TOKEN</label>
                 <input type="password" id="input-cloud-key" class="scada-input font-mono" value="sb_publishable_8IWAa0Ieg89zFHgrNXcXKg_mB9hO-O6" style="width: 100%;">
               </div>
               <div>
-                <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">DATABASE PROVIDER</label>
+                <label class="cloud-drawer-label">DATABASE PROVIDER</label>
                 <select id="select-cloud-provider" class="scada-select" style="width: 100%;">
                   <option value="Supabase Cloud (PostgreSQL)" selected>Supabase (PostgreSQL)</option>
                   <option value="Firebase Firestore REST">Firebase Firestore</option>
