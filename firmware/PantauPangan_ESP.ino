@@ -1,4 +1,4 @@
-/**no
+/**
  * PantauPangan - Firmware Node ESP8266 (ESP-12E NodeMCU V3)
  * Mata Kuliah: Internet of Things & Sistem Terintegrasi
  *
@@ -313,7 +313,7 @@ void loop() {
 // ============================================================================
 void renderLCDPage(float temperature, float humidity) {
   bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
-  bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 90.0 || humidity < 75.0));
+  bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 85.0 || humidity < 35.0));
 
   // --------------------------------------------------------------------------
   // HALAMAN 0: TELEMETRI REAL-TIME & STATUS KEPATUHAN
@@ -370,15 +370,15 @@ void renderLCDPage(float temperature, float humidity) {
     } else if (temperature < limitMinTemp) {
       header = "!SUHU DROP BEKU !";
       actionMsg = "PERIKSA PENGATUR DEFROST & TERMOSTAT! ";
-    } else if (humidity > 90.0) {
+    } else if (humidity > 85.0) {
       header = "!KELEMBAPAN TINGGI";
       actionMsg = "NYALAKAN FAN EVAPORATOR & SIRKULASI! ";
-    } else if (humidity < 75.0) {
+    } else if (humidity < 35.0) {
       header = "!UDARA TERLALU KERING";
-      actionMsg = "PERIKSA SEAL KEDAP UDARA RUANGAN! ";
+      actionMsg = "PERIKSA KONDISI RUANGAN PENYIMPANAN! ";
     } else {
       header = "KONDISI TERJAGA ";
-      actionMsg = "KUALITAS COLD CHAIN TERJAGA AMAN ";
+      actionMsg = "PENYIMPANAN AMAN & SESUAI STANDAR HACCP ";
     }
 
     // Efek Animasi Teks Berjalan (Marquee Scrolling) di Baris 2
