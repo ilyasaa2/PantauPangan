@@ -1251,6 +1251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchCloudLogs() {
     const tbody = document.getElementById('cloud-logs-tbody');
+    const counterEl = document.getElementById('cloud-log-counter');
     if (!tbody) return;
 
     try {
@@ -1259,9 +1260,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const logs = await res.json();
 
       if (!logs || logs.length === 0) {
+        if (counterEl) counterEl.textContent = '0 Transaksi';
         tbody.innerHTML = `
           <tr>
-            <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2rem;">
+            <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2.5rem 1rem;">
               Menunggu aliran telemetri pertama dari hardware ESP-12E...
             </td>
           </tr>
@@ -1269,20 +1271,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      if (counterEl) counterEl.textContent = `${logs.length} Paket Terkini`;
+
       tbody.innerHTML = logs.map(l => {
         const isNormal = l.status === 'NORMAL';
         const badgeClass = isNormal ? 'normal' : 'kritis';
         return `
           <tr>
-            <td class="font-mono"><strong>${l.id}</strong></td>
+            <td class="font-mono" style="padding-left: 1.25rem;"><strong>${l.id}</strong></td>
             <td class="font-mono">${l.timestamp}</td>
             <td class="font-mono">${l.device_id}</td>
-            <td class="font-mono" style="font-weight: 700;">${typeof l.temperature === 'number' ? l.temperature.toFixed(1) : l.temperature}°C</td>
-            <td class="font-mono">${typeof l.humidity === 'number' ? l.humidity.toFixed(1) : l.humidity}%</td>
-            <td><span class="badge-status-pill ${badgeClass}">${l.status}</span></td>
-            <td><span class="badge-status-pill normal font-mono">HTTP ${l.http_code || 201}</span></td>
-            <td class="font-mono" style="color: var(--accent-blue);">${l.latency_ms} ms</td>
-            <td><span class="badge-status-pill normal">${l.cloud_status || 'VERIFIED'}</span></td>
+            <td class="font-mono" style="text-align: right; font-weight: 700;">${typeof l.temperature === 'number' ? l.temperature.toFixed(1) : l.temperature}°C</td>
+            <td class="font-mono" style="text-align: right;">${typeof l.humidity === 'number' ? l.humidity.toFixed(1) : l.humidity}%</td>
+            <td style="text-align: center;"><span class="badge-status-pill ${badgeClass}">${l.status}</span></td>
+            <td style="text-align: center;"><span class="badge-status-pill normal font-mono">HTTP ${l.http_code || 201}</span></td>
+            <td class="font-mono" style="text-align: right; color: var(--accent-blue);">${l.latency_ms} ms</td>
+            <td style="text-align: center; padding-right: 1.25rem;"><span class="badge-status-pill normal">${l.cloud_status || 'VERIFIED'}</span></td>
           </tr>
         `;
       }).join('');

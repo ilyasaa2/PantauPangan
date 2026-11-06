@@ -726,38 +726,56 @@
         </div>
 
         <!-- TABEL STREAMING LOG SINKRONISASI CLOUD -->
-        <div class="card scada-card telemetry-table-card">
-          <div class="table-card-header">
-            <div>
-              <h3 class="table-card-title">Live Cloud Synchronization Ledger</h3>
-              <p class="subtext-muted">Aliran paket data sensor yang berhasil terunggah ke database eksternal cloud secara real-time</p>
+        <div class="card scada-card table-wrapper-scada">
+          <div class="cloud-table-header">
+            <div class="cloud-table-title-group">
+              <h3 class="cloud-table-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-blue);">
+                  <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                  <path d="M12 12v9"></path>
+                  <path d="m8 17 4 4 4-4"></path>
+                </svg>
+                <span>Live Cloud Synchronization Ledger</span>
+              </h3>
+              <p class="subtext-muted" style="margin: 0; font-size: 0.75rem;">
+                Aliran paket data sensor telemetri yang terunggah dan terverifikasi di PostgreSQL / Supabase secara real-time
+              </p>
             </div>
-            <div class="badge-status-pill normal font-mono" id="cloud-feed-status">STREAMING ACTIVE</div>
+
+            <div class="cloud-table-meta">
+              <span class="subtext-muted font-mono" id="cloud-log-counter" style="font-size: 0.72rem;">Memuat...</span>
+              <span class="badge-status-pill normal font-mono" id="cloud-feed-status">● STREAMING ACTIVE</span>
+            </div>
           </div>
 
           <div class="table-responsive">
             <table class="scada-table" id="table-cloud-logs">
               <thead>
                 <tr>
-                  <th>TRANSACTION ID</th>
+                  <th style="padding-left: 1.25rem;">TRANSACTION ID</th>
                   <th>WAKTU SINKRONISASI</th>
                   <th>DEVICE ID</th>
-                  <th>SUHU SENSOR</th>
-                  <th>KELEMBAPAN</th>
-                  <th>STATUS HACCP</th>
-                  <th>HTTP STATUS</th>
-                  <th>LATENCY</th>
-                  <th>STATUS VERIFIKASI</th>
+                  <th style="text-align: right;">SUHU SENSOR</th>
+                  <th style="text-align: right;">KELEMBAPAN</th>
+                  <th style="text-align: center;">STATUS HACCP</th>
+                  <th style="text-align: center;">HTTP STATUS</th>
+                  <th style="text-align: right;">LATENCY</th>
+                  <th style="text-align: center; padding-right: 1.25rem;">STATUS VERIFIKASI</th>
                 </tr>
               </thead>
               <tbody id="cloud-logs-tbody">
                 <tr>
-                  <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2rem;">
+                  <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2.5rem 1rem;">
                     Menunggu transmisi data pertama dari hardware ESP-12E...
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="scada-table-footer">
+            <span class="subtext-muted" style="font-size: 0.72rem;">Dual-Persistence Engine &bull; Auto-Mirroring ke Supabase REST v1</span>
+            <span class="subtext-muted font-mono" style="font-size: 0.72rem;">Streaming Rate: ~2.5s / Packet</span>
           </div>
         </div>
       </section>
