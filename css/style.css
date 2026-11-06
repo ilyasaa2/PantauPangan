@@ -1397,8 +1397,46 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   10. RESPONSIVE MEDIA QUERIES
+   10. RESPONSIVE MEDIA QUERIES & CLOUD INSPECTOR STYLES
    ========================================================================== */
+.cloud-chip {
+  background-color: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.3);
+  color: var(--accent-blue);
+}
+
+.location-select {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  padding: 0.18rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.location-select:focus {
+  border-color: var(--accent-blue);
+}
+
+.preset-haccp-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-elevated);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.preset-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
 @media (max-width: 1200px) {
   .metrics-scada-grid {
     grid-template-columns: repeat(2, 1fr);

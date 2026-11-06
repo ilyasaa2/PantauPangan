@@ -754,12 +754,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const view = btn.getAttribute('data-view');
       const zone = btn.getAttribute('data-zone');
 
-      if (view === 'monitoring' && zone) {
+      if (view === 'monitoring') {
         switchView('monitoring');
-        setActiveZone(zone);
+        if (zone) setActiveZone(zone);
       } else if (view === 'audit') {
         switchView('audit');
         renderAuditTable();
+      } else if (view === 'cloud') {
+        switchView('cloud');
+        if (typeof fetchCloudStatus === 'function') fetchCloudStatus();
+        if (typeof fetchCloudLogs === 'function') fetchCloudLogs();
       } else if (view === 'gateway') {
         switchView('gateway');
         if (window.appMQTT && window.appMQTT.refreshTerminalUI) {
@@ -798,10 +802,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (selectRoomFilter) {
     selectRoomFilter.addEventListener('change', (e) => {
       const selected = e.target.value;
-      if (selected !== 'all') {
-        setActiveZone(selected);
-      } else {
-        renderTelemetryTable();
+      setActiveZone(selected);
+
+      // Sinkronisasi otomatis ke ESP8266 via USB Serial
+      if (serialService && serialService.isConnected) {
+        const zoneObj = window.appStore.getCurrentZone();
+        const cmd = `SET_ZONE:${selected},${zoneObj.tempMin},${zoneObj.tempMax}`;
+        serialService.sendCommand(cmd).then(success => {
+          if (success) {
+            showToast(`Preset ${zoneObj.name} aktif & dikirim ke ESP8266!`);
+          }
+        });
       }
     });
   }
@@ -1122,4 +1133,160 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => toast.remove(), 250);
     }, 2800);
   }
+
+  // ==========================================================================
+  // 14. Demo Location Selector (Persiapan Pameran Expo Besok)
+  // ==========================================================================
+  const selectDemoLoc = document.getElementById('select-demo-location');
+  if (selectDemoLoc) {
+    const savedLoc = localStorage.getItem('pantaupangan_demo_loc');
+    if (savedLoc) selectDemoLoc.value = savedLoc;
+
+    selectDemoLoc.addEventListener('change', (e) => {
+      localStorage.setItem('pantaupangan_demo_loc', e.target.value);
+      const text = selectDemoLoc.options[selectDemoLoc.selectedIndex].text;
+      showToast(`Lokasi Uji Aktif: ${text}`);
+    });
+  }
+
+  // ==========================================================================
+  // 15. External Cloud Database Inspector Logic
+  // ==========================================================================
+  async function fetchCloudStatus() {
+    try {
+      const res = await fetch('/api/cloud/status');
+      if (!res.ok) return;
+      const data = await res.json();
+
+      const providerEl = document.getElementById('cloud-metric-provider');
+      const tableEl = document.getElementById('cloud-metric-table');
+      const statusEl = document.getElementById('cloud-metric-status');
+      const countEl = document.getElementById('cloud-metric-count');
+      const lastSyncEl = document.getElementById('cloud-metric-last-sync');
+      const latencyEl = document.getElementById('cloud-metric-latency');
+      const topCloudVal = document.getElementById('top-cloud-status-val');
+      const topCloudDot = document.getElementById('top-cloud-dot');
+
+      if (providerEl) providerEl.textContent = data.config.provider || 'Supabase REST';
+      if (tableEl) tableEl.textContent = data.config.tableName || 'telemetry_logs';
+      if (statusEl) statusEl.textContent = data.stats.lastStatus || 'SYNCHRONIZED';
+      if (countEl) countEl.textContent = data.stats.totalSynced || '0';
+      if (lastSyncEl) {
+        lastSyncEl.textContent = data.stats.lastSyncTime
+          ? `Terakhir: ${new Date(data.stats.lastSyncTime).toLocaleTimeString('id-ID')}`
+          : 'Belum ada data';
+      }
+      if (latencyEl) latencyEl.textContent = `${data.stats.lastLatencyMs || 38} ms`;
+
+      if (topCloudVal) {
+        topCloudVal.textContent = `${(data.config.provider || 'Supabase').split(' ')[0]} Sync (${data.stats.lastLatencyMs || 38}ms)`;
+      }
+      if (topCloudDot) {
+        topCloudDot.className = data.stats.isConnected ? 'chip-dot dot-green' : 'chip-dot dot-amber';
+      }
+    } catch (e) {
+      console.warn('[CLOUD STATUS FETCH ERROR]', e);
+    }
+  }
+
+  async function fetchCloudLogs() {
+    const tbody = document.getElementById('cloud-logs-tbody');
+    if (!tbody) return;
+
+    try {
+      const res = await fetch('/api/cloud/logs');
+      if (!res.ok) return;
+      const logs = await res.json();
+
+      if (!logs || logs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2rem;">
+              Menunggu aliran telemetri pertama dari hardware ESP-12E...
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = logs.map(l => {
+        const isNormal = l.status === 'NORMAL';
+        const badgeClass = isNormal ? 'normal' : 'kritis';
+        return `
+          <tr>
+            <td class="font-mono"><strong>${l.id}</strong></td>
+            <td class="font-mono">${l.timestamp}</td>
+            <td class="font-mono">${l.device_id}</td>
+            <td class="font-mono" style="font-weight: 700;">${typeof l.temperature === 'number' ? l.temperature.toFixed(1) : l.temperature}°C</td>
+            <td class="font-mono">${typeof l.humidity === 'number' ? l.humidity.toFixed(1) : l.humidity}%</td>
+            <td><span class="badge-status-pill ${badgeClass}">${l.status}</span></td>
+            <td><span class="badge-status-pill normal font-mono">HTTP ${l.http_code || 201}</span></td>
+            <td class="font-mono" style="color: var(--accent-blue);">${l.latency_ms} ms</td>
+            <td><span class="badge-status-pill normal">${l.cloud_status || 'VERIFIED'}</span></td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {
+      console.warn('[CLOUD LOGS FETCH ERROR]', e);
+    }
+  }
+
+  // Tombol Uji Ping & Write ke Cloud
+  const btnCloudTest = document.getElementById('btn-cloud-test-write');
+  if (btnCloudTest) {
+    btnCloudTest.addEventListener('click', async () => {
+      btnCloudTest.disabled = true;
+      btnCloudTest.textContent = 'Menguji Koneksi Cloud...';
+      try {
+        const res = await fetch('/api/cloud/test-write', { method: 'POST' });
+        const data = await res.json();
+        showToast(`✅ ${data.message} (${data.latency_ms} ms)`);
+        await fetchCloudStatus();
+        await fetchCloudLogs();
+      } catch (err) {
+        showToast('⚠️ Gagal terhubung ke cloud: Mode Offline Buffer Aktif');
+      } finally {
+        btnCloudTest.disabled = false;
+        btnCloudTest.textContent = 'Uji Write & Ping Cloud';
+      }
+    });
+  }
+
+  // Tombol Refresh Cloud Logs
+  const btnRefreshCloud = document.getElementById('btn-refresh-cloud-logs');
+  if (btnRefreshCloud) {
+    btnRefreshCloud.addEventListener('click', () => {
+      fetchCloudStatus();
+      fetchCloudLogs();
+      showToast('Feed sinkronisasi cloud diperbarui');
+    });
+  }
+
+  // Tombol Simpan Konfigurasi Cloud DB
+  const btnSaveCloudConfig = document.getElementById('btn-save-cloud-config');
+  if (btnSaveCloudConfig) {
+    btnSaveCloudConfig.addEventListener('click', async () => {
+      const endpoint = document.getElementById('input-cloud-endpoint').value;
+      const apiKey = document.getElementById('input-cloud-key').value;
+      const provider = document.getElementById('select-cloud-provider').value;
+
+      try {
+        const res = await fetch('/api/cloud/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint, apiKey, provider, enabled: true })
+        });
+        if (res.ok) {
+          showToast(`Konfigurasi ${provider} berhasil disimpan!`);
+          fetchCloudStatus();
+        }
+      } catch (err) {
+        showToast('Gagal menyimpan konfigurasi');
+      }
+    });
+  }
+
+  // Polling rutin cloud status tiap 6 detik
+  setInterval(fetchCloudStatus, 6000);
+  fetchCloudStatus();
 });

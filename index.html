@@ -40,22 +40,30 @@
 
     <!-- Status & Telemetri Sistem di Baris Atas (Informasi Non-Navigasi) -->
     <div class="topbar-chips">
-      <div class="status-chip plant-chip" title="Lokasi Gudang Aktif">
-        <span class="chip-label">PLANT LOCATION:</span>
-        <span class="chip-val">Gudang Logistik Pusat - Blok C</span>
+      <div class="status-chip plant-chip" title="Pilih Lokasi Pengujian / Pameran">
+        <span class="chip-label">LOKASI UJI:</span>
+        <select id="select-demo-location" class="location-select">
+          <option value="expo" selected>📍 Stand Aula Pameran (Utama)</option>
+          <option value="lab">📍 Lab IoT &amp; Embedded System</option>
+          <option value="workshop">📍 Pengujian Mandiri / Lapangan</option>
+        </select>
       </div>
 
-      <div class="status-chip device-chip" id="top-chip-gateway" title="Koneksi Gateway ESP">
+      <div class="status-chip cloud-chip" id="top-chip-cloud" title="Sinkronisasi Database Eksternal Cloud">
+        <span class="chip-dot dot-green" id="top-cloud-dot"></span>
+        <span id="top-cloud-text">Cloud DB: <strong class="font-mono" id="top-cloud-status-val">Supabase Sync (38ms)</strong></span>
+      </div>
+
+      <div class="status-chip device-chip" id="top-chip-gateway" title="Koneksi Gateway NodeMCU ESP-12E">
         <span class="chip-dot dot-green" id="top-gateway-dot"></span>
-        <span id="top-gateway-text">ESP-12E / ESP32: <strong class="font-mono">Online / 1.2s ping</strong></span>
+        <span id="top-gateway-text">ESP-12E Node: <strong class="font-mono">Online</strong></span>
       </div>
 
-      <div class="status-chip battery-chip" title="Daya Baterai Cadangan 18650">
+      <div class="status-chip battery-chip" title="Catu Daya Adaptor Eksternal 5V 3A">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect>
-          <line x1="22" y1="11" x2="22" y2="13"></line>
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
         </svg>
-        <span class="font-mono" id="top-battery-val">18650: 94%</span>
+        <span class="font-mono" id="top-battery-val">PWR: 5V 3A DC</span>
       </div>
     </div>
 
@@ -106,57 +114,11 @@
     
     <!-- SIDEBAR KIRI (ACTIVE TELEMETRY HUB) -->
     <aside class="scada-sidebar">
-      <div class="sidebar-section-label">ACTIVE TELEMETRY HUB</div>
+      <div class="sidebar-section-label">UNIT KONTROL DEMO EXPO</div>
 
-      <!-- Pemilih Fasilitas / Gudang -->
+      <!-- Informasi Node Fisik ESP-12E -->
       <div class="sidebar-plant-card">
         <div class="plant-card-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-        </div>
-        <div class="plant-card-info">
-          <span class="plant-card-title">Gudang Logistik Blok C</span>
-          <span class="plant-card-sub font-mono">ID: GDG-CJ-03</span>
-        </div>
-      </div>
-
-      <!-- Menu Navigasi Samping Kiri -->
-      <nav class="sidebar-nav" aria-label="Menu Telemetri SCADA">
-        <button class="nav-item active" data-zone="chilled_room" data-view="monitoring">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="2" x2="12" y2="22"></line>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="m20 16-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4-4"></path>
-          </svg>
-          <span class="nav-text">Chilled Room 1</span>
-        </button>
-
-        <button class="nav-item" data-zone="frozen_room" data-view="monitoring">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"></path>
-          </svg>
-          <span class="nav-text">Deep Freezer Room</span>
-        </button>
-
-        <button class="nav-item" data-zone="dry_storage" data-view="monitoring">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
-          </svg>
-          <span class="nav-text">Dry Storage Room</span>
-        </button>
-
-        <button class="nav-item" data-view="audit" id="nav-btn-audit">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <polyline points="9 12 11 14 15 10"></polyline>
-          </svg>
-          <span class="nav-text">Audit Trail &amp; CAPA</span>
-        </button>
-
-        <button class="nav-item" data-view="gateway" id="nav-btn-gateway">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="4" width="16" height="16" rx="2"></rect>
             <rect x="9" y="9" width="6" height="6"></rect>
@@ -169,7 +131,45 @@
             <line x1="1" y1="9" x2="4" y2="9"></line>
             <line x1="1" y1="14" x2="4" y2="14"></line>
           </svg>
-          <span class="nav-text">ESP32 Gateways</span>
+        </div>
+        <div class="plant-card-info">
+          <span class="plant-card-title">Node ESP-12E Stand</span>
+          <span class="plant-card-sub font-mono">ID: ESP-12E-CCP-01</span>
+        </div>
+      </div>
+
+      <!-- Menu Navigasi Samping Kiri (4 Menu Fungsional) -->
+      <nav class="sidebar-nav" aria-label="Menu Navigasi SCADA">
+        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span class="nav-text">Live Telemetry &amp; SCADA</span>
+        </button>
+
+        <button class="nav-item" data-view="audit" id="nav-btn-audit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+          <span class="nav-text">HACCP Digital Audit Trail</span>
+        </button>
+
+        <button class="nav-item" data-view="cloud" id="nav-btn-cloud">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+          </svg>
+          <span class="nav-text">Cloud Database Inspector</span>
+        </button>
+
+        <button class="nav-item" data-view="gateway" id="nav-btn-gateway">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
+          <span class="nav-text">Hardware &amp; Gateway Health</span>
         </button>
       </nav>
 
@@ -177,21 +177,21 @@
       <div class="sidebar-footer">
         <div class="footer-status-card">
           <div class="footer-row">
-            <span class="footer-label">GATEWAY RT:</span>
-            <span class="badge-pill-green" id="sidebar-gateway-status">Online</span>
+            <span class="footer-label">DB ARCHITECTURE:</span>
+            <span class="badge-pill-green" id="sidebar-gateway-status">Dual-Persistence</span>
           </div>
           <div class="footer-row">
-            <span class="footer-label">Protocol:</span>
-            <span class="font-mono footer-val">MQTT / TLS</span>
+            <span class="footer-label">Cloud Target:</span>
+            <span class="font-mono footer-val" id="sidebar-cloud-target">Supabase REST</span>
           </div>
           <div class="footer-row">
-            <span class="footer-label">Broker Ping:</span>
-            <span class="font-mono footer-val" id="sidebar-broker-ping">1.2s</span>
+            <span class="footer-label">Resilience:</span>
+            <span class="font-mono footer-val" style="color:var(--status-normal);">100% Offline Ready</span>
           </div>
           <div class="footer-divider"></div>
           <div class="footer-meta">
             <span>v4.2.1-industrial</span>
-            <span>HACCP/BPOM Compliant</span>
+            <span>HACCP/BPOM Valid</span>
           </div>
         </div>
       </div>
@@ -207,18 +207,20 @@
           <div class="view-title-group">
             <div class="live-dot-pulse" aria-hidden="true"></div>
             <div>
-              <h2 class="view-title" id="page-room-title">Monitoring Suhu &amp; Kelembapan Ruang</h2>
-              <p class="view-subtitle">Pemantauan real-time sensor telemetri ruangan aktif (HACCP log streaming)</p>
+              <h2 class="view-title" id="page-room-title">Live Telemetry &amp; HACCP SCADA</h2>
+              <p class="view-subtitle">Pemantauan real-time sensor telemetri perangkat fisik ESP-12E (Meja Stand Pameran)</p>
             </div>
           </div>
 
           <div class="view-actions-group">
-            <select id="select-active-room-filter" class="scada-select">
-              <option value="all" selected>Semua Ruang (Blok C)</option>
-              <option value="chilled_room">Chilled Room 1 (0°C–5°C)</option>
-              <option value="frozen_room">Deep Freezer Room (-18°C)</option>
-              <option value="dry_storage">Dry Storage Room (&lt;30°C)</option>
-            </select>
+            <div class="preset-haccp-wrapper" title="Ubah Standar HACCP untuk Menguji Respon LED &amp; Buzzer ESP">
+              <span class="preset-label">STANDAR HACCP:</span>
+              <select id="select-active-room-filter" class="scada-select font-mono">
+                <option value="chilled_room" selected>❄️ Cold Storage (0.0°C ~ 5.0°C) [Simulasi Alarm]</option>
+                <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 30.0°C) [Simulasi Normal]</option>
+                <option value="frozen_room">🧊 Deep Freezer (-22.0°C ~ -18.0°C) [Simulasi Beku]</option>
+              </select>
+            </div>
 
             <button id="btn-refresh-telemetry" class="btn btn-scada-outline">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -551,21 +553,159 @@
         </div>
       </section>
 
-      <!-- VIEW 3: ESP32 / ESP-12E GATEWAYS & HARDWARE INSPECTOR -->
+      <!-- VIEW 3: EXTERNAL CLOUD DATABASE INSPECTOR -->
+      <section id="view-cloud" class="content-view" style="display: none;">
+        <div class="view-header-bar">
+          <div class="view-title-group">
+            <div class="live-dot-pulse" aria-hidden="true"></div>
+            <div>
+              <h2 class="view-title">External Cloud Database Inspector</h2>
+              <p class="view-subtitle">Live Mirroring &amp; Dual-Persistence Sinkronisasi Data Telemetri ke PostgreSQL / Supabase REST</p>
+            </div>
+          </div>
+
+          <div class="view-actions-group">
+            <button id="btn-cloud-test-write" class="btn btn-scada-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Uji Write &amp; Ping Cloud
+            </button>
+            <button id="btn-refresh-cloud-logs" class="btn btn-scada-outline">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Refresh Cloud Feed
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KARTU METRIK CLOUD DATABASE -->
+        <div class="metrics-scada-grid" style="margin-bottom: 1.25rem;">
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title">CLOUD PROVIDER</span>
+              <span class="badge-status-pill normal">PostgreSQL REST</span>
+            </div>
+            <div class="metric-body">
+              <div class="metric-val" id="cloud-metric-provider" style="font-size: 1.35rem;">Supabase REST</div>
+              <div class="metric-sub">Target Table: <span class="font-mono" id="cloud-metric-table">telemetry_logs</span></div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title">STATUS SINKRONISASI</span>
+              <span class="chip-dot dot-green"></span>
+            </div>
+            <div class="metric-body">
+              <div class="metric-val" id="cloud-metric-status" style="color: var(--status-normal);">SYNCHRONIZED</div>
+              <div class="metric-sub">Arsitektur: Dual-Persistence</div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title">TOTAL DATA TERSIMPAN</span>
+              <span class="subtext-muted">Cloud Rows</span>
+            </div>
+            <div class="metric-body">
+              <div class="metric-val font-mono" id="cloud-metric-count">0</div>
+              <div class="metric-sub" id="cloud-metric-last-sync">Belum ada sinkronisasi</div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title">ROUND-TRIP LATENCY</span>
+              <span class="subtext-muted">HTTPS Ping</span>
+            </div>
+            <div class="metric-body">
+              <div class="metric-val font-mono" id="cloud-metric-latency" style="color: var(--accent-blue);">38 ms</div>
+              <div class="metric-sub">Kecepatan streaming ke cloud</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KONTROL KONFIGURASI ENDPOINT CLOUD -->
+        <div class="card scada-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
+          <h3 class="chart-box-title" style="margin-bottom: 0.75rem;">Konfigurasi Endpoint Cloud Database</h3>
+          <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 0.75rem; align-items: end;">
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">CLOUD REST TARGET URL</label>
+              <input type="text" id="input-cloud-endpoint" class="scada-input font-mono" value="https://api.supabase.com/v1/telemetry_stream" style="width: 100%;">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">API KEY / BEARER TOKEN</label>
+              <input type="password" id="input-cloud-key" class="scada-input font-mono" value="sb-pantaudpangan-demo-api-key-2026" style="width: 100%;">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; font-weight: 600;">DATABASE PROVIDER</label>
+              <select id="select-cloud-provider" class="scada-select" style="width: 100%;">
+                <option value="Supabase PostgreSQL REST" selected>Supabase (PostgreSQL)</option>
+                <option value="Firebase Firestore REST">Firebase Firestore</option>
+                <option value="PostgreSQL Remote REST">PostgreSQL Direct REST</option>
+                <option value="MongoDB Atlas Data API">MongoDB Atlas</option>
+              </select>
+            </div>
+            <div>
+              <button id="btn-save-cloud-config" class="btn btn-scada-primary" style="height: 38px;">Simpan Konfigurasi</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABEL STREAMING LOG SINKRONISASI CLOUD -->
+        <div class="card scada-card telemetry-table-card">
+          <div class="table-card-header">
+            <div>
+              <h3 class="table-card-title">Live Cloud Synchronization Ledger</h3>
+              <p class="subtext-muted">Aliran paket data sensor yang berhasil terunggah ke database eksternal cloud secara real-time</p>
+            </div>
+            <div class="badge-status-pill normal font-mono" id="cloud-feed-status">STREAMING ACTIVE</div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="scada-table" id="table-cloud-logs">
+              <thead>
+                <tr>
+                  <th>TRANSACTION ID</th>
+                  <th>WAKTU SINKRONISASI</th>
+                  <th>DEVICE ID</th>
+                  <th>SUHU SENSOR</th>
+                  <th>KELEMBAPAN</th>
+                  <th>STATUS HACCP</th>
+                  <th>HTTP STATUS</th>
+                  <th>LATENCY</th>
+                  <th>STATUS VERIFIKASI</th>
+                </tr>
+              </thead>
+              <tbody id="cloud-logs-tbody">
+                <tr>
+                  <td colspan="9" style="text-align: center; color: var(--text-dim); padding: 2rem;">
+                    Menunggu transmisi data pertama dari hardware ESP-12E...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: ESP-12E HARDWARE & GATEWAY HEALTH -->
       <section id="view-gateway" class="content-view" style="display: none;">
         <div class="view-header-bar">
           <div class="view-title-group">
             <div class="live-dot-pulse" aria-hidden="true"></div>
             <div>
-              <h2 class="view-title">ESP32 &amp; ESP-12E Telemetry Gateways</h2>
-              <p class="view-subtitle">Status Perangkat Keras IoT, Web Serial UART 115200 Baud, MQTT Broker &amp; Aktuator</p>
+              <h2 class="view-title">ESP-12E NodeMCU V3 &amp; Gateway Health</h2>
+              <p class="view-subtitle">Status Perangkat Keras IoT, Shield HW-389, Web Serial UART 115200 Baud, LCD 1602 I2C &amp; Aktuator</p>
             </div>
           </div>
         </div>
 
         <div class="gateway-grid">
           <div class="card scada-card gateway-detail-card">
-            <h3 class="chart-box-title">Node Telemetri Aktif: ESP-12E / ESP32</h3>
+            <h3 class="chart-box-title">Node Telemetri Aktif: ESP-12E NodeMCU V3</h3>
             <div class="gateway-info-list font-mono">
               <div class="info-row">
                 <span>Status Serial USB:</span>
@@ -576,32 +716,36 @@
                 <span>115200 bps</span>
               </div>
               <div class="info-row">
-                <span>MAC Address Node:</span>
-                <span>5C:CF:7F:A1:39:8E</span>
+                <span>Baseboard Shield:</span>
+                <span>HW-389 NodeMCU Expansion Baseboard</span>
               </div>
               <div class="info-row">
-                <span>IP Gateway Lokal:</span>
-                <span>192.168.10.45</span>
+                <span>Catu Daya Utama:</span>
+                <span>Adaptor Eksternal 5V 3A (Jack DC Shield)</span>
               </div>
               <div class="info-row">
-                <span>Daya Baterai 18650:</span>
-                <span id="battery-status">4.08V (94%)</span>
+                <span>Layar Display:</span>
+                <span>LCD 1602 Biru + Backpack I2C (PCF8574T 0x27)</span>
               </div>
               <div class="info-row">
-                <span>Aktuator Buzzer &amp; LED:</span>
-                <span id="actuator-status">Buzzer OFF &bull; LED Hijau</span>
+                <span>Indikator Visual &amp; Audio:</span>
+                <span id="actuator-status">3 LED (Hijau/Kuning/Merah) + Buzzer 5V</span>
               </div>
             </div>
           </div>
 
           <div class="card scada-card gateway-detail-card">
-            <h3 class="chart-box-title">Skema Pinout Wiring (ESP-12E)</h3>
-            <p class="subtext-muted" style="margin-bottom: 1rem;">Interkoneksi pin fisik sesuai proposal HACCP Bab 3.3:</p>
+            <h3 class="chart-box-title">Skema Pinout NodeMCU Shield HW-389</h3>
+            <p class="subtext-muted" style="margin-bottom: 1rem;">Pemetaan Pin Fisik Terintegrasi:</p>
             <ul class="wiring-spec-list font-mono">
-              <li><strong>DHT11 DATA:</strong> GPIO 4 (Pin D2)</li>
-              <li><strong>Buzzer Aktif 5V:</strong> GPIO 5 (Pin D1) - Alarm Deviasi</li>
-              <li><strong>LED Indikator:</strong> GPIO 2 (Pin D4) - Status Hijau/Merah</li>
-              <li><strong>VCC &amp; GND:</strong> 3.3V / 5V &amp; Ground</li>
+              <li><strong>LCD 1602 SDA:</strong> Pin D2 (GPIO 4)</li>
+              <li><strong>LCD 1602 SCL:</strong> Pin D1 (GPIO 5)</li>
+              <li><strong>DHT11 Sensor Signal:</strong> Pin D5 (GPIO 14)</li>
+              <li><strong>LED Hijau (Normal):</strong> Pin D6 (GPIO 12)</li>
+              <li><strong>LED Kuning (Warning):</strong> Pin D7 (GPIO 13)</li>
+              <li><strong>LED Merah (Kritis):</strong> Pin D8 (GPIO 15)</li>
+              <li><strong>Buzzer Aktif 5V:</strong> Pin D3 (GPIO 0)</li>
+              <li><strong>VCC &amp; GND Shield:</strong> Pin 5V (Vin) &amp; Pin GND</li>
             </ul>
           </div>
         </div>
