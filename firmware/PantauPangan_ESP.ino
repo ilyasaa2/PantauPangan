@@ -37,8 +37,8 @@
 const char* WIFI_SSID = "000";
 const char* WIFI_PASS = "00000000";
 
-// Alamat IP Gateway Laptop (Akan diperbarui otomatis via UDP Beacon jika terdeteksi)
-String laptopServerIP = "192.168.0.104";
+// Alamat IP Gateway Laptop (Sesuai IP Wi-Fi Hotspot saat ini: 172.20.10.3)
+String laptopServerIP = "172.20.10.3";
 const int SERVER_PORT = 3000;
 bool isWiFiConnected = false;
 bool hasDiscoveredServer = false;

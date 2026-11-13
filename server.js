@@ -27,17 +27,45 @@ let wirelessControlState = {
 
 // UDP Beacon Auto-Discovery: Membantu ESP8266 mendeteksi IP laptop secara otomatis
 try {
+  const os = require('os');
   const udpBeacon = dgram.createSocket('udp4');
   udpBeacon.bind(() => {
     try { udpBeacon.setBroadcast(true); } catch (e) {}
   });
 
+  function getBroadcastTargets() {
+    const targets = new Set(['255.255.255.255']);
+    const ifaces = os.networkInterfaces();
+    for (const name in ifaces) {
+      for (const iface of ifaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          const ipParts = iface.address.split('.').map(Number);
+          const maskParts = iface.netmask.split('.').map(Number);
+          const bcastParts = ipParts.map((b, i) => (b | (~maskParts[i] & 255)));
+          targets.add(bcastParts.join('.'));
+
+          // Kirim juga langsung ke range host di subnet lokal hotspot
+          const baseSubnet = ipParts.slice(0, 3).join('.');
+          for (let host = 1; host <= 14; host++) {
+            targets.add(`${baseSubnet}.${host}`);
+          }
+        }
+      }
+    }
+    return Array.from(targets);
+  }
+
   setInterval(() => {
     try {
       const msg = Buffer.from('PANTAUPANGAN_GATEWAY:3000');
-      udpBeacon.send(msg, 0, msg.length, 3001, '255.255.255.255', () => {});
+      const targets = getBroadcastTargets();
+      targets.forEach(target => {
+        try {
+          udpBeacon.send(msg, 0, msg.length, 3001, target, () => {});
+        } catch (e) {}
+      });
     } catch (e) {}
-  }, 2500);
+  }, 2000);
 } catch (err) {
   console.warn('[UDP BEACON WARNING]', err.message);
 }
