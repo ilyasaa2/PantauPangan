@@ -1116,8 +1116,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (exportFormatSelect) exportFormatSelect.value = defaultFormat;
     exportModal.removeAttribute('hidden');
 
-    const total = window.appStore.telemetryLogs.length;
-    const normals = window.appStore.telemetryLogs.filter(l => l.status === 'NORMAL').length;
+    const totalAudit = (window.appStore.auditLogs || []).length;
+    const totalTelemetry = (window.appStore.telemetryLogs || []).length;
+    const total = Math.max(totalAudit, totalTelemetry);
+
+    let normals = 0;
+    if (totalAudit > 0) {
+      normals = window.appStore.auditLogs.filter(l => l.status === 'NORMAL').length;
+    } else {
+      normals = window.appStore.telemetryLogs.filter(l => l.status === 'NORMAL').length;
+    }
     const rate = total > 0 ? ((normals / total) * 100).toFixed(1) : '100.0';
 
     const logCountEl = document.getElementById('preview-log-count');
@@ -1143,7 +1151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (btnExecuteExport) {
-    btnExecuteExport.addEventListener('click', () => {
+    btnExecuteExport.addEventListener('click', async () => {
       const zone = document.getElementById('export-zone-select').value;
       const auditor = document.getElementById('export-auditor-name').value;
       const periodSelect = document.getElementById('export-date-range');
@@ -1154,25 +1162,25 @@ document.addEventListener('DOMContentLoaded', () => {
       btnExecuteExport.disabled = true;
       btnExecuteExport.textContent = 'Menyusun Dokumen...';
 
-      // Eksekusi asinkron agar UI tidak freeze / macet
-      setTimeout(() => {
-        try {
-          if (format === 'pdf') {
-            showToast('Menyusun Dokumen Resmi PDF BPOM...');
-            window.appExport.exportToPDF(zone, auditor, period, periodKey);
-          } else if (format === 'xlsx') {
-            showToast('Mengunduh Lembar Kerja Excel (.xlsx)...');
-            window.appExport.exportToExcel(zone);
-          } else {
-            showToast('Mengunduh Data Mentah CSV...');
-            window.appExport.exportToCSV(zone);
-          }
-        } finally {
-          btnExecuteExport.disabled = false;
-          btnExecuteExport.textContent = 'Unduh Laporan';
-          closeExportModal();
+      try {
+        if (format === 'pdf') {
+          showToast('Menyusun Dokumen Resmi PDF BPOM...');
+          await window.appExport.exportToPDF(zone, auditor, period, periodKey);
+        } else if (format === 'xlsx') {
+          showToast('Mengunduh Lembar Kerja Excel (.xlsx)...');
+          await window.appExport.exportToExcel(zone);
+        } else {
+          showToast('Mengunduh Data Mentah CSV...');
+          await window.appExport.exportToCSV(zone);
         }
-      }, 60);
+      } catch (err) {
+        console.error('[EXPORT FAILED]', err);
+        showToast('⚠️ Gagal mengekspor laporan.');
+      } finally {
+        btnExecuteExport.disabled = false;
+        btnExecuteExport.textContent = 'Unduh Laporan';
+        closeExportModal();
+      }
     });
   }
 
@@ -1360,6 +1368,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Sinkronisasi data awal Buku Besar Audit Trail dari server database
+  async function loadInitialAuditFromServer() {
+    try {
+      const res = await fetch('/api/audit');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          window.appStore.auditLogs = data;
+          renderAuditTable();
+        }
+      }
+    } catch (e) {
+      console.warn('[AUDIT INIT LOAD FAILED]', e);
+    }
+  }
+  loadInitialAuditFromServer();
 
   // Polling rutin cloud status & streaming feed tiap 3 detik
   setInterval(() => {
