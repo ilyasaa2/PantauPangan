@@ -176,7 +176,7 @@ c:\PantauPangan\
 ├── index.html                   # Dashboard SCADA pameran (4 functional views)
 ├── server.js                    # Server HTTP, SSE & Cloud Database Sync Engine
 ├── README.md                    # Dokumentasi komprehensif proyek
-├── ALUR_SISTEM.md               # Arsitektur teknis, diagram Mermaid & formula AI
+├── INTEGRASI_SISTEM.md          # Dokumen arsitektur sistem terpadu & notulensi integrasi multi-disiplin (TSI, AI, IoT)
 ├── DESIGN.md                    # Pedoman antarmuka visual antislop
 ├── firmware/
 │   └── PantauPangan_ESP.ino    # Firmware ESP8266 + LCD 1602 Multi-Page Carousel
