@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PantauPangan - SCADA Cold Chain & HACCP Audit</title>
-  <meta name="description" content="Dashboard SCADA pemantauan suhu dan kelembapan cold chain berbasis ESP-12E, MQTT, dan AI untuk audit kepatuhan HACCP & BPOM.">
+  <title>PantauPangan - SCADA Cold Chain &amp; HACCP Audit (DHT11)</title>
+  <meta name="description" content="Dashboard SCADA pemantauan suhu dan kelembapan cold chain berbasis ESP-12E, DHT11, MQTT, dan AI untuk audit kepatuhan HACCP & BPOM.">
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,14 +27,14 @@
     <!-- TIER 1: GLOBAL TOPBAR (DARK NAVY #1b3860) -->
     <div class="tb-global-header">
       <div class="tb-global-left">
-        <!-- ThingsBoard Brand Logo -->
-        <a href="#" class="tb-brand" onclick="return false;" title="ThingsBoard Industrial IoT Platform">
+        <!-- Brand Logo PantauPangan -->
+        <a href="#" class="tb-brand" onclick="return false;" title="PantauPangan SCADA Platform">
           <svg class="tb-logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
             <!-- Hexagonal Circuit Gear Emblem -->
             <path d="M12 1.5l8.66 5v11L12 22.5 3.34 17.5v-11L12 1.5zm0 2.31L5.34 7.62v8.76L12 20.19l6.66-3.81V7.62L12 3.81z" fill="#ffffff"/>
             <circle cx="12" cy="12" r="3" fill="#38bdf8"/>
           </svg>
-          <span class="tb-logo-text">ThingsBoard</span>
+          <span class="tb-logo-text">PantauPangan</span>
         </a>
 
         <!-- Global Breadcrumbs -->
@@ -56,7 +56,7 @@
               <rect x="14" y="12" width="7" height="9" rx="1"></rect>
               <rect x="3" y="16" width="7" height="5" rx="1"></rect>
             </svg>
-            <span id="header-breadcrumb-sub">Arduino DHT22: Temperature &amp; Humidity Demo Dashboard</span>
+            <span id="header-breadcrumb-sub">ESP8266 DHT11: Temperature &amp; Humidity Demo Dashboard</span>
           </span>
         </div>
       </div>
@@ -138,14 +138,14 @@
     <!-- TIER 2: DASHBOARD CONTEXT TOOLBAR (#204576) -->
     <div class="tb-dashboard-toolbar">
       <div class="tb-toolbar-left">
-        <h1 class="tb-toolbar-title" id="tb-dashboard-title">Arduino DHT22: Temperature &amp; Humidity Demo Dashboard</h1>
+        <h1 class="tb-toolbar-title" id="tb-dashboard-title">ESP8266 DHT11: Temperature &amp; Humidity Demo Dashboard</h1>
       </div>
 
       <div class="tb-toolbar-right">
         <!-- HACCP Entity / Room Preset Dropdown -->
         <div class="tb-toolbar-select-wrap">
           <select id="select-active-room-filter" class="tb-toolbar-select font-mono" title="Pilih Standar HACCP">
-            <option value="chilled_room" selected>Arduino DHT22: Temperature &amp; Hu... &#x25BC;</option>
+            <option value="chilled_room" selected>ESP8266 DHT11: Temperature &amp; Hu... &#x25BC;</option>
             <option value="dry_storage">Ruang Ambient (18.0°C ~ 32.0°C) &#x25BC;</option>
             <option value="frozen_room">Deep Freezer (-22.0°C ~ -18.0°C) &#x25BC;</option>
           </select>
@@ -223,7 +223,7 @@
       <nav class="sidebar-nav" aria-label="ThingsBoard Menu">
         
         <!-- 1. DASHBOARDS (Monitoring Suhu, Kelembapan, & SCADA - ACTIVE) -->
-        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring" title="Arduino DHT22 Live SCADA Dashboard">
+        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring" title="ESP8266 DHT11 Live SCADA Dashboard">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="9" rx="1"></rect>
             <rect x="14" y="3" width="7" height="5" rx="1"></rect>
@@ -351,7 +351,7 @@
                 </div>
                 <div class="tb-control-meta font-mono">
                   <div>Node: <strong id="gateway-tech-title">ESP-12E NodeMCU V3</strong> (<span id="gateway-ping-info">Web Serial / 115200</span>)</div>
-                  <div>Status: <span class="badge-status-pill normal" id="node-status-badge">● Standby</span></div>
+                  <span id="node-status-badge" style="display: none;">● Standby</span>
                 </div>
               </div>
             </div>
@@ -363,7 +363,7 @@
             <div class="card scada-card tb-gauge-card">
               <div class="tb-card-header">
                 <span class="tb-card-title" id="card-temp-label">TEMPERATURE °C</span>
-                <span class="badge-status-pill normal" id="temp-compliance-badge">● Normal</span>
+                <span id="temp-compliance-badge" style="display: none;">● Normal</span>
               </div>
               <div class="tb-gauge-body">
                 <div class="tb-digital-readout">
@@ -400,7 +400,7 @@
             <div class="card scada-card tb-gauge-card">
               <div class="tb-card-header">
                 <span class="tb-card-title">HUMIDITY %</span>
-                <span class="badge-status-pill normal" id="rh-compliance-badge">● Ideal</span>
+                <span id="rh-compliance-badge" style="display: none;">● Ideal</span>
               </div>
               <div class="tb-gauge-body">
                 <div class="tb-digital-readout">
@@ -541,7 +541,7 @@
             <span class="ai-dock-title">AI Engine: Z-Score Anomaly Detector</span>
             <div class="ai-dock-val">
               <span id="val-ai-score">0.25 |Z|</span>
-              <span class="badge-status-pill normal" id="ai-status-badge">Z-Score Normal</span>
+              <span id="ai-status-badge" style="display: none;">Z-Score Normal</span>
             </div>
             <span class="ai-dock-desc" id="ai-diagnosis-desc">
               Sirkulasi udara dan kompresor beroperasi dalam batas toleransi HACCP. Tidak terdeteksi risiko kerusakan bahan pangan.
