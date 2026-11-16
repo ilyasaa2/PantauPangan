@@ -34,8 +34,8 @@ class PantauPanganExportService {
       this.store.auditLogs = this.store.telemetryLogs.map((t, idx) => ({
         id: 'LOG-' + String(idx + 1).padStart(4, '0'),
         timeFormatted: t.timeFormatted || `${t.date || ''} ${t.time || ''}`,
-        zoneId: t.roomKey || 'dry_storage',
-        zoneName: t.roomName || 'Stand Demo PantauPangan',
+        zoneId: t.roomKey || 'chilled_room',
+        zoneName: t.roomName || 'Cold Storage 1',
         temperature: typeof t.temperature === 'number' ? t.temperature : parseFloat(t.temperature) || 28.5,
         humidity: typeof t.humidity === 'number' ? t.humidity : parseFloat(t.humidity) || 60.0,
         zScore: 0.12,

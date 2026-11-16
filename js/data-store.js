@@ -61,7 +61,7 @@ if (typeof window !== 'undefined') {
 
 class PantauPanganStore {
   constructor() {
-    this.currentZoneId = 'dry_storage';
+    this.currentZoneId = 'chilled_room';
     this.timeWindow = '1h'; // '1h', '6h', '24h'
     this.activeSimState = 'NORMAL'; // 'NORMAL', 'DOOR_OPEN', 'COMPRESSOR_FAILURE', 'SENSOR_FAULT'
     this.hardware = {

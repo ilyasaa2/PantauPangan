@@ -73,11 +73,10 @@ float lastTemp = 0.0;
 float lastRh = 0.0;
 bool isSensorReady = false;
 
-// Batas Kritis HACCP Default (Standar Pameran: Ruang Kering/Ambient 18.0°C s/d 32.0°C)
-// Agar saat pertama kali dinyalakan di suhu ruangan (~28°C-30.5°C), status langsung NORMAL (LED Hijau)
-float limitMinTemp = 18.0;
-float limitMaxTemp = 32.0;
-float warnThreshold = 30.8; // Suhu mendekati batas kritis memicu lampu kuning
+// Batas Kritis HACCP Default (Standar Utama Cold Chain: Cold Storage 0.0°C s/d 5.0°C)
+float limitMinTemp = 0.0;
+float limitMaxTemp = 5.0;
+float warnThreshold = 3.8; // Suhu mendekati batas kritis memicu lampu kuning
 
 // Kendali alarm & status mute buzzer
 bool remoteAlarmActive = false;

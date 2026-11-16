@@ -19,9 +19,9 @@ if (!fs.existsSync(DATA_DIR)) {
 // State Kontrol Nirkabel (Wireless Wi-Fi ESP8266)
 let pendingESPCommands = [];
 let wirelessControlState = {
-  zone: 'dry_storage',
-  tempMin: 18.0,
-  tempMax: 32.0,
+  zone: 'chilled_room',
+  tempMin: 0.0,
+  tempMax: 5.0,
   buzzerMuted: false
 };
 
