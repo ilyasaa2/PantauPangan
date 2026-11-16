@@ -106,6 +106,13 @@
   padding: 0;
 }
 
+[hidden],
+[hidden="true"],
+.modal-backdrop[hidden],
+.date-filter-popover[hidden] {
+  display: none !important;
+}
+
 html, body {
   height: 100%;
 }
@@ -560,9 +567,13 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .content-view {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 1.15rem;
+}
+
+.content-view.active {
+  display: flex !important;
 }
 
 /* View Header Bar */
@@ -1045,6 +1056,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex-direction: column;
 }
 
+.date-filter-popover[hidden] {
+  display: none !important;
+}
+
 .popover-header {
   display: flex;
   align-items: center;
@@ -1515,6 +1530,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   align-items: center;
   justify-content: center;
   z-index: 100;
+}
+
+.modal-backdrop[hidden] {
+  display: none !important;
 }
 
 .modal-window {

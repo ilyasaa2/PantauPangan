@@ -710,15 +710,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const target = document.getElementById(`view-${viewId}`);
     if (target) {
-      target.style.display = '';
+      target.style.display = 'flex';
       target.classList.add('active');
     }
   }
 
   function setActiveZone(zoneId) {
     window.appStore.setZone(zoneId);
-    simTempOffset = 0;
-    simRhOffset = 0;
 
     const currentZone = window.appStore.getCurrentZone();
 
