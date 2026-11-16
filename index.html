@@ -37,9 +37,9 @@
           <div class="tb-breadcrumb-trail font-mono">
             <span>Dashboards</span>
             <span>&gt;</span>
-            <span id="header-breadcrumb-sub">NodeMCU ESP-12E: Temperature &amp; Humidity SCADA</span>
+            <span id="header-breadcrumb-sub">NodeMCU ESP-12E SCADA</span>
           </div>
-          <span class="tb-dashboard-title">Arduino DHT22 / ESP-12E SCADA Dashboard</span>
+          <span class="tb-dashboard-title">PantauPangan SCADA</span>
         </div>
       </div>
     </div>
@@ -47,29 +47,28 @@
     <!-- Status & Telemetri Sistem di Baris Atas (Informasi Non-Navigasi) -->
     <div class="topbar-chips">
       <div class="status-chip plant-chip" title="Pilih Lokasi Pengujian / Pameran">
-        <span class="chip-label font-mono">LOKASI:</span>
         <select id="select-demo-location" class="location-select font-mono">
-          <option value="expo" selected>📍 Stand Aula Pameran (Utama)</option>
-          <option value="lab">📍 Lab IoT &amp; Embedded System</option>
-          <option value="workshop">📍 Pengujian Mandiri / Lapangan</option>
+          <option value="expo" selected>📍 Stand Aula Pameran</option>
+          <option value="lab">📍 Lab IoT System</option>
+          <option value="workshop">📍 Uji Lapangan</option>
         </select>
       </div>
 
       <div class="status-chip cloud-chip" id="top-chip-cloud" title="Sinkronisasi Database Eksternal Cloud">
         <span class="chip-dot dot-green" id="top-cloud-dot"></span>
-        <span id="top-cloud-text">Cloud DB: <strong class="font-mono" id="top-cloud-status-val">Supabase Sync (38ms)</strong></span>
+        <span id="top-cloud-text"><strong class="font-mono" id="top-cloud-status-val">Supabase (38ms)</strong></span>
       </div>
 
       <div class="status-chip device-chip" id="top-chip-gateway" title="Koneksi Gateway NodeMCU ESP-12E">
         <span class="chip-dot dot-green" id="top-gateway-dot"></span>
-        <span id="top-gateway-text">ESP-12E: <strong class="font-mono">Siaga</strong></span>
+        <span id="top-gateway-text"><strong class="font-mono">ESP-12E Siaga</strong></span>
       </div>
 
-      <div class="status-chip battery-chip" title="Catu Daya Adaptor Eksternal 5V 3A">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="status-chip battery-chip" title="Catu Daya Adaptor Eksternal 5V 3A DC">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
         </svg>
-        <span class="font-mono" id="top-battery-val">PWR: 5V 3A DC</span>
+        <span class="font-mono" id="top-battery-val">5V 3A DC</span>
       </div>
     </div>
 
@@ -627,7 +626,7 @@
         </div>
 
         <!-- 4 KARTU METRIK CLOUD DATABASE -->
-        <div class="metrics-scada-grid" style="margin-bottom: 1.25rem;">
+        <div class="metrics-scada-grid">
           <!-- Kartu 1: Cloud Provider -->
           <div class="card scada-card">
             <div class="card-kpi-header">
@@ -635,7 +634,7 @@
               <span class="badge-status-pill normal">PostgreSQL REST</span>
             </div>
             <div class="card-kpi-body">
-              <span class="kpi-value-text font-bold" id="cloud-metric-provider" style="font-size: 1.3rem; color: var(--text-main);">Supabase REST</span>
+              <span class="kpi-value-text font-bold" id="cloud-metric-provider">Supabase REST</span>
             </div>
             <div class="card-kpi-footer">
               <span class="kpi-footer-muted">Tabel:</span>
@@ -650,7 +649,7 @@
               <span class="chip-dot dot-green"></span>
             </div>
             <div class="card-kpi-body">
-              <span class="kpi-value-text font-bold" id="cloud-metric-status" style="font-size: 1.3rem; color: var(--status-normal);">SYNCHRONIZED</span>
+              <span class="kpi-value-text font-bold text-success" id="cloud-metric-status">SYNCHRONIZED</span>
             </div>
             <div class="card-kpi-footer">
               <span class="kpi-footer-muted">Arsitektur:</span>
@@ -669,7 +668,7 @@
               <span class="kpi-unit">baris</span>
             </div>
             <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Waktu:</span>
+              <span class="kpi-footer-muted">Terakhir:</span>
               <span class="kpi-footer-val font-mono" id="cloud-metric-last-sync">Sinkronisasi Aktif</span>
             </div>
           </div>
@@ -681,12 +680,12 @@
               <span class="badge-status-pill normal font-mono">HTTPS Ping</span>
             </div>
             <div class="card-kpi-body">
-              <span class="kpi-value font-mono" id="cloud-metric-latency" style="color: var(--accent-blue);">38</span>
+              <span class="kpi-value font-mono text-cyan" id="cloud-metric-latency">38</span>
               <span class="kpi-unit">ms</span>
             </div>
             <div class="card-kpi-footer">
               <span class="kpi-footer-muted">Koneksi:</span>
-              <span class="kpi-footer-val" style="color: var(--status-normal);">Real-Time Streaming</span>
+              <span class="kpi-footer-val text-success">Real-Time Streaming</span>
             </div>
           </div>
         </div>
@@ -705,12 +704,12 @@
               <div>
                 <h3 class="cloud-conn-title">
                   <span>Supabase Cloud PostgreSQL Connection</span>
-                  <span class="badge-status-pill normal" style="font-size: 0.68rem; font-weight: 600;">Verified Production</span>
+                  <span class="badge-status-pill normal">Verified Production</span>
                 </h3>
-                <span class="subtext-muted" style="font-size: 0.72rem;">Koneksi cloud external terverifikasi aktif untuk pameran stand expo</span>
+                <span class="subtext-muted">Koneksi cloud external terverifikasi aktif untuk pameran stand expo</span>
               </div>
             </div>
-            <button id="btn-toggle-cloud-settings" class="btn btn-scada-outline" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+            <button id="btn-toggle-cloud-settings" class="btn btn-scada-outline">
               ⚙️ Pengaturan Endpoint (Lanjutan)
             </button>
           </div>
@@ -719,7 +718,7 @@
           <div class="cloud-props-grid">
             <div class="cloud-prop-item">
               <span class="cloud-prop-label">PROJECT HOST</span>
-              <span class="cloud-prop-val font-mono" style="color: var(--accent-blue);">wkeujvejvnemibgvwvjr.supabase.co</span>
+              <span class="cloud-prop-val font-mono text-cyan">wkeujvejvnemibgvwvjr.supabase.co</span>
             </div>
             <div class="cloud-prop-item">
               <span class="cloud-prop-label">TABEL POSTGRESQL</span>
@@ -727,13 +726,13 @@
             </div>
             <div class="cloud-prop-item">
               <span class="cloud-prop-label">PROTOKOL KEAMANAN</span>
-              <span class="cloud-prop-val" style="color: var(--status-normal);">TLS 1.3 / HTTPS REST Bearer</span>
+              <span class="cloud-prop-val text-success">TLS 1.3 / HTTPS REST Bearer</span>
             </div>
             <div class="cloud-prop-item">
               <span class="cloud-prop-label">SECURITY &amp; RLS</span>
-              <span class="cloud-prop-val">
-                <span class="badge-status-pill normal" style="font-size: 0.7rem;">Row Level Security Active</span>
-              </span>
+              <div class="cloud-prop-val">
+                <span class="badge-status-pill normal">Row Level Security Active</span>
+              </div>
             </div>
           </div>
 
@@ -775,13 +774,13 @@
                 </svg>
                 <span>Live Cloud Synchronization Ledger</span>
               </h3>
-              <p class="subtext-muted" style="margin: 0; font-size: 0.75rem;">
+              <p class="subtext-muted">
                 Aliran paket data sensor telemetri yang terunggah dan terverifikasi di PostgreSQL / Supabase secara real-time
               </p>
             </div>
 
             <div class="cloud-table-meta">
-              <span class="subtext-muted font-mono" id="cloud-log-counter" style="font-size: 0.72rem;">Memuat...</span>
+              <span class="subtext-muted font-mono" id="cloud-log-counter">0 Transaksi</span>
               <span class="badge-status-pill normal font-mono" id="cloud-feed-status">● STREAMING ACTIVE</span>
             </div>
           </div>
@@ -874,6 +873,18 @@
               <li><strong>Buzzer Aktif 5V:</strong> Pin D3 (GPIO 0)</li>
               <li><strong>VCC &amp; GND Shield:</strong> Pin 5V (Vin) &amp; Pin GND</li>
             </ul>
+          </div>
+
+          <!-- Card 3: MQTT / Telemetry Protocol Terminal Stream -->
+          <div class="card scada-card gateway-terminal-card" style="grid-column: span 2; padding: 1rem 1.15rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
+              <div>
+                <h3 class="chart-box-title" style="margin: 0;">MQTT &amp; Serial Telemetry Protocol Stream</h3>
+                <p class="subtext-muted" style="margin: 0.15rem 0 0 0;">Inspeksi aliran paket data JSON IoT, QoS 1, &amp; diagnostik jaringan secara real-time</p>
+              </div>
+              <button id="btn-clear-terminal" class="btn btn-scada-outline" onclick="window.appMQTT &amp;&amp; window.appMQTT.clearTerminal()">Bersihkan Terminal</button>
+            </div>
+            <pre id="mqtt-log-terminal">[00:00:00] Menunggu transmisi paket telemetri MQTT / Serial pertama dari node ESP-12E...</pre>
           </div>
         </div>
       </section>

@@ -178,18 +178,19 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
   position: sticky;
   top: 0;
   z-index: 50;
-  gap: 1rem;
+  gap: 0.75rem;
   color: #ffffff;
+  overflow: hidden;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.85rem;
   flex-shrink: 0;
 }
 
@@ -202,8 +203,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .brand-icon-wrap {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-sm);
@@ -222,10 +223,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .tb-breadcrumb-trail {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.68rem;
+  gap: 0.35rem;
+  font-size: 0.65rem;
   color: #93c5fd;
   font-family: var(--font-mono);
+  line-height: 1.2;
 }
 
 .tb-breadcrumb-trail a {
@@ -238,29 +240,37 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .tb-dashboard-title {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 /* Topbar Chips / Selector Bar */
 .topbar-chips {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  overflow-x: auto;
+  gap: 0.45rem;
+  overflow: hidden;
+  flex-shrink: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.topbar-chips::-webkit-scrollbar {
+  display: none;
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.25rem 0.65rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0.55rem;
   background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-xs);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: #e2e8f0;
   white-space: nowrap;
 }
@@ -273,7 +283,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 500;
   cursor: pointer;
 }
@@ -299,7 +309,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-shrink: 0;
 }
 
@@ -307,8 +317,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.38rem 0.75rem;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
   border-radius: var(--radius-xs);
   font-weight: 600;
   font-size: 0.75rem;
@@ -317,27 +327,34 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   white-space: nowrap;
 }
 
-.btn-tb-primary {
+.btn-tb-primary,
+.btn-scada-primary {
   background-color: #0284c7;
   color: #ffffff;
   border: 1px solid #38bdf8;
 }
 
-.btn-tb-primary:hover {
+.btn-tb-primary:hover,
+.btn-scada-primary:hover {
   background-color: #0369a1;
 }
 
-.btn-tb-outline {
+.btn-tb-outline,
+.btn-scada-outline,
+.btn-scada-usb {
   background-color: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-tb-outline:hover {
+.btn-tb-outline:hover,
+.btn-scada-outline:hover,
+.btn-scada-usb:hover {
   background-color: rgba(255, 255, 255, 0.18);
 }
 
-.btn-tb-outline.connected {
+.btn-tb-outline.connected,
+.btn-scada-usb.connected {
   background-color: rgba(16, 185, 129, 0.2);
   border-color: #10b981;
   color: #6ee7b7;
@@ -374,20 +391,20 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .scada-sidebar {
-  width: 200px;
+  width: 215px;
   background-color: var(--tb-sidebar-bg);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 0.85rem 0.5rem;
+  padding: 0.85rem 0.6rem;
   flex-shrink: 0;
-  gap: 0.65rem;
+  gap: 0.75rem;
   color: #cbd5e1;
 }
 
 .sidebar-section-label {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.625rem;
   font-weight: 700;
   color: #64748b;
   letter-spacing: 0.08em;
@@ -395,10 +412,56 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   padding: 0 0.5rem;
 }
 
+/* Plant Card */
+.sidebar-plant-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
+}
+
+.plant-card-icon {
+  width: 28px;
+  height: 28px;
+  background-color: rgba(2, 132, 199, 0.15);
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.plant-card-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.plant-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plant-card-sub {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  line-height: 1.2;
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
   flex: 1;
 }
 
@@ -406,13 +469,14 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.55rem 0.65rem;
+  padding: 0.55rem 0.75rem;
   border-radius: var(--radius-xs);
   color: #94a3b8;
   font-size: 0.78rem;
   font-weight: 500;
   text-align: left;
-  border-left: 2px solid transparent;
+  border-left: 3px solid transparent;
+  line-height: 1.25;
 }
 
 .nav-item:hover {
@@ -509,6 +573,61 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .content-view.active {
   display: flex !important;
+}
+
+/* Global View Header Bar (Used in View 1, 2, 3, 4) */
+.view-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.view-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.live-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--status-normal);
+  box-shadow: 0 0 8px var(--status-normal);
+  flex-shrink: 0;
+  animation: pulse-live 2s infinite ease-in-out;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+.view-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.view-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  line-height: 1.35;
+}
+
+.view-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 /* Top Sub-Bar Controls (HACCP Preset, Mute, Refresh) */
@@ -845,10 +964,17 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border: 1px solid var(--status-warning-border);
 }
 
-.badge-status-pill.critical {
+.badge-status-pill.critical,
+.badge-status-pill.kritis {
   color: var(--status-critical);
   background-color: var(--status-critical-bg);
   border: 1px solid var(--status-critical-border);
+}
+
+.badge-status-pill.blue {
+  color: #38bdf8;
+  background-color: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 /* ==========================================================================
@@ -1239,60 +1365,319 @@ input:checked + .tb-slider:before {
 }
 
 /* ==========================================================================
-   10. VIEW 2, 3, 4 (AUDIT, CLOUD, GATEWAY)
+   10. VIEW 2, 3, 4 (AUDIT, CLOUD, GATEWAY) & SHARED SCADA CARD INTERNALS
    ========================================================================== */
-.audit-toolbar-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  background-color: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
-}
-
 .metrics-scada-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .metrics-scada-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .metrics-scada-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* KPI Card Internals (Used in View 1 & View 3) */
+.metrics-scada-grid .card.scada-card {
+  padding: 0.85rem 1rem;
+  min-height: 105px;
+  justify-content: space-between;
+}
+
+.card-kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.card-kpi-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0.25rem 0;
+  min-height: 28px;
+}
+
+.kpi-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.kpi-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.kpi-value-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.card-kpi-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.4rem;
+  margin-top: 0.4rem;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.kpi-footer-muted {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.kpi-footer-val {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Cloud Connection Summary Box (View 3) */
+.cloud-conn-card {
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+}
+
+.cloud-conn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cloud-conn-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cloud-db-badge-icon {
+  width: 34px;
+  height: 34px;
+  background-color: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.28);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.cloud-conn-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  line-height: 1.25;
 }
 
 .cloud-props-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xs);
-  padding: 0.75rem;
+  gap: 0.65rem;
+}
+
+@media (max-width: 1024px) {
+  .cloud-props-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .cloud-prop-item {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  padding: 0.6rem 0.8rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
 }
 
 .cloud-prop-label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   font-weight: 700;
-  color: var(--text-dim);
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .cloud-prop-val {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-main);
+  word-break: break-all;
 }
 
+.cloud-drawer {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  padding: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.cloud-drawer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr auto;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+@media (max-width: 800px) {
+  .cloud-drawer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cloud-drawer-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.scada-input {
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.scada-input:focus {
+  border-color: var(--border-focus);
+  outline: none;
+}
+
+/* Cloud Table Widget */
+.cloud-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-elevated);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cloud-table-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cloud-table-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.cloud-table-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Shared Table Wrapper & Responsive Container */
+.table-wrapper-scada {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  max-height: 480px;
+}
+
+/* View 2: Audit Trail Toolbar */
+.audit-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background-color: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.scada-search-input {
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  min-width: 240px;
+}
+
+.scada-search-input:focus {
+  border-color: var(--border-focus);
+  outline: none;
+}
+
+/* View 4: Hardware & Gateway Health */
 .gateway-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
+@media (max-width: 1024px) {
+  .gateway-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .gateway-detail-card {
-  padding: 1rem;
+  padding: 1rem 1.15rem;
 }
 
 .gateway-info-list {
@@ -1330,6 +1715,21 @@ input:checked + .tb-slider:before {
 
 .wiring-spec-list strong {
   color: var(--accent-cyan);
+}
+
+#mqtt-log-terminal {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  background-color: #050a12;
+  color: #38bdf8;
+  border: 1px solid #1a2a40;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 /* ==========================================================================
@@ -1481,6 +1881,24 @@ input:checked + .tb-slider:before {
   }
   .tb-ai-dock {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1280px) {
+  .battery-chip {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .plant-chip {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .gateway-terminal-card {
+    grid-column: span 1 !important;
   }
 }
 
