@@ -672,6 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             const currentZone = window.appStore.getCurrentZone();
             serialService.sendCommand(`SET_ZONE:${currentZone.id},${currentZone.tempMin},${currentZone.tempMax}`);
+            if (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+              serialService.sendCommand(`SET_IP:${window.location.hostname}`);
+            }
           }, 400);
         } catch (err) {
           if (err.name !== 'NotFoundError') {
@@ -734,7 +737,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Perbarui chart
-    const series = window.appStore.zoneData[zoneId];
+    let series = window.appStore.zoneData[zoneId];
+    if (!series) {
+      window.appStore.zoneData[zoneId] = [];
+      series = window.appStore.zoneData[zoneId];
+    }
+
+    // Jika seri data untuk ruang ini masih kosong, manfaatkan pembacaan suhu fisik terkini
+    if (series.length === 0) {
+      const fallbackTemp = latestIncomingPoint ? latestIncomingPoint.temperature : (window.appStore.telemetryLogs[0]?.temperature || 28.5);
+      const fallbackRh = latestIncomingPoint ? latestIncomingPoint.humidity : (window.appStore.telemetryLogs[0]?.humidity || 60.0);
+      const now = new Date();
+      series.push({
+        timestamp: now,
+        timeLabel: now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        temperature: fallbackTemp,
+        humidity: fallbackRh,
+        zoneId: zoneId
+      });
+    }
+
     if (telemetryChart && series) {
       telemetryChart.data.labels = series.map(d => d.timeLabel);
       telemetryChart.data.datasets[0].data = series.map(d => d.temperature);

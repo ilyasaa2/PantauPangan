@@ -18,7 +18,7 @@ class PantauPanganAIEngine {
    * @param {Object} zoneSpec - Objek spesifikasi batas kritis zona (dari CCP_ZONES)
    */
   analyze(series, zoneSpec) {
-    if (!series || series.length < 5) {
+    if (!series || series.length === 0) {
       return {
         zScore: 0,
         status: 'NORMAL',
@@ -29,6 +29,35 @@ class PantauPanganAIEngine {
         timeToBreachMinutes: null,
         rootCause: 'Data sampling sedang dikumpulkan...',
         capa: 'Menunggu inisialisasi telemetri penuh.'
+      };
+    }
+
+    const latestPoint = series[series.length - 1];
+    const latestTemp = latestPoint.temperature;
+    const latestRh = latestPoint.humidity;
+
+    const isTempBreached = latestTemp > zoneSpec.tempMax || latestTemp < zoneSpec.tempMin;
+    const isRhBreached = (zoneSpec.rhMax && latestRh > zoneSpec.rhMax) || (zoneSpec.rhMin && latestRh < zoneSpec.rhMin);
+
+    if (series.length < 5) {
+      const status = (isTempBreached || isRhBreached) ? 'CRITICAL' : 'NORMAL';
+      const diagnosis = (isTempBreached || isRhBreached)
+        ? this.inferRootCause(latestTemp, latestRh, 0, zoneSpec, 3.0)
+        : { cause: 'Inisialisasi Pemantauan Awal', capa: 'Mengumpulkan sampel awal baseline termal.', isDoorOpen: false, isCompressorFault: false };
+
+      return {
+        zScore: (isTempBreached || isRhBreached) ? 3.0 : 0,
+        absZ: (isTempBreached || isRhBreached) ? 3.0 : 0,
+        status: status,
+        mean: latestTemp,
+        stdDev: 0.1,
+        slopePerMinute: 0,
+        forecast15m: latestTemp,
+        timeToBreachMinutes: null,
+        rootCause: diagnosis.cause,
+        capa: diagnosis.capa,
+        isDoorOpen: diagnosis.isDoorOpen,
+        isCompressorFault: diagnosis.isCompressorFault
       };
     }
 

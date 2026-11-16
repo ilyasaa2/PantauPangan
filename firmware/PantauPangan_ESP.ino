@@ -37,8 +37,8 @@
 const char* WIFI_SSID = "000";
 const char* WIFI_PASS = "00000000";
 
-// Alamat IP Gateway Laptop (Sesuai IP Wi-Fi Hotspot saat ini: 172.20.10.3)
-String laptopServerIP = "172.20.10.3";
+// Alamat IP Gateway Laptop (Default: IP Wi-Fi Laptop saat ini 192.168.0.104, atau via UDP/Serial)
+String laptopServerIP = "192.168.0.104";
 const int SERVER_PORT = 3000;
 bool isWiFiConnected = false;
 bool hasDiscoveredServer = false;
@@ -64,8 +64,8 @@ const int UDP_BEACON_PORT = 3001;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 DHT dht(DHTPIN, DHTTYPE);
 
-// Interval sampling sensor & update serial (2.5 detik)
-const unsigned long INTERVAL_MS = 2500;
+// Interval sampling sensor & update serial (2.0 detik)
+const unsigned long INTERVAL_MS = 2000;
 unsigned long lastReadTime = 0;
 
 // Variabel data sensor terakhir
@@ -120,6 +120,34 @@ void lcdPrintLine(int row, String text) {
 // Prototype Fungsi
 void renderLCDPage(float temperature, float humidity);
 void handleServerFeedback(String resp);
+void updateActuators(float temperature, float humidity);
+
+// ============================================================================
+// Helper: Evaluasi & Perbarui Status Aktuator (LED 3 Warna & Buzzer) Seketika
+// ============================================================================
+void updateActuators(float temperature, float humidity) {
+  if (isnan(temperature) || isnan(humidity)) return;
+
+  bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
+  bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 85.0 || humidity < 35.0));
+
+  if (isCritical) {
+    digitalWrite(PIN_LED_GRN, LOW);
+    digitalWrite(PIN_LED_YEL, LOW);
+    digitalWrite(PIN_LED_RED, HIGH);   // LED Merah ON
+    digitalWrite(BUZZER_PIN, buzzerMuted ? LOW : HIGH); // Buzzer aktif jika tidak di-mute
+  } else if (isWarning) {
+    digitalWrite(PIN_LED_GRN, LOW);
+    digitalWrite(PIN_LED_YEL, HIGH);   // LED Kuning ON
+    digitalWrite(PIN_LED_RED, LOW);
+    digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF saat warning
+  } else {
+    digitalWrite(PIN_LED_GRN, HIGH);   // LED Hijau ON (Kondisi NORMAL / AMAN)
+    digitalWrite(PIN_LED_YEL, LOW);
+    digitalWrite(PIN_LED_RED, LOW);
+    digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF
+  }
+}
 
 // ============================================================================
 // 4. Setup Hardware
@@ -224,13 +252,26 @@ void loop() {
 
     if (cmd == "ALARM_ON") {
       remoteAlarmActive = true;
+      if (isSensorReady) {
+        updateActuators(lastTemp, lastRh);
+        renderLCDPage(lastTemp, lastRh);
+      }
+      Serial.println(F("{\"ack\":\"ALARM_ON\",\"status\":\"CRITICAL\"}"));
     } else if (cmd == "ALARM_OFF") {
       remoteAlarmActive = false;
+      if (isSensorReady) {
+        updateActuators(lastTemp, lastRh);
+        renderLCDPage(lastTemp, lastRh);
+      }
+      Serial.println(F("{\"ack\":\"ALARM_OFF\"}"));
     } else if (cmd == "MUTE_BUZZER" || cmd == "BUZZER_MUTE") {
       buzzerMuted = true;
       digitalWrite(BUZZER_PIN, LOW); // Langsung senyap
+      Serial.println(F("{\"ack\":\"BUZZER_MUTED\"}"));
     } else if (cmd == "UNMUTE_BUZZER" || cmd == "BUZZER_UNMUTE") {
       buzzerMuted = false;
+      if (isSensorReady) updateActuators(lastTemp, lastRh);
+      Serial.println(F("{\"ack\":\"BUZZER_UNMUTED\"}"));
     } else if (cmd.startsWith("SET_ZONE:")) {
       int firstComma = cmd.indexOf(',');
       int secondComma = cmd.indexOf(',', firstComma + 1);
@@ -238,7 +279,25 @@ void loop() {
         limitMinTemp = cmd.substring(firstComma + 1, secondComma).toFloat();
         limitMaxTemp = cmd.substring(secondComma + 1).toFloat();
         warnThreshold = limitMaxTemp - 1.2;
+
+        // Evaluasi respon aktuator & LCD seketika (responsif instan tanpa delay)
+        if (isSensorReady) {
+          updateActuators(lastTemp, lastRh);
+          renderLCDPage(lastTemp, lastRh);
+        }
+        Serial.print(F("{\"ack\":\"SET_ZONE\",\"min\":"));
+        Serial.print(limitMinTemp, 1);
+        Serial.print(F(",\"max\":"));
+        Serial.print(limitMaxTemp, 1);
+        Serial.println(F("}"));
       }
+    } else if (cmd.startsWith("SET_IP:")) {
+      laptopServerIP = cmd.substring(7);
+      laptopServerIP.trim();
+      hasDiscoveredServer = true;
+      Serial.print(F("{\"ack\":\"SET_IP\",\"ip\":\""));
+      Serial.print(laptopServerIP);
+      Serial.println(F("\"}"));
     }
   }
 
@@ -283,26 +342,11 @@ void loop() {
     lastRh = humidity;
     isSensorReady = true;
 
-    // Evaluasi Kondisi Kepatuhan HACCP
+    // Evaluasi Kondisi Kepatuhan HACCP & Update Aktuator Langsung
+    updateActuators(temperature, humidity);
+
     bool isCritical = (temperature > limitMaxTemp || temperature < limitMinTemp || remoteAlarmActive);
     bool isWarning  = (!isCritical && (temperature >= warnThreshold || humidity > 85.0 || humidity < 35.0));
-
-    if (isCritical) {
-      digitalWrite(PIN_LED_GRN, LOW);
-      digitalWrite(PIN_LED_YEL, LOW);
-      digitalWrite(PIN_LED_RED, HIGH);   // LED Merah ON
-      digitalWrite(BUZZER_PIN, buzzerMuted ? LOW : HIGH); // Buzzer aktif jika tidak di-mute
-    } else if (isWarning) {
-      digitalWrite(PIN_LED_GRN, LOW);
-      digitalWrite(PIN_LED_YEL, HIGH);   // LED Kuning ON
-      digitalWrite(PIN_LED_RED, LOW);
-      digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF saat warning
-    } else {
-      digitalWrite(PIN_LED_GRN, HIGH);   // LED Hijau ON (Kondisi NORMAL / AMAN)
-      digitalWrite(PIN_LED_YEL, LOW);
-      digitalWrite(PIN_LED_RED, LOW);
-      digitalWrite(BUZZER_PIN, LOW);     // Buzzer OFF
-    }
 
     // A. Transmisi Serial UART (Selalu Aktif untuk Backup USB)
     Serial.print(F("{\"device_id\":\"ESP-12E-CCP-01\""));
@@ -378,12 +422,19 @@ void handleServerFeedback(String resp) {
   int minIdx = resp.indexOf("\"tempMin\":");
   int maxIdx = resp.indexOf("\"tempMax\":");
   if (minIdx > 0 && maxIdx > minIdx) {
-    float newMin = resp.substring(minIdx + 10, resp.indexOf(',', minIdx)).toFloat();
-    float newMax = resp.substring(maxIdx + 10, resp.indexOf(',', maxIdx)).toFloat();
-    if (newMax > newMin) {
-      limitMinTemp = newMin;
-      limitMaxTemp = newMax;
-      warnThreshold = limitMaxTemp - 1.2;
+    int endMin = resp.indexOf(',', minIdx);
+    if (endMin < 0) endMin = resp.indexOf('}', minIdx);
+    int endMax = resp.indexOf(',', maxIdx);
+    if (endMax < 0) endMax = resp.indexOf('}', maxIdx);
+
+    if (endMin > minIdx && endMax > maxIdx) {
+      float newMin = resp.substring(minIdx + 10, endMin).toFloat();
+      float newMax = resp.substring(maxIdx + 10, endMax).toFloat();
+      if (newMax > newMin) {
+        limitMinTemp = newMin;
+        limitMaxTemp = newMax;
+        warnThreshold = limitMaxTemp - 1.2;
+      }
     }
   }
 
@@ -405,7 +456,22 @@ void handleServerFeedback(String resp) {
       else if (cmd == "ALARM_OFF") remoteAlarmActive = false;
       else if (cmd == "MUTE_BUZZER") { buzzerMuted = true; digitalWrite(BUZZER_PIN, LOW); }
       else if (cmd == "UNMUTE_BUZZER") buzzerMuted = false;
+      else if (cmd.startsWith("SET_ZONE:")) {
+        int firstComma = cmd.indexOf(',');
+        int secondComma = cmd.indexOf(',', firstComma + 1);
+        if (firstComma > 0 && secondComma > firstComma) {
+          limitMinTemp = cmd.substring(firstComma + 1, secondComma).toFloat();
+          limitMaxTemp = cmd.substring(secondComma + 1).toFloat();
+          warnThreshold = limitMaxTemp - 1.2;
+        }
+      }
     }
+  }
+
+  // Respon seketika aktuator LED, Buzzer & Layar LCD begitu respons diterima
+  if (isSensorReady) {
+    updateActuators(lastTemp, lastRh);
+    renderLCDPage(lastTemp, lastRh);
   }
 }
 
