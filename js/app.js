@@ -191,10 +191,17 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     if (items.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-dim);">
-        <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.25rem;">Belum ada data telemetri tercatat</div>
-        <div style="font-size: 0.8rem;">Database telah bersih. Data baru akan otomatis masuk dan tampil di sini saat perangkat IoT (ESP-12E / ESP32) tersambung.</div>
+      tbody.innerHTML = `<tr><td colspan="8">
+        <div class="table-standby-state">
+          <div class="standby-radar" aria-hidden="true"></div>
+          <div class="standby-title">Perangkat ESP-12E Siaga (Standby)</div>
+          <div class="standby-desc">Sistem SCADA aktif dan siap menerima data. Hubungkan port USB melalui tombol Sync atau aktifkan gateway Wi-Fi untuk streaming telemetri waktu-nyata.</div>
+        </div>
       </td></tr>`;
+      const infoEl = document.getElementById('telemetry-pagination-info');
+      if (infoEl) infoEl.textContent = 'Menampilkan 0 data telemetri';
+      const pageContainer = document.getElementById('telemetry-pagination-buttons');
+      if (pageContainer) pageContainer.innerHTML = '<button class="btn-scada-page" disabled>Sebelumnya</button><button class="btn-scada-page page-num active" disabled>1</button><button class="btn-scada-page" disabled>Selanjutnya</button>';
       return;
     }
 

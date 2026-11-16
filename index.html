@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PantauPangan - SCADA Cold Chain & HACCP Audit</title>
-  <meta name="description" content="Dashboard SCADA pemantauan suhu dan kelembapan cold chain berbasis ESP-12E/ESP32, MQTT, dan AI untuk audit kepatuhan HACCP & BPOM.">
+  <meta name="description" content="Dashboard SCADA pemantauan suhu dan kelembapan cold chain berbasis ESP-12E, MQTT, dan AI untuk audit kepatuhan HACCP & BPOM.">
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,13 +27,15 @@
     <div class="topbar-left">
       <div class="brand-block">
         <div class="brand-icon-wrap" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          <!-- Cold Chain Thermal Sensor Emblem -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"></path>
+            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
           </svg>
         </div>
         <div class="brand-text">
           <span class="brand-title">PantauPangan</span>
-          <span class="brand-subtitle">SCADA COLD CHAIN</span>
+          <span class="brand-subtitle">HACCP COLD CHAIN SCADA</span>
         </div>
       </div>
     </div>
@@ -56,7 +58,7 @@
 
       <div class="status-chip device-chip" id="top-chip-gateway" title="Koneksi Gateway NodeMCU ESP-12E">
         <span class="chip-dot dot-green" id="top-gateway-dot"></span>
-        <span id="top-gateway-text">ESP-12E Node: <strong class="font-mono">Online</strong></span>
+        <span id="top-gateway-text">ESP-12E: <strong class="font-mono">Siaga</strong></span>
       </div>
 
       <div class="status-chip battery-chip" title="Catu Daya Adaptor Eksternal 5V 3A">
@@ -70,13 +72,12 @@
     <!-- Aksi Kanan Topbar: USB Connect, Sync, Tema, Ekspor PDF -->
     <div class="topbar-actions">
       <!-- Tombol USB Web Serial & Sync -->
-      <button id="btn-toggle-usb" class="btn btn-scada-usb" title="Sambungkan USB Fisik ESP-12E / ESP32">
+      <button id="btn-toggle-usb" class="btn btn-scada-usb" title="Sambungkan USB Fisik ESP-12E">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
         </svg>
         <span id="usb-btn-text">Sync</span>
       </button>
-
 
       <!-- Tombol Ekspor PDF Resmi BPOM -->
       <button id="btn-open-export-pdf" class="btn btn-scada-primary">
@@ -90,7 +91,7 @@
       </button>
 
       <!-- Toggle Tema Terang/Gelap -->
-      <button id="btn-theme-toggle" class="btn-icon" aria-label="Ganti Tema Tampilan" title="Ganti Tema">
+      <button id="btn-theme-toggle" class="btn-icon" aria-label="Ganti Tema Tampilan" title="Ganti Tema (Dark/Light)">
         <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"></circle>
           <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
@@ -99,14 +100,6 @@
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-
-      <!-- Avatar Pengguna / Auditor -->
-      <div class="user-avatar-pill" title="Auditor: Tim QA BPOM">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </div>
     </div>
   </header>
 
@@ -218,7 +211,7 @@
               <span class="preset-label">STANDAR HACCP:</span>
               <select id="select-active-room-filter" class="scada-select font-mono">
                 <option value="chilled_room" selected>❄️ Cold Storage (0.0°C ~ 5.0°C) [Standar Utama Cold Chain]</option>
-                <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 32.0°C) [Simulasi Uji Suhu Kamar / Normal]</option>
+                <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 32.0°C) [Simulasi Uji Suhu Kamar]</option>
                 <option value="frozen_room">🧊 Deep Freezer (-22.0°C ~ -18.0°C) [Simulasi Uji Beku Ekstrem]</option>
               </select>
             </div>
@@ -291,31 +284,31 @@
           <!-- Kartu 3: Gateway & Telemetri -->
           <div class="card scada-card">
             <div class="card-kpi-header">
-              <span class="kpi-label">GATEWAY &amp; TELEMETRI</span>
-              <span class="badge-status-pill normal" id="node-status-badge">● Online</span>
+              <span class="kpi-label">KONTROLER FISIK</span>
+              <span class="badge-status-pill normal" id="node-status-badge">● Standby</span>
             </div>
             <div class="card-kpi-body">
-              <span class="kpi-value-text font-bold" id="gateway-tech-title">ESP32 Mesh</span>
+              <span class="kpi-value-text font-bold" id="gateway-tech-title">NodeMCU ESP-12E</span>
             </div>
             <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Interval Ping / Broker:</span>
-              <span class="kpi-footer-val font-mono" id="gateway-ping-info">30s / MQTT OK</span>
+              <span class="kpi-footer-muted">Sampling / Port:</span>
+              <span class="kpi-footer-val font-mono" id="gateway-ping-info">2.0s / Web Serial</span>
             </div>
           </div>
 
           <!-- Kartu 4: Total Data Masuk -->
           <div class="card scada-card">
             <div class="card-kpi-header">
-              <span class="kpi-label">TOTAL DATA MASUK</span>
-              <span class="badge-status-pill blue">Hari Ini</span>
+              <span class="kpi-label">LOG TELEMETRI</span>
+              <span class="badge-status-pill blue">Tersimpan</span>
             </div>
             <div class="card-kpi-body">
-              <span class="kpi-value font-mono" id="total-telemetry-count">1,420</span>
+              <span class="kpi-value font-mono" id="total-telemetry-count">0</span>
               <span class="kpi-unit">baris</span>
             </div>
             <div class="card-kpi-footer">
               <span class="kpi-footer-muted">Deviasi Terdeteksi:</span>
-              <span class="kpi-footer-val font-mono" id="deviation-count-label">1 Kejadian</span>
+              <span class="kpi-footer-val font-mono" id="deviation-count-label">0 Kejadian</span>
             </div>
           </div>
         </div>
@@ -388,8 +381,8 @@
 
           <div class="toolbar-filter-pills">
             <button class="filter-pill active" data-filter="all" id="btn-filter-all">Semua</button>
-            <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal">Normal (11)</button>
-            <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning">Peringatan (1)</button>
+            <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal">Normal (0)</button>
+            <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning">Peringatan (0)</button>
           </div>
 
           <div class="date-shift-container">
@@ -467,10 +460,10 @@
             </table>
           </div>
 
-          <!-- Pagination Footer Sesuai Desain Gambar -->
+          <!-- Pagination Footer -->
           <div class="scada-table-footer">
             <div class="footer-count-text" id="telemetry-pagination-info">
-              Menampilkan 1 - 10 dari 1,420 data telemetri
+              Menampilkan 0 data telemetri
             </div>
             <div class="footer-controls">
               <div class="rows-select-wrap">
@@ -478,12 +471,9 @@
                 <span class="font-mono font-bold">10</span>
               </div>
               <div class="pagination-buttons" id="telemetry-pagination-buttons">
-                <button class="btn-scada-page" id="btn-telem-prev">Sebelumnya</button>
-                <button class="btn-scada-page page-num active">1</button>
-                <button class="btn-scada-page page-num">2</button>
-                <button class="btn-scada-page page-num">3</button>
-                <button class="btn-scada-page page-num">4</button>
-                <button class="btn-scada-page" id="btn-telem-next">Selanjutnya</button>
+                <button class="btn-scada-page" id="btn-telem-prev" disabled>Sebelumnya</button>
+                <button class="btn-scada-page page-num active" disabled>1</button>
+                <button class="btn-scada-page" id="btn-telem-next" disabled>Selanjutnya</button>
               </div>
             </div>
           </div>
@@ -886,7 +876,7 @@
         </div>
 
         <div class="modal-summary-box">
-          <div>Total Log Terverifikasi: <strong id="preview-log-count" class="font-mono">1,420 Data</strong></div>
+          <div>Total Log Terverifikasi: <strong id="preview-log-count" class="font-mono">0 Data</strong></div>
           <div>Kepatuhan Batas: <strong id="preview-compliance-pct" class="font-mono text-success">100.0%</strong></div>
         </div>
       </div>

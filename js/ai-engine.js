@@ -66,9 +66,6 @@ class PantauPanganAIEngine {
     const temps = windowData.map(d => d.temperature);
     const humidities = windowData.map(d => d.humidity);
 
-    const latestTemp = temps[temps.length - 1];
-    const latestRh = humidities[humidities.length - 1];
-
     // 1. Perhitungan Mean (Rata-rata) dan Standar Deviasi (σ)
     const n = temps.length;
     const mean = temps.reduce((acc, v) => acc + v, 0) / n;
@@ -120,10 +117,10 @@ class PantauPanganAIEngine {
 
     // 6. Penentuan Status Kepatuhan HACCP
     let status = 'NORMAL';
-    const isTempBreached = latestTemp > upperLimit || latestTemp < lowerLimit;
-    const isRhBreached = (zoneSpec.rhMax && latestRh > zoneSpec.rhMax) || (zoneSpec.rhMin && latestRh < zoneSpec.rhMin);
+    const tempBreached = latestTemp > upperLimit || latestTemp < lowerLimit;
+    const rhBreached = (zoneSpec.rhMax && latestRh > zoneSpec.rhMax) || (zoneSpec.rhMin && latestRh < zoneSpec.rhMin);
 
-    if (isTempBreached || isRhBreached) {
+    if (tempBreached || rhBreached) {
       status = 'CRITICAL';
     } else if (absZ > this.zScoreThreshold || (timeToBreachMinutes && timeToBreachMinutes <= 20) || forecast15m > upperLimit) {
       status = 'WARNING';
