@@ -77,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
         maintainAspectRatio: false,
         animation: { duration: 250 },
         interaction: { intersect: false, mode: 'index' },
+        layout: {
+          padding: { left: 6, right: 8, top: 6, bottom: 2 }
+        },
         plugins: {
           legend: {
             display: false
@@ -96,8 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 6 }
           },
           y: {
+            suggestedMin: currentZone ? (currentZone.tempMin - 2) : 0,
+            suggestedMax: currentZone ? (currentZone.tempMax + 5) : 10,
             grid: { color: gridColor },
             ticks: {
+              padding: 6,
               color: textColor,
               font: { family: 'JetBrains Mono', size: 9 },
               callback: value => value + '°C'
@@ -162,6 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
         maintainAspectRatio: false,
         animation: { duration: 250 },
         interaction: { intersect: false, mode: 'index' },
+        layout: {
+          padding: { left: 6, right: 8, top: 6, bottom: 2 }
+        },
         plugins: {
           legend: {
             display: false
@@ -185,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             max: 100,
             grid: { color: gridColor },
             ticks: {
+              padding: 6,
               color: textColor,
               font: { family: 'JetBrains Mono', size: 9 },
               callback: value => value + '%'
@@ -1290,6 +1300,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (shiftLabelEl) {
         shiftLabelEl.textContent = `${dateLabel} | ${shiftLabel}`;
       }
+      const topTimerangeLabelEl = document.getElementById('top-timerange-label');
+      if (topTimerangeLabelEl) {
+        topTimerangeLabelEl.textContent = `${dateLabel} - ${shiftLabel}`;
+      }
 
       closeDatePopover();
       renderTelemetryTable();
@@ -1314,6 +1328,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (shiftLabelEl) {
         shiftLabelEl.textContent = 'Live Telemetri | Semua Shift';
+      }
+      const topTimerangeLabelEl = document.getElementById('top-timerange-label');
+      if (topTimerangeLabelEl) {
+        topTimerangeLabelEl.textContent = 'Realtime - last minute';
       }
 
       closeDatePopover();

@@ -63,27 +63,14 @@
 
       <!-- TIER 1 RIGHT: Quick Actions -->
       <div class="tb-global-right">
-        <!-- Location preset selector (Uji Stand Expo) -->
-        <div class="tb-location-pill" title="Lokasi Pengujian Stand Expo">
-          <select id="select-demo-location" class="location-select font-mono">
-            <option value="expo" selected>📍 Stand Aula Pameran</option>
-            <option value="lab">📍 Lab IoT System</option>
-            <option value="workshop">📍 Uji Lapangan</option>
-          </select>
-        </div>
+        <!-- Hidden demo location & battery for script compatibility -->
+        <span id="select-demo-location" style="display: none;"></span>
+        <span id="top-battery-val" style="display: none;"></span>
 
         <!-- Cloud Sync status indicator -->
         <div class="tb-sync-chip" id="top-chip-cloud" title="Sinkronisasi Cloud Supabase PostgreSQL REST">
           <span class="chip-dot dot-green" id="top-cloud-dot"></span>
           <span id="top-cloud-text"><strong class="font-mono" id="top-cloud-status-val">Supabase (38ms)</strong></span>
-        </div>
-
-        <!-- Power Indicator -->
-        <div class="tb-power-chip" title="Catu Daya Adaptor Eksternal 5V 3A DC">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-          </svg>
-          <span class="font-mono" id="top-battery-val">5V 3A DC</span>
         </div>
 
         <!-- USB Serial Connect Button -->
@@ -140,15 +127,51 @@
           <span id="top-gateway-text">NodeMCU Siaga</span>
         </span>
 
-        <!-- Realtime Timerange Button -->
-        <button class="tb-toolbar-btn font-mono" id="btn-toggle-date-filter-top" title="Pilih Rentang Waktu Telemetri">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <span id="top-timerange-label">Realtime - last minute</span>
-          <span class="tb-btn-arrow">&#x25BC;</span>
-        </button>
+        <!-- Realtime Timerange Button & Floating Popover -->
+        <div class="tb-timerange-container" style="position: relative;">
+          <button class="tb-toolbar-btn font-mono" id="btn-toggle-date-filter-top" title="Pilih Rentang Waktu Telemetri">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="top-timerange-label">Realtime - last minute</span>
+            <span class="tb-btn-arrow">&#x25BC;</span>
+          </button>
+
+          <!-- Popover Dropdown Filter Tanggal & Shift -->
+          <div class="date-filter-popover" id="date-filter-popover" hidden>
+            <div class="popover-header">
+              <span class="popover-title">Filter Tanggal &amp; Shift Operasional</span>
+              <button class="btn-popover-close" id="btn-close-date-popover" aria-label="Tutup">&times;</button>
+            </div>
+            <div class="popover-body">
+              <div class="popover-field">
+                <label for="filter-date-select">Pilih Periode / Tanggal:</label>
+                <select id="filter-date-select" class="popover-select">
+                  <option value="all" selected>Semua Tanggal (Live &amp; Historis)</option>
+                  <option value="today">Hari Ini (Live Streaming Saja)</option>
+                  <option value="24/10/2024">24 Okt 2024 (Data Audit Standar)</option>
+                  <option value="custom">Pilih Tanggal Manual...</option>
+                </select>
+                <input type="date" id="filter-custom-date-input" class="popover-date-input" style="display: none; margin-top: 0.35rem;">
+              </div>
+              <div class="popover-field">
+                <label for="filter-shift-select">Shift Kerja HACCP:</label>
+                <select id="filter-shift-select" class="popover-select">
+                  <option value="all" selected>Semua Shift (24 Jam Penuh)</option>
+                  <option value="pagi_sore">Shift Pagi - Sore (07:00 – 23:00)</option>
+                  <option value="shift1">Shift 1: Pagi (07:00 – 15:00)</option>
+                  <option value="shift2">Shift 2: Siang/Sore (15:00 – 23:00)</option>
+                  <option value="shift3">Shift 3: Malam (23:00 – 07:00)</option>
+                </select>
+              </div>
+            </div>
+            <div class="popover-footer">
+              <button class="btn-popover-reset" id="btn-reset-date-filter">Reset Default</button>
+              <button class="btn-popover-apply" id="btn-apply-date-filter">Terapkan Filter</button>
+            </div>
+          </div>
+        </div>
 
         <!-- Hidden Buzzer Controls for Script Compatibility -->
         <button id="btn-toggle-buzzer-mute" style="display: none;">
@@ -264,9 +287,12 @@
                 <canvas id="sensorTelemetryChart"></canvas>
               </div>
               <div class="tb-chart-footer">
-                <span>Temperature, °C</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span style="display: inline-block; width: 14px; height: 2px; background-color: #38bdf8;"></span>
+                  Temperature, °C
+                </span>
                 <span>avg <strong id="avg-temp">3.50°C</strong></span>
-                <span style="font-size: 0.65rem;">Kepatuhan: <strong id="compliance-rate" class="text-success">100.0%</strong></span>
+                <span id="compliance-rate" style="display: none;">100.0%</span>
               </div>
             </div>
 
@@ -282,9 +308,12 @@
                 <canvas id="humidityTelemetryChart"></canvas>
               </div>
               <div class="tb-chart-footer">
-                <span>Humidity, %</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span style="display: inline-block; width: 14px; height: 2px; background-color: #00e5ff;"></span>
+                  Humidity, %
+                </span>
                 <span>avg <strong id="avg-rh">85.0%</strong></span>
-                <span style="font-size: 0.65rem;">Std Dev: <strong id="std-dev-temp">&plusmn;0.25</strong></span>
+                <span id="std-dev-temp" style="display: none;">&plusmn;0.25</span>
               </div>
             </div>
 
@@ -332,10 +361,7 @@
           <div class="tb-widget-column">
             <!-- Widget 3: Temperature °C Gauge -->
             <div class="card scada-card tb-gauge-card">
-              <div class="tb-card-header">
-                <span class="tb-card-title" id="card-temp-label">TEMPERATURE °C</span>
-                <span id="temp-compliance-badge" style="display: none;">● Normal</span>
-              </div>
+              <span id="temp-compliance-badge" style="display: none;">● Normal</span>
               <div class="tb-gauge-body">
                 <div class="tb-digital-readout">
                   <span class="tb-digital-val font-mono" id="val-current-temp">3.5</span>
@@ -360,19 +386,14 @@
                     <span>COLD</span>
                   </div>
                 </div>
-                <div class="tb-gauge-footer-label">
-                  <span>Batas HACCP:</span>
-                  <span class="font-bold font-mono" id="val-target-temp">0.0 °C ~ 5.0 °C</span>
-                </div>
+                <div class="tb-gauge-bottom-title font-mono" id="card-temp-label">TEMPERATURE °C</div>
+                <span id="val-target-temp" style="display: none;">0.0 °C ~ 5.0 °C</span>
               </div>
             </div>
 
             <!-- Widget 4: Humidity % Gauge -->
             <div class="card scada-card tb-gauge-card">
-              <div class="tb-card-header">
-                <span class="tb-card-title">HUMIDITY %</span>
-                <span id="rh-compliance-badge" style="display: none;">● Ideal</span>
-              </div>
+              <span id="rh-compliance-badge" style="display: none;">● Ideal</span>
               <div class="tb-gauge-body">
                 <div class="tb-digital-readout">
                   <span class="tb-digital-val font-mono" id="val-current-rh">85.0</span>
@@ -397,10 +418,8 @@
                     <span>DRY</span>
                   </div>
                 </div>
-                <div class="tb-gauge-footer-label">
-                  <span>Rentang Aman:</span>
-                  <span class="font-bold font-mono" id="val-target-rh">75% ~ 90% RH</span>
-                </div>
+                <div class="tb-gauge-bottom-title font-mono">HUMIDITY %</div>
+                <span id="val-target-rh" style="display: none;">75% ~ 90% RH</span>
               </div>
             </div>
           </div>
@@ -409,69 +428,36 @@
           <div class="tb-widget-column">
             <div class="card scada-card tb-table-widget">
               <div class="tb-card-header">
-                <span class="tb-card-title">New Timeseries table</span>
+                <div class="tb-table-title-group">
+                  <span class="tb-card-title">New Timeseries table</span>
+                  <span class="tb-table-subtitle font-mono">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Realtime - last 30 days
+                  </span>
+                </div>
                 <div class="tb-card-actions">
-                  <span class="tb-icon-action" title="Cari data">&#x1F50D;</span>
+                  <div class="tb-search-input-wrap">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="filter-telemetry-search" placeholder="Cari..." class="tb-search-input">
+                  </div>
                   <span class="tb-icon-action" title="Full Widget">&#x26F6;</span>
                 </div>
               </div>
-              <div class="tb-table-header-controls">
-                <div class="tb-search-input-wrap">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                  <input type="text" id="filter-telemetry-search" placeholder="Cari sensor, catatan..." class="tb-search-input">
-                </div>
+
+              <!-- Hidden compatibility elements for search/filter and shift label -->
+              <div style="display: none;">
                 <div class="toolbar-filter-pills">
-                  <button class="filter-pill active" data-filter="all" id="btn-filter-all">Semua</button>
-                  <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal">Normal (0)</button>
-                  <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning">Peringatan (0)</button>
+                  <button class="filter-pill active" data-filter="all" id="btn-filter-all"></button>
+                  <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal"></button>
+                  <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning"></button>
                 </div>
-                <div class="date-shift-container">
-                  <div class="toolbar-date-shift" id="btn-toggle-date-filter" role="button" tabindex="0" title="Filter Tanggal &amp; Shift Operasional">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    <span class="date-shift-text font-mono" id="current-shift-label">Live | Shift</span>
-                  </div>
-                  <!-- Popover Dropdown Filter Tanggal & Shift -->
-                  <div class="date-filter-popover" id="date-filter-popover" hidden>
-                    <div class="popover-header">
-                      <span class="popover-title">Filter Tanggal &amp; Shift Operasional</span>
-                      <button class="btn-popover-close" id="btn-close-date-popover" aria-label="Tutup">&times;</button>
-                    </div>
-                    <div class="popover-body">
-                      <div class="popover-field">
-                        <label for="filter-date-select">Pilih Periode / Tanggal:</label>
-                        <select id="filter-date-select" class="popover-select">
-                          <option value="all" selected>Semua Tanggal (Live &amp; Historis)</option>
-                          <option value="today">Hari Ini (Live Streaming Saja)</option>
-                          <option value="24/10/2024">24 Okt 2024 (Data Audit Standar)</option>
-                          <option value="custom">Pilih Tanggal Manual...</option>
-                        </select>
-                        <input type="date" id="filter-custom-date-input" class="popover-date-input" style="display: none; margin-top: 0.35rem;">
-                      </div>
-                      <div class="popover-field">
-                        <label for="filter-shift-select">Shift Kerja HACCP:</label>
-                        <select id="filter-shift-select" class="popover-select">
-                          <option value="all" selected>Semua Shift (24 Jam Penuh)</option>
-                          <option value="pagi_sore">Shift Pagi - Sore (07:00 – 23:00)</option>
-                          <option value="shift1">Shift 1: Pagi (07:00 – 15:00)</option>
-                          <option value="shift2">Shift 2: Siang/Sore (15:00 – 23:00)</option>
-                          <option value="shift3">Shift 3: Malam (23:00 – 07:00)</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="popover-footer">
-                      <button class="btn-popover-reset" id="btn-reset-date-filter">Reset Default</button>
-                      <button class="btn-popover-apply" id="btn-apply-date-filter">Terapkan Filter</button>
-                    </div>
-                  </div>
-                </div>
+                <div id="btn-toggle-date-filter"><span id="current-shift-label">Live | Shift</span></div>
               </div>
               <div class="tb-table-scroll">
                 <table class="scada-table">
