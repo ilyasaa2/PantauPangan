@@ -198,8 +198,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .tb-global-left {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  flex-shrink: 0;
+  gap: 1.25rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .tb-brand {
@@ -209,6 +211,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   text-decoration: none;
   color: #ffffff;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .tb-brand:hover {
@@ -233,6 +236,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   gap: 0.5rem;
   font-size: 0.78rem;
   color: #9cb5d9;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .tb-crumb-item {
@@ -240,11 +246,25 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   align-items: center;
   gap: 0.4rem;
   color: #cbd5e1;
+  flex-shrink: 0;
 }
 
 .tb-crumb-item.current {
   color: #ffffff;
   font-weight: 600;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-crumb-item.current span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 380px;
 }
 
 .tb-crumb-item svg {
@@ -256,14 +276,15 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: #64748b;
   font-weight: 400;
   font-size: 0.7rem;
+  flex-shrink: 0;
 }
 
 /* Tier 1 Right Actions & User Profile */
 .tb-global-right {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-shrink: 0;
+  gap: 0.5rem;
+  flex: 0 0 auto;
 }
 
 .tb-location-pill select {
@@ -294,6 +315,13 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: 0.7rem;
   color: #e2e8f0;
   white-space: nowrap;
+}
+
+@media (max-width: 1350px) {
+  .tb-location-pill,
+  .tb-power-chip {
+    display: none;
+  }
 }
 
 .chip-dot {
