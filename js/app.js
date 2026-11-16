@@ -999,7 +999,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`Zona aktif: ${currentZone.name}`);
   }
 
-  // Event listener tombol navigasi sidebar
+  // Event listener tombol navigasi sidebar ThingsBoard
   const sidebarButtons = document.querySelectorAll('.sidebar-nav .nav-item');
   sidebarButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1007,26 +1007,59 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
 
       const view = btn.getAttribute('data-view');
+      const action = btn.getAttribute('data-action');
       const zone = btn.getAttribute('data-zone');
+
+      const breadcrumbSub = document.getElementById('header-breadcrumb-sub');
+      const toolbarTitle = document.getElementById('tb-dashboard-title');
 
       if (view === 'monitoring') {
         switchView('monitoring');
+        if (breadcrumbSub) breadcrumbSub.textContent = 'Arduino DHT22: Temperature & Humidity Demo Dashboard';
+        if (toolbarTitle) toolbarTitle.textContent = 'Arduino DHT22: Temperature & Humidity Demo Dashboard';
         if (zone) setActiveZone(zone);
       } else if (view === 'audit') {
         switchView('audit');
+        if (breadcrumbSub) breadcrumbSub.textContent = 'HACCP Digital Audit Trail & Cryptographic Verification';
+        if (toolbarTitle) toolbarTitle.textContent = 'HACCP Digital Audit Trail';
         renderAuditTable();
       } else if (view === 'cloud') {
         switchView('cloud');
+        if (breadcrumbSub) breadcrumbSub.textContent = 'External Cloud Database Inspector (Supabase PostgreSQL)';
+        if (toolbarTitle) toolbarTitle.textContent = 'External Cloud Database Inspector';
         if (typeof fetchCloudStatus === 'function') fetchCloudStatus();
         if (typeof fetchCloudLogs === 'function') fetchCloudLogs();
       } else if (view === 'gateway') {
         switchView('gateway');
+        if (breadcrumbSub) breadcrumbSub.textContent = 'Hardware & Gateway Health (NodeMCU ESP-12E)';
+        if (toolbarTitle) toolbarTitle.textContent = 'Hardware & Gateway Health';
         if (window.appMQTT && window.appMQTT.refreshTerminalUI) {
           window.appMQTT.refreshTerminalUI();
         }
+      } else if (action === 'rules') {
+        showToast('Rule Chains: Engine HACCP aktif (Ambang Batas Chilled & Deep Freezer)');
+      } else if (action === 'customers') {
+        showToast('Customers: Tenant Administrator / Auditor BPOM RI');
+      } else if (action === 'assets') {
+        showToast('Assets: Cold Storage Facility Unit A1 (Active)');
+      } else if (action === 'widgets') {
+        showToast('Widgets Library: 6 Active Widgets (Charts, Gauges, Table, GPIO)');
       }
     });
   });
+
+  // Fullscreen Handlers
+  function toggleFullScreenMode() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+  const btnFs1 = document.getElementById('btn-fullscreen-toggle');
+  const btnFs2 = document.getElementById('btn-tb-fullscreen');
+  if (btnFs1) btnFs1.addEventListener('click', toggleFullScreenMode);
+  if (btnFs2) btnFs2.addEventListener('click', toggleFullScreenMode);
 
   // ==========================================================================
   // 9. Filter & Search Toolbar Tabel Streaming
@@ -1180,6 +1213,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectFilterShift = document.getElementById('filter-shift-select');
   const shiftLabelEl = document.getElementById('current-shift-label');
 
+  const btnToggleDateFilterTop = document.getElementById('btn-toggle-date-filter-top');
+
   function openDatePopover() {
     if (datePopover) datePopover.removeAttribute('hidden');
   }
@@ -1190,6 +1225,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnToggleDateFilter) {
     btnToggleDateFilter.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (datePopover.hasAttribute('hidden')) {
+        openDatePopover();
+      } else {
+        closeDatePopover();
+      }
+    });
+  }
+
+  if (btnToggleDateFilterTop) {
+    btnToggleDateFilterTop.addEventListener('click', (e) => {
       e.stopPropagation();
       if (datePopover.hasAttribute('hidden')) {
         openDatePopover();

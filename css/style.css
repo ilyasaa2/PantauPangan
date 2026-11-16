@@ -169,103 +169,124 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .subtext-muted { color: var(--text-muted); font-size: 0.72rem; }
 
 /* ==========================================================================
-   1. TOPBAR HEADER (THINGSBOARD NAVY HEADER)
+   1. TWO-TIER THINGSBOARD HEADER BAR
+   Tier 1: Global Platform Bar (#1b3860) - Logo, Breadcrumbs, Tenant Admin
+   Tier 2: Dashboard Context Toolbar (#204576) - Title, Preset, Device, Time Filter
    ========================================================================== */
-.scada-topbar {
+.tb-header-container {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+/* --- TIER 1: GLOBAL PLATFORM BAR --- */
+.tb-global-header {
+  height: 48px;
   background-color: var(--tb-header-bg);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  gap: 0.75rem;
+  padding: 0 1.25rem 0 1rem;
   color: #ffffff;
-  overflow: hidden;
+  gap: 1rem;
 }
 
-.topbar-left {
+.tb-global-left {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 1.5rem;
   flex-shrink: 0;
 }
 
-/* Brand & Breadcrumbs */
-.brand-block {
+.tb-brand {
   display: flex;
   align-items: center;
   gap: 0.65rem;
   text-decoration: none;
+  color: #ffffff;
+  user-select: none;
 }
 
-.brand-icon-wrap {
-  width: 30px;
-  height: 30px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #38bdf8;
+.tb-brand:hover {
+  opacity: 0.95;
+}
+
+.tb-logo-icon {
   flex-shrink: 0;
 }
 
+.tb-logo-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+/* Breadcrumbs (Dashboards > Dashboard Name) */
 .tb-breadcrumbs {
   display: flex;
-  flex-direction: column;
-}
-
-.tb-breadcrumb-trail {
-  display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.65rem;
-  color: #93c5fd;
-  font-family: var(--font-mono);
-  line-height: 1.2;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #9cb5d9;
 }
 
-.tb-breadcrumb-trail a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.tb-breadcrumb-trail a:hover {
-  color: #ffffff;
-}
-
-.tb-dashboard-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-
-/* Topbar Chips / Selector Bar */
-.topbar-chips {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  overflow: hidden;
-  flex-shrink: 1;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.topbar-chips::-webkit-scrollbar {
-  display: none;
-}
-
-.status-chip {
+.tb-crumb-item {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  color: #cbd5e1;
+}
+
+.tb-crumb-item.current {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.tb-crumb-item svg {
+  color: #9cb5d9;
+  flex-shrink: 0;
+}
+
+.tb-crumb-separator {
+  color: #64748b;
+  font-weight: 400;
+  font-size: 0.7rem;
+}
+
+/* Tier 1 Right Actions & User Profile */
+.tb-global-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.tb-location-pill select {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xs);
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.tb-location-pill select option {
+  background-color: var(--tb-header-bg);
+  color: #ffffff;
+}
+
+.tb-sync-chip,
+.tb-power-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.25rem 0.55rem;
   background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -273,24 +294,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: 0.7rem;
   color: #e2e8f0;
   white-space: nowrap;
-}
-
-.status-chip strong {
-  color: #ffffff;
-}
-
-.location-select {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.location-select option {
-  background-color: var(--tb-header-bg);
-  color: #ffffff;
 }
 
 .chip-dot {
@@ -305,14 +308,299 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   box-shadow: 0 0 8px #10b981;
 }
 
-/* Topbar Actions */
-.topbar-actions {
-  display: flex;
+.dot-amber {
+  background-color: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+
+.tb-btn-global-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tb-btn-global-action:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.tb-btn-global-action.connected {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #6ee7b7;
+}
+
+.tb-btn-global-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #0284c7;
+  border: 1px solid #38bdf8;
+  color: #ffffff;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.tb-btn-global-primary:hover {
+  background-color: #0369a1;
+}
+
+.tb-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xs);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tb-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .icon-sun { display: block; }
+[data-theme="dark"] .icon-moon { display: none; }
+[data-theme="light"] .icon-sun { display: none; }
+[data-theme="light"] .icon-moon { display: block; }
+
+.tb-user-profile {
+  display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  padding: 0.25rem 0.65rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xs);
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.tb-user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38bdf8;
+}
+
+.tb-username {
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+/* --- TIER 2: DASHBOARD CONTEXT TOOLBAR --- */
+.tb-dashboard-toolbar {
+  height: 48px;
+  background-color: #204576;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem 0 1rem;
+  color: #ffffff;
+  gap: 1rem;
+}
+
+.tb-toolbar-left {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 1;
+}
+
+.tb-toolbar-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.tb-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   flex-shrink: 0;
 }
 
+.tb-toolbar-select-wrap select {
+  background-color: #17345b;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-radius: var(--radius-xs);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  max-width: 250px;
+}
+
+.tb-toolbar-select-wrap select option {
+  background-color: #17345b;
+  color: #ffffff;
+}
+
+.tb-toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  user-select: none;
+}
+
+.tb-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.tb-toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.tb-btn-arrow {
+  font-size: 0.6rem;
+  color: #9cb5d9;
+}
+
+.tb-toolbar-icon-action {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xs);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tb-toolbar-icon-action:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.tb-toolbar-icon-action.muted {
+  background-color: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   2. BODY CONTAINER & SIDEBAR (THINGSBOARD AUTHENTIC NAVIGATION RAIL)
+   ========================================================================== */
+.scada-body-container {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 96px);
+}
+
+.scada-sidebar.tb-nav-rail {
+  width: 195px;
+  background-color: var(--tb-sidebar-bg);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 0;
+  flex-shrink: 0;
+  color: #9cb5d9;
+  gap: 2px;
+  user-select: none;
+}
+
+.scada-sidebar.tb-nav-rail .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1.15rem;
+  color: #8fa7c7;
+  font-size: 0.73rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-left: 3px solid transparent;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  text-align: left;
+  line-height: 1;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item svg {
+  color: #8fa7c7;
+  flex-shrink: 0;
+  transition: color 0.12s ease;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item:hover svg {
+  color: #ffffff;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item.active {
+  background-color: var(--tb-sidebar-active);
+  color: #ffffff;
+  font-weight: 600;
+  border-left-color: #38bdf8;
+}
+
+.scada-sidebar.tb-nav-rail .nav-item.active svg {
+  color: #38bdf8;
+}
+
+/* Fallback legacy button styles */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -358,198 +646,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-color: rgba(16, 185, 129, 0.2);
   border-color: #10b981;
   color: #6ee7b7;
-}
-
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-xs);
-  color: #ffffff;
-}
-
-.btn-icon:hover {
-  background-color: rgba(255, 255, 255, 0.18);
-}
-
-[data-theme="dark"] .icon-sun { display: block; }
-[data-theme="dark"] .icon-moon { display: none; }
-[data-theme="light"] .icon-sun { display: none; }
-[data-theme="light"] .icon-moon { display: block; }
-
-/* ==========================================================================
-   2. BODY CONTAINER & SIDEBAR (THINGSBOARD DEEP BLUE RAIL)
-   ========================================================================== */
-.scada-body-container {
-  display: flex;
-  flex: 1;
-  min-height: calc(100vh - 52px);
-}
-
-.scada-sidebar {
-  width: 215px;
-  background-color: var(--tb-sidebar-bg);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  padding: 0.85rem 0.6rem;
-  flex-shrink: 0;
-  gap: 0.75rem;
-  color: #cbd5e1;
-}
-
-.sidebar-section-label {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0 0.5rem;
-}
-
-/* Plant Card */
-.sidebar-plant-card {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.65rem;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-xs);
-}
-
-.plant-card-icon {
-  width: 28px;
-  height: 28px;
-  background-color: rgba(2, 132, 199, 0.15);
-  border: 1px solid rgba(2, 132, 199, 0.3);
-  border-radius: var(--radius-xs);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-cyan);
-  flex-shrink: 0;
-}
-
-.plant-card-info {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.plant-card-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #f8fafc;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.plant-card-sub {
-  font-size: 0.65rem;
-  color: #94a3b8;
-  line-height: 1.2;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.75rem;
-  border-radius: var(--radius-xs);
-  color: #94a3b8;
-  font-size: 0.78rem;
-  font-weight: 500;
-  text-align: left;
-  border-left: 3px solid transparent;
-  line-height: 1.25;
-}
-
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
-}
-
-.nav-item.active {
-  background-color: var(--tb-sidebar-active);
-  color: #ffffff;
-  font-weight: 600;
-  border-left-color: #38bdf8;
-}
-
-.nav-item.active svg {
-  color: #38bdf8;
-}
-
-/* Sidebar Hardware Pod */
-.sidebar-footer {
-  margin-top: auto;
-}
-
-.footer-status-card {
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-xs);
-  padding: 0.65rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.68rem;
-}
-
-.footer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.footer-label {
-  font-family: var(--font-mono);
-  color: #64748b;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-}
-
-.footer-val {
-  color: #cbd5e1;
-}
-
-.badge-pill-green {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: #34d399;
-  background-color: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 0.1rem 0.35rem;
-  border-radius: var(--radius-xs);
-}
-
-.footer-divider {
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.08);
-  margin: 0.25rem 0;
-}
-
-.footer-meta {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: #64748b;
 }
 
 /* ==========================================================================

@@ -22,101 +22,138 @@
 </head>
 <body class="scada-layout">
 
-  <!-- 1. HEADER BAR UTAMA (SCADA TOPBAR) -->
-  <header class="scada-topbar">
-    <div class="topbar-left">
-      <div class="brand-block">
-        <div class="brand-icon-wrap" aria-hidden="true">
-          <!-- Cold Chain Thermal Sensor Emblem -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"></path>
-            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+  <!-- 1. TWO-TIER THINGSBOARD HEADER BAR -->
+  <header class="tb-header-container">
+    <!-- TIER 1: GLOBAL TOPBAR (DARK NAVY #1b3860) -->
+    <div class="tb-global-header">
+      <div class="tb-global-left">
+        <!-- ThingsBoard Brand Logo -->
+        <a href="#" class="tb-brand" onclick="return false;" title="ThingsBoard Industrial IoT Platform">
+          <svg class="tb-logo-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <!-- Hexagonal Circuit Gear Emblem -->
+            <path d="M12 1.5l8.66 5v11L12 22.5 3.34 17.5v-11L12 1.5zm0 2.31L5.34 7.62v8.76L12 20.19l6.66-3.81V7.62L12 3.81z" fill="#ffffff"/>
+            <circle cx="12" cy="12" r="3" fill="#38bdf8"/>
           </svg>
+          <span class="tb-logo-text">ThingsBoard</span>
+        </a>
+
+        <!-- Global Breadcrumbs -->
+        <div class="tb-breadcrumbs font-mono">
+          <span class="tb-crumb-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+            <span class="tb-crumb-link">Dashboards</span>
+          </span>
+          <span class="tb-crumb-separator">&gt;</span>
+          <span class="tb-crumb-item current">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+            <span id="header-breadcrumb-sub">Arduino DHT22: Temperature &amp; Humidity Demo Dashboard</span>
+          </span>
         </div>
-        <div class="tb-breadcrumbs">
-          <div class="tb-breadcrumb-trail font-mono">
-            <span>Dashboards</span>
-            <span>&gt;</span>
-            <span id="header-breadcrumb-sub">NodeMCU ESP-12E SCADA</span>
+      </div>
+
+      <!-- TIER 1 RIGHT: Quick Actions & Tenant User Profile -->
+      <div class="tb-global-right">
+        <!-- Location preset selector (Uji Stand Expo) -->
+        <div class="tb-location-pill" title="Lokasi Pengujian Stand Expo">
+          <select id="select-demo-location" class="location-select font-mono">
+            <option value="expo" selected>📍 Stand Aula Pameran</option>
+            <option value="lab">📍 Lab IoT System</option>
+            <option value="workshop">📍 Uji Lapangan</option>
+          </select>
+        </div>
+
+        <!-- Cloud Sync status indicator -->
+        <div class="tb-sync-chip" id="top-chip-cloud" title="Sinkronisasi Cloud Supabase PostgreSQL REST">
+          <span class="chip-dot dot-green" id="top-cloud-dot"></span>
+          <span id="top-cloud-text"><strong class="font-mono" id="top-cloud-status-val">Supabase (38ms)</strong></span>
+        </div>
+
+        <!-- Power Indicator -->
+        <div class="tb-power-chip" title="Catu Daya Adaptor Eksternal 5V 3A DC">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+          <span class="font-mono" id="top-battery-val">5V 3A DC</span>
+        </div>
+
+        <!-- USB Serial Connect Button -->
+        <button id="btn-toggle-usb" class="tb-btn-global-action" title="Sambungkan USB Fisik ESP-12E / NodeMCU">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+          <span id="usb-btn-text">Sync</span>
+        </button>
+
+        <!-- Export Official BPOM PDF -->
+        <button id="btn-open-export-pdf" class="tb-btn-global-primary" title="Ekspor Laporan Audit Digital BPOM / HACCP">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Export BPOM PDF</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="tb-icon-btn" aria-label="Ganti Tema Tampilan" title="Ganti Tema (Dark/Light)">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button class="tb-icon-btn" id="btn-fullscreen-toggle" title="Mode Layar Penuh SCADA">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </button>
+
+        <!-- User Profile Pill: tenant administrator -->
+        <div class="tb-user-profile" title="Tenant Administrator">
+          <div class="tb-user-avatar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
           </div>
-          <span class="tb-dashboard-title">PantauPangan SCADA</span>
+          <span class="tb-username">tenant administrator</span>
         </div>
       </div>
     </div>
 
-    <!-- Status & Telemetri Sistem di Baris Atas (Informasi Non-Navigasi) -->
-    <div class="topbar-chips">
-      <div class="status-chip plant-chip" title="Pilih Lokasi Pengujian / Pameran">
-        <select id="select-demo-location" class="location-select font-mono">
-          <option value="expo" selected>📍 Stand Aula Pameran</option>
-          <option value="lab">📍 Lab IoT System</option>
-          <option value="workshop">📍 Uji Lapangan</option>
-        </select>
+    <!-- TIER 2: DASHBOARD CONTEXT TOOLBAR (#204576) -->
+    <div class="tb-dashboard-toolbar">
+      <div class="tb-toolbar-left">
+        <h1 class="tb-toolbar-title" id="tb-dashboard-title">Arduino DHT22: Temperature &amp; Humidity Demo Dashboard</h1>
       </div>
 
-      <div class="status-chip cloud-chip" id="top-chip-cloud" title="Sinkronisasi Database Eksternal Cloud">
-        <span class="chip-dot dot-green" id="top-cloud-dot"></span>
-        <span id="top-cloud-text"><strong class="font-mono" id="top-cloud-status-val">Supabase (38ms)</strong></span>
-      </div>
+      <div class="tb-toolbar-right">
+        <!-- HACCP Entity / Room Preset Dropdown -->
+        <div class="tb-toolbar-select-wrap">
+          <select id="select-active-room-filter" class="tb-toolbar-select font-mono" title="Pilih Standar HACCP">
+            <option value="chilled_room" selected>Arduino DHT22: Temperature &amp; Hu... &#x25BC;</option>
+            <option value="dry_storage">Ruang Ambient (18.0°C ~ 32.0°C) &#x25BC;</option>
+            <option value="frozen_room">Deep Freezer (-22.0°C ~ -18.0°C) &#x25BC;</option>
+          </select>
+        </div>
 
-      <div class="status-chip device-chip" id="top-chip-gateway" title="Koneksi Gateway NodeMCU ESP-12E">
-        <span class="chip-dot dot-green" id="top-gateway-dot"></span>
-        <span id="top-gateway-text"><strong class="font-mono">ESP-12E Siaga</strong></span>
-      </div>
-
-      <div class="status-chip battery-chip" title="Catu Daya Adaptor Eksternal 5V 3A DC">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-        </svg>
-        <span class="font-mono" id="top-battery-val">5V 3A DC</span>
-      </div>
-    </div>
-
-    <!-- Aksi Kanan Topbar: USB Connect, Sync, Tema, Ekspor PDF -->
-    <div class="topbar-actions">
-      <!-- Tombol USB Web Serial & Sync -->
-      <button id="btn-toggle-usb" class="btn btn-tb-outline" title="Sambungkan USB Fisik ESP-12E">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
-        </svg>
-        <span id="usb-btn-text">Sync</span>
-      </button>
-
-      <!-- Tombol Ekspor PDF Resmi BPOM -->
-      <button id="btn-open-export-pdf" class="btn btn-tb-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-        </svg>
-        Export BPOM PDF
-      </button>
-
-      <!-- Toggle Tema Terang/Gelap -->
-      <button id="btn-theme-toggle" class="btn-icon" aria-label="Ganti Tema Tampilan" title="Ganti Tema (Dark/Light)">
-        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"></circle>
-          <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-        </svg>
-        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- 2. CONTAINER UTAMA (SIDEBAR + MAIN VIEW) -->
-  <div class="scada-body-container">
-    
-    <!-- SIDEBAR KIRI (ACTIVE TELEMETRY HUB) -->
-    <aside class="scada-sidebar">
-      <div class="sidebar-section-label">UNIT KONTROL DEMO EXPO</div>
-
-      <!-- Informasi Node Fisik ESP-12E -->
-      <div class="sidebar-plant-card">
-        <div class="plant-card-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Device Selector Chip: ESP8266 NodeMCU -->
+        <div class="tb-toolbar-chip" id="top-chip-gateway" title="Perangkat Keras ESP8266 NodeMCU Siaga">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="4" width="16" height="16" rx="2"></rect>
             <rect x="9" y="9" width="6" height="6"></rect>
             <line x1="9" y1="1" x2="9" y2="4"></line>
@@ -128,70 +165,163 @@
             <line x1="1" y1="9" x2="4" y2="9"></line>
             <line x1="1" y1="14" x2="4" y2="14"></line>
           </svg>
+          <span class="chip-dot dot-green" id="top-gateway-dot"></span>
+          <span id="top-gateway-text">ESP8266 NodeMCU</span>
         </div>
-        <div class="plant-card-info">
-          <span class="plant-card-title">Node ESP-12E Stand</span>
-          <span class="plant-card-sub font-mono">ID: ESP-12E-CCP-01</span>
-        </div>
-      </div>
 
-      <!-- Menu Navigasi Samping Kiri (4 Menu Fungsional) -->
-      <nav class="sidebar-nav" aria-label="Menu Navigasi SCADA">
-        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        <!-- Realtime Timerange Button -->
+        <button class="tb-toolbar-btn font-mono" id="btn-toggle-date-filter-top" title="Pilih Rentang Waktu Telemetri">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span class="nav-text">Live Telemetry &amp; SCADA</span>
+          <span id="top-timerange-label">Realtime - last minute</span>
+          <span class="tb-btn-arrow">&#x25BC;</span>
         </button>
 
-        <button class="nav-item" data-view="audit" id="nav-btn-audit">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Mute Buzzer Button -->
+        <button id="btn-toggle-buzzer-mute" class="tb-toolbar-icon-action" title="Matikan / Nyalakan Suara Buzzer Fisik NodeMCU">
+          <span id="buzzer-btn-icon">🔇</span>
+          <span id="buzzer-btn-text" style="display:none">Mute Buzzer</span>
+        </button>
+
+        <!-- Refresh Telemetry Button -->
+        <button id="btn-refresh-telemetry" class="tb-toolbar-icon-action" title="Segarkan Data Real-Time">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+
+        <!-- Download / Export Telemetry Data Button -->
+        <button id="btn-export-csv-excel" class="tb-toolbar-icon-action" title="Unduh CSV/Excel Telemetri">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+
+        <!-- Fullscreen Widget Layout Toggle -->
+        <button class="tb-toolbar-icon-action" id="btn-tb-fullscreen" title="Layar Penuh Dashboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. CONTAINER UTAMA (SIDEBAR + MAIN VIEW) -->
+  <div class="scada-body-container">
+    
+    <!-- SIDEBAR KIRI (THINGSBOARD AUTHENTIC NAVIGATION RAIL) -->
+    <aside class="scada-sidebar tb-nav-rail">
+      <!-- Menu Navigasi Samping Kiri (Exact ThingsBoard Items) -->
+      <nav class="sidebar-nav" aria-label="ThingsBoard Menu">
+        
+        <!-- 1. HOME -->
+        <button class="nav-item" data-view="monitoring" id="nav-btn-home" title="Home Overview">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span class="nav-text">HOME</span>
+        </button>
+
+        <!-- 2. RULE CHAINS -->
+        <button class="nav-item" data-action="rules" id="nav-btn-rules" title="Rule Chains &amp; HACCP Triggers">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="6" cy="6" r="3"></circle>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="12" r="3"></circle>
+            <line x1="8.59" y1="7.49" x2="15.42" y2="10.51"></line>
+            <line x1="8.59" y1="16.51" x2="15.42" y2="13.49"></line>
+          </svg>
+          <span class="nav-text">&lt;&middot;&gt; RULE CHAINS</span>
+        </button>
+
+        <!-- 3. CUSTOMERS -->
+        <button class="nav-item" data-action="customers" id="nav-btn-customers" title="Customers / Auditor Entities">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span class="nav-text">CUSTOMERS</span>
+        </button>
+
+        <!-- 4. ASSETS -->
+        <button class="nav-item" data-action="assets" id="nav-btn-assets" title="Cold Storage Assets">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span class="nav-text">ASSETS</span>
+        </button>
+
+        <!-- 5. DEVICES (Hardware & Gateway Health) -->
+        <button class="nav-item" data-view="gateway" id="nav-btn-gateway" title="ESP8266 NodeMCU &amp; GPIO Devices">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <line x1="9" y1="1" x2="9" y2="4"></line>
+            <line x1="15" y1="1" x2="15" y2="4"></line>
+            <line x1="9" y1="20" x2="9" y2="23"></line>
+            <line x1="15" y1="20" x2="15" y2="23"></line>
+            <line x1="20" y1="9" x2="23" y2="9"></line>
+            <line x1="20" y1="14" x2="23" y2="14"></line>
+            <line x1="1" y1="9" x2="4" y2="9"></line>
+            <line x1="1" y1="14" x2="4" y2="14"></line>
+          </svg>
+          <span class="nav-text">DEVICES</span>
+        </button>
+
+        <!-- 6. ENTITY VIEWS (Cloud Database Inspector) -->
+        <button class="nav-item" data-view="cloud" id="nav-btn-cloud" title="Supabase Cloud Entity Views">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span class="nav-text">ENTITY VIEWS</span>
+        </button>
+
+        <!-- 7. WIDGETS LIBRARY -->
+        <button class="nav-item" data-action="widgets" id="nav-btn-widgets" title="ThingsBoard Widgets Library">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="nav-text">WIDGETS LIBRARY</span>
+        </button>
+
+        <!-- 8. DASHBOARDS (Monitoring Suhu & Telemetri - ACTIVE) -->
+        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring" title="Arduino DHT22 Live Dashboard">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+          </svg>
+          <span class="nav-text">DASHBOARDS</span>
+        </button>
+
+        <!-- 9. AUDIT LOGS (HACCP Digital Audit Trail) -->
+        <button class="nav-item" data-view="audit" id="nav-btn-audit" title="HACCP Compliance Audit Logs">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             <polyline points="9 12 11 14 15 10"></polyline>
           </svg>
-          <span class="nav-text">HACCP Digital Audit Trail</span>
-        </button>
-
-        <button class="nav-item" data-view="cloud" id="nav-btn-cloud">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-          </svg>
-          <span class="nav-text">Cloud Database Inspector</span>
-        </button>
-
-        <button class="nav-item" data-view="gateway" id="nav-btn-gateway">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-          </svg>
-          <span class="nav-text">Hardware &amp; Gateway Health</span>
+          <span class="nav-text">AUDIT LOGS</span>
         </button>
       </nav>
-
-      <!-- Sidebar Footer Status Box -->
-      <div class="sidebar-footer">
-        <div class="footer-status-card">
-          <div class="footer-row">
-            <span class="footer-label">DB ARCHITECTURE:</span>
-            <span class="badge-pill-green" id="sidebar-gateway-status">Dual-Persistence</span>
-          </div>
-          <div class="footer-row">
-            <span class="footer-label">Cloud Target:</span>
-            <span class="font-mono footer-val" id="sidebar-cloud-target">Supabase REST</span>
-          </div>
-          <div class="footer-row">
-            <span class="footer-label">Resilience:</span>
-            <span class="font-mono footer-val" style="color:var(--status-normal);">100% Offline Ready</span>
-          </div>
-          <div class="footer-divider"></div>
-          <div class="footer-meta">
-            <span>v4.2.1-industrial</span>
-            <span>HACCP/BPOM Valid</span>
-          </div>
-        </div>
-      </div>
     </aside>
 
     <!-- AREA KONTEN UTAMA -->
@@ -199,42 +329,6 @@
       
       <!-- VIEW 1: MONITORING SUHU & TELEMETRI RUANG (THINGSBOARD SCADA LAYOUT) -->
       <section id="view-monitoring" class="content-view active">
-        <!-- Controls Bar: HACCP Preset, Mute Buzzer, Refresh, Export CSV -->
-        <div class="tb-controls-bar">
-          <div class="tb-preset-group">
-            <span class="preset-label">STANDAR HACCP:</span>
-            <select id="select-active-room-filter" class="scada-select font-mono" title="Pilih Standar Suhu HACCP Cold Chain">
-              <option value="chilled_room" selected>❄️ Cold Storage (0.0°C ~ 5.0°C) [Standar Utama Cold Chain]</option>
-              <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 32.0°C) [Simulasi Uji Suhu Kamar]</option>
-              <option value="frozen_room">🧊 Deep Freezer (-22.0°C ~ -18.0°C) [Simulasi Uji Beku Ekstrem]</option>
-            </select>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-            <!-- Tombol Mute / Unmute Buzzer Fisik -->
-            <button id="btn-toggle-buzzer-mute" class="btn btn-scada-outline" title="Matikan / Nyalakan Suara Buzzer Fisik NodeMCU">
-              <span id="buzzer-btn-icon">🔇</span>
-              <span id="buzzer-btn-text">Mute Buzzer</span>
-            </button>
-
-            <button id="btn-refresh-telemetry" class="btn btn-scada-outline">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-              </svg>
-              Refresh Data
-            </button>
-
-            <button id="btn-export-csv-excel" class="btn btn-scada-outline">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Ekspor CSV/Excel
-            </button>
-          </div>
-        </div>
-
         <!-- THINGSBOARD MULTI-WIDGET 3-COLUMN GRID -->
         <div class="tb-dashboard-grid">
           
