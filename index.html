@@ -28,14 +28,18 @@
       <div class="brand-block">
         <div class="brand-icon-wrap" aria-hidden="true">
           <!-- Cold Chain Thermal Sensor Emblem -->
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"></path>
             <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
           </svg>
         </div>
-        <div class="brand-text">
-          <span class="brand-title">PantauPangan</span>
-          <span class="brand-subtitle">HACCP COLD CHAIN SCADA</span>
+        <div class="tb-breadcrumbs">
+          <div class="tb-breadcrumb-trail font-mono">
+            <span>Dashboards</span>
+            <span>&gt;</span>
+            <span id="header-breadcrumb-sub">NodeMCU ESP-12E: Temperature &amp; Humidity SCADA</span>
+          </div>
+          <span class="tb-dashboard-title">Arduino DHT22 / ESP-12E SCADA Dashboard</span>
         </div>
       </div>
     </div>
@@ -43,8 +47,8 @@
     <!-- Status & Telemetri Sistem di Baris Atas (Informasi Non-Navigasi) -->
     <div class="topbar-chips">
       <div class="status-chip plant-chip" title="Pilih Lokasi Pengujian / Pameran">
-        <span class="chip-label">LOKASI UJI:</span>
-        <select id="select-demo-location" class="location-select">
+        <span class="chip-label font-mono">LOKASI:</span>
+        <select id="select-demo-location" class="location-select font-mono">
           <option value="expo" selected>📍 Stand Aula Pameran (Utama)</option>
           <option value="lab">📍 Lab IoT &amp; Embedded System</option>
           <option value="workshop">📍 Pengujian Mandiri / Lapangan</option>
@@ -72,7 +76,7 @@
     <!-- Aksi Kanan Topbar: USB Connect, Sync, Tema, Ekspor PDF -->
     <div class="topbar-actions">
       <!-- Tombol USB Web Serial & Sync -->
-      <button id="btn-toggle-usb" class="btn btn-scada-usb" title="Sambungkan USB Fisik ESP-12E">
+      <button id="btn-toggle-usb" class="btn btn-tb-outline" title="Sambungkan USB Fisik ESP-12E">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
         </svg>
@@ -80,7 +84,7 @@
       </button>
 
       <!-- Tombol Ekspor PDF Resmi BPOM -->
-      <button id="btn-open-export-pdf" class="btn btn-scada-primary">
+      <button id="btn-open-export-pdf" class="btn btn-tb-primary">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
@@ -194,28 +198,20 @@
     <!-- AREA KONTEN UTAMA -->
     <main class="scada-main-content">
       
-      <!-- VIEW 1: MONITORING SUHU & TELEMETRI RUANG (DEFAULT) -->
+      <!-- VIEW 1: MONITORING SUHU & TELEMETRI RUANG (THINGSBOARD SCADA LAYOUT) -->
       <section id="view-monitoring" class="content-view active">
-        <!-- Title & Action Bar -->
-        <div class="view-header-bar">
-          <div class="view-title-group">
-            <div class="live-dot-pulse" aria-hidden="true"></div>
-            <div>
-              <h2 class="view-title" id="page-room-title">Live Telemetry &amp; HACCP SCADA</h2>
-              <p class="view-subtitle">Pemantauan real-time sensor telemetri perangkat fisik ESP-12E (Meja Stand Pameran)</p>
-            </div>
+        <!-- Controls Bar: HACCP Preset, Mute Buzzer, Refresh, Export CSV -->
+        <div class="tb-controls-bar">
+          <div class="tb-preset-group">
+            <span class="preset-label">STANDAR HACCP:</span>
+            <select id="select-active-room-filter" class="scada-select font-mono" title="Pilih Standar Suhu HACCP Cold Chain">
+              <option value="chilled_room" selected>❄️ Cold Storage (0.0°C ~ 5.0°C) [Standar Utama Cold Chain]</option>
+              <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 32.0°C) [Simulasi Uji Suhu Kamar]</option>
+              <option value="frozen_room">🧊 Deep Freezer (-22.0°C ~ -18.0°C) [Simulasi Uji Beku Ekstrem]</option>
+            </select>
           </div>
 
-          <div class="view-actions-group">
-            <div class="preset-haccp-wrapper" title="Ubah Standar HACCP untuk Menguji Respon LED &amp; Buzzer ESP">
-              <span class="preset-label">STANDAR HACCP:</span>
-              <select id="select-active-room-filter" class="scada-select font-mono">
-                <option value="chilled_room" selected>❄️ Cold Storage (0.0°C ~ 5.0°C) [Standar Utama Cold Chain]</option>
-                <option value="dry_storage">📦 Ruang Ambient (18.0°C ~ 32.0°C) [Simulasi Uji Suhu Kamar]</option>
-                <option value="frozen_room">🧊 Deep Freezer (-22.0°C ~ -18.0°C) [Simulasi Uji Beku Ekstrem]</option>
-              </select>
-            </div>
-
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
             <!-- Tombol Mute / Unmute Buzzer Fisik -->
             <button id="btn-toggle-buzzer-mute" class="btn btn-scada-outline" title="Matikan / Nyalakan Suara Buzzer Fisik NodeMCU">
               <span id="buzzer-btn-icon">🔇</span>
@@ -229,14 +225,7 @@
               Refresh Data
             </button>
 
-            <button id="btn-toggle-chart-view" class="btn btn-scada-outline" title="Buka/Tutup Visual Grafik & AI Tren">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-              </svg>
-              Grafik &amp; AI
-            </button>
-
-            <button id="btn-export-csv-excel" class="btn btn-scada-primary">
+            <button id="btn-export-csv-excel" class="btn btn-scada-outline">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -247,235 +236,293 @@
           </div>
         </div>
 
-        <!-- 4 KARTU METRIK SCADA UTAMA -->
-        <div class="metrics-scada-grid">
-          <!-- Kartu 1: Suhu Terkini -->
-          <div class="card scada-card">
-            <div class="card-kpi-header">
-              <span class="kpi-label" id="card-temp-label">SUHU TERKINI (CHILLED 1)</span>
-              <span class="badge-status-pill normal" id="temp-compliance-badge">● Normal</span>
-            </div>
-            <div class="card-kpi-body">
-              <span class="kpi-value font-mono" id="val-current-temp">3.5</span>
-              <span class="kpi-unit">°C</span>
-            </div>
-            <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Batas HACCP:</span>
-              <span class="kpi-footer-val font-mono" id="val-target-temp">0.0 °C ~ 5.0 °C</span>
-            </div>
-          </div>
-
-          <!-- Kartu 2: Kelembapan Rerata -->
-          <div class="card scada-card">
-            <div class="card-kpi-header">
-              <span class="kpi-label">KELEMBAPAN RERATA</span>
-              <span class="badge-status-pill normal" id="rh-compliance-badge">● Ideal</span>
-            </div>
-            <div class="card-kpi-body">
-              <span class="kpi-value font-mono" id="val-current-rh">85.0</span>
-              <span class="kpi-unit">% RH</span>
-            </div>
-            <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Rentang Aman:</span>
-              <span class="kpi-footer-val font-mono" id="val-target-rh">75% ~ 90% RH</span>
-            </div>
-          </div>
-
-          <!-- Kartu 3: Gateway & Telemetri -->
-          <div class="card scada-card">
-            <div class="card-kpi-header">
-              <span class="kpi-label">KONTROLER FISIK</span>
-              <span class="badge-status-pill normal" id="node-status-badge">● Standby</span>
-            </div>
-            <div class="card-kpi-body">
-              <span class="kpi-value-text font-bold" id="gateway-tech-title">NodeMCU ESP-12E</span>
-            </div>
-            <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Sampling / Port:</span>
-              <span class="kpi-footer-val font-mono" id="gateway-ping-info">2.0s / Web Serial</span>
-            </div>
-          </div>
-
-          <!-- Kartu 4: Total Data Masuk -->
-          <div class="card scada-card">
-            <div class="card-kpi-header">
-              <span class="kpi-label">LOG TELEMETRI</span>
-              <span class="badge-status-pill blue">Tersimpan</span>
-            </div>
-            <div class="card-kpi-body">
-              <span class="kpi-value font-mono" id="total-telemetry-count">0</span>
-              <span class="kpi-unit">baris</span>
-            </div>
-            <div class="card-kpi-footer">
-              <span class="kpi-footer-muted">Deviasi Terdeteksi:</span>
-              <span class="kpi-footer-val font-mono" id="deviation-count-label">0 Kejadian</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- PANEL GRAFIK & AI (Bisa ditoggle via tombol "Grafik & AI") -->
-        <div class="chart-and-ai-panel" id="chart-ai-container" style="display: none;">
-          <div class="chart-ai-grid">
-            <!-- Grafik Tren -->
-            <div class="card scada-card chart-box">
-              <div class="chart-box-header">
-                <div>
-                  <h3 class="chart-box-title">Tren Suhu Real-Time vs Batas Kritis HACCP</h3>
-                  <p class="chart-box-desc">Monitoring kontinu setiap interval sampling dengan garis batas toleransi BPOM</p>
-                </div>
-                <div class="chart-tags font-mono">
-                  <span>Avg: <strong id="avg-temp">3.50°C</strong></span>
-                  <span>σ: <strong id="std-dev-temp">±0.25°C</strong></span>
-                  <span>Kepatuhan: <strong id="compliance-rate" class="text-success">100.0%</strong></span>
+        <!-- THINGSBOARD MULTI-WIDGET 3-COLUMN GRID -->
+        <div class="tb-dashboard-grid">
+          
+          <!-- KOLOM 1: GRAFIK WAKTU-NYATA (TEMPERATURE & HUMIDITY) & GPIO CONTROL -->
+          <div class="tb-widget-column">
+            <!-- Widget 1: Temperature Chart -->
+            <div class="card scada-card tb-chart-card">
+              <div class="tb-card-header">
+                <span class="tb-card-title">Temperature</span>
+                <div class="tb-card-actions">
+                  <span class="tb-icon-action" title="Full Widget">&#x26F6;</span>
                 </div>
               </div>
-              <div class="chart-canvas-wrapper">
+              <div class="tb-chart-body">
                 <canvas id="sensorTelemetryChart"></canvas>
               </div>
+              <div class="tb-chart-footer">
+                <span>Temperature, °C</span>
+                <span>avg <strong id="avg-temp">3.50°C</strong></span>
+                <span style="font-size: 0.65rem;">Kepatuhan: <strong id="compliance-rate" class="text-success">100.0%</strong></span>
+              </div>
             </div>
 
-            <!-- Panel Diagnostik AI & CAPA -->
-            <div class="card scada-card ai-diagnostic-box">
-              <div class="card-header-clean">
-                <h3 class="chart-box-title">AI Engine: Z-Score &amp; CAPA</h3>
-                <span class="badge-status-pill normal" id="ai-status-badge">Z-Score Normal</span>
-              </div>
-              
-              <div class="ai-stat-row">
-                <span class="subtext-muted">Skor Deviasi Z:</span>
-                <span class="font-mono font-bold" id="val-ai-score">0.25 |Z|</span>
-              </div>
-              <div class="ai-stat-row">
-                <span class="subtext-muted">Prediksi 15 Menit:</span>
-                <span class="font-mono font-bold text-highlight" id="val-ai-prediction">3.6°C (Aman)</span>
-              </div>
-
-              <div class="ai-reasoning-card" id="ai-alert-box">
-                <div class="ai-reason-header">
-                  <span class="font-bold" id="ai-diagnosis-title">Kondisi Pendinginan Normal</span>
-                  <span class="status-pill-small normal" id="ai-box-badge">Stabil</span>
+            <!-- Widget 2: Humidity Level Chart -->
+            <div class="card scada-card tb-chart-card">
+              <div class="tb-card-header">
+                <span class="tb-card-title">Humidity Level</span>
+                <div class="tb-card-actions">
+                  <span class="tb-icon-action" title="Full Widget">&#x26F6;</span>
                 </div>
-                <p class="ai-reason-text" id="ai-diagnosis-desc">
-                  Sirkulasi udara dan siklus kompresor berada dalam batas toleransi. Tidak terdeteksi risiko kerusakan bahan pangan.
-                </p>
-                <div class="ai-time-countdown font-mono" id="ai-time-countdown">Estimasi Aman</div>
               </div>
+              <div class="tb-chart-body">
+                <canvas id="humidityTelemetryChart"></canvas>
+              </div>
+              <div class="tb-chart-footer">
+                <span>Humidity, %</span>
+                <span>avg <strong id="avg-rh">85.0%</strong></span>
+                <span style="font-size: 0.65rem;">Std Dev: <strong id="std-dev-temp">&plusmn;0.25</strong></span>
+              </div>
+            </div>
 
-              <div class="capa-notice-card">
-                <span class="capa-title">Rekomendasi Tindakan Korektif (CAPA):</span>
-                <p class="capa-body" id="capa-action-text">Lanjutkan pemantauan berkala. Tidak diperlukan intervensi mekanis saat ini.</p>
+            <!-- Widget 6: ESP8266 NODEMCU & GPIO Control -->
+            <div class="card scada-card tb-control-card">
+              <div class="tb-card-header">
+                <span class="tb-card-title">ESP8266 NODEMCU &amp; GPIO</span>
+                <div class="tb-card-actions">
+                  <span class="tb-icon-action">&#x26F6;</span>
+                </div>
+              </div>
+              <div class="tb-control-body">
+                <div class="gpio-switch-grid">
+                  <div class="gpio-item">
+                    <div class="gpio-info">
+                      <span class="gpio-pin">GPIO 0 (Pin D3)</span>
+                      <span class="gpio-desc">Buzzer Alarm Fisik</span>
+                    </div>
+                    <label class="tb-switch" title="Toggle Buzzer Alarm Fisik">
+                      <input type="checkbox" id="gpio-buzzer-switch" checked>
+                      <span class="tb-slider"></span>
+                    </label>
+                  </div>
+                  <div class="gpio-item">
+                    <div class="gpio-info">
+                      <span class="gpio-pin">GPIO 12/13/15</span>
+                      <span class="gpio-desc">HACCP Tri-Color LED</span>
+                    </div>
+                    <div class="gpio-led-cluster" title="LED Fisik: Hijau (Normal), Kuning (Warning), Merah (Kritis)">
+                      <span class="led-dot led-green active" id="led-green-indicator" title="GPIO 12: Normal"></span>
+                      <span class="led-dot led-yellow" id="led-yellow-indicator" title="GPIO 13: Warning"></span>
+                      <span class="led-dot led-red" id="led-red-indicator" title="GPIO 15: Critical Breach"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="tb-control-meta font-mono">
+                  <div>Node: <strong id="gateway-tech-title">ESP-12E NodeMCU V3</strong> (<span id="gateway-ping-info">Web Serial / 115200</span>)</div>
+                  <div>Status: <span class="badge-status-pill normal" id="node-status-badge">● Standby</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KOLOM 2: INSTRUMENTASI TANK GAUGE VERTIKAL (TEMPERATURE & HUMIDITY) -->
+          <div class="tb-widget-column">
+            <!-- Widget 3: Temperature °C Gauge -->
+            <div class="card scada-card tb-gauge-card">
+              <div class="tb-card-header">
+                <span class="tb-card-title" id="card-temp-label">TEMPERATURE °C</span>
+                <span class="badge-status-pill normal" id="temp-compliance-badge">● Normal</span>
+              </div>
+              <div class="tb-gauge-body">
+                <div class="tb-digital-readout">
+                  <span class="tb-digital-val font-mono" id="val-current-temp">3.5</span>
+                  <span class="tb-digital-unit">°C</span>
+                </div>
+                <div class="tb-gauge-meter-wrapper">
+                  <div class="tb-gauge-scale-left font-mono">
+                    <span>50</span>
+                    <span>25</span>
+                    <span class="haccp-mark-high">5.0</span>
+                    <span class="haccp-mark-low">0.0</span>
+                    <span>-25</span>
+                  </div>
+                  <div class="tb-gauge-segments" id="temp-gauge-segments" title="Skala Suhu Vertikal 24 Segmen">
+                    <!-- Segmen di-generate oleh JS -->
+                  </div>
+                  <div class="tb-gauge-scale-right font-mono">
+                    <span class="scale-label-danger">CRIT</span>
+                    <span class="scale-label-haccp">MAX</span>
+                    <span class="scale-label-safe">SAFE</span>
+                    <span class="scale-label-haccp">MIN</span>
+                    <span>COLD</span>
+                  </div>
+                </div>
+                <div class="tb-gauge-footer-label">
+                  <span>Batas HACCP:</span>
+                  <span class="font-bold font-mono" id="val-target-temp">0.0 °C ~ 5.0 °C</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Widget 4: Humidity % Gauge -->
+            <div class="card scada-card tb-gauge-card">
+              <div class="tb-card-header">
+                <span class="tb-card-title">HUMIDITY %</span>
+                <span class="badge-status-pill normal" id="rh-compliance-badge">● Ideal</span>
+              </div>
+              <div class="tb-gauge-body">
+                <div class="tb-digital-readout">
+                  <span class="tb-digital-val font-mono" id="val-current-rh">85.0</span>
+                  <span class="tb-digital-unit">%</span>
+                </div>
+                <div class="tb-gauge-meter-wrapper">
+                  <div class="tb-gauge-scale-left font-mono">
+                    <span>100</span>
+                    <span>75</span>
+                    <span>50</span>
+                    <span>25</span>
+                    <span>0</span>
+                  </div>
+                  <div class="tb-gauge-segments" id="rh-gauge-segments" title="Skala Kelembapan Vertikal 24 Segmen">
+                    <!-- Segmen di-generate oleh JS -->
+                  </div>
+                  <div class="tb-gauge-scale-right font-mono">
+                    <span class="scale-label-danger">100%</span>
+                    <span class="scale-label-safe">RH MAX</span>
+                    <span class="scale-label-safe">RH MIN</span>
+                    <span>25%</span>
+                    <span>DRY</span>
+                  </div>
+                </div>
+                <div class="tb-gauge-footer-label">
+                  <span>Rentang Aman:</span>
+                  <span class="font-bold font-mono" id="val-target-rh">75% ~ 90% RH</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KOLOM 3: TIMESERIES TABLE WIDGET (LOG TELEMETRI REAL-TIME) -->
+          <div class="tb-widget-column">
+            <div class="card scada-card tb-table-widget">
+              <div class="tb-card-header">
+                <span class="tb-card-title">New Timeseries table</span>
+                <div class="tb-card-actions">
+                  <span class="tb-icon-action" title="Cari data">&#x1F50D;</span>
+                  <span class="tb-icon-action" title="Full Widget">&#x26F6;</span>
+                </div>
+              </div>
+              <div class="tb-table-header-controls">
+                <div class="tb-search-input-wrap">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="filter-telemetry-search" placeholder="Cari sensor, catatan..." class="tb-search-input">
+                </div>
+                <div class="toolbar-filter-pills">
+                  <button class="filter-pill active" data-filter="all" id="btn-filter-all">Semua</button>
+                  <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal">Normal (0)</button>
+                  <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning">Peringatan (0)</button>
+                </div>
+                <div class="date-shift-container">
+                  <div class="toolbar-date-shift" id="btn-toggle-date-filter" role="button" tabindex="0" title="Filter Tanggal &amp; Shift Operasional">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span class="date-shift-text font-mono" id="current-shift-label">Live | Shift</span>
+                  </div>
+                  <!-- Popover Dropdown Filter Tanggal & Shift -->
+                  <div class="date-filter-popover" id="date-filter-popover" hidden>
+                    <div class="popover-header">
+                      <span class="popover-title">Filter Tanggal &amp; Shift Operasional</span>
+                      <button class="btn-popover-close" id="btn-close-date-popover" aria-label="Tutup">&times;</button>
+                    </div>
+                    <div class="popover-body">
+                      <div class="popover-field">
+                        <label for="filter-date-select">Pilih Periode / Tanggal:</label>
+                        <select id="filter-date-select" class="popover-select">
+                          <option value="all" selected>Semua Tanggal (Live &amp; Historis)</option>
+                          <option value="today">Hari Ini (Live Streaming Saja)</option>
+                          <option value="24/10/2024">24 Okt 2024 (Data Audit Standar)</option>
+                          <option value="custom">Pilih Tanggal Manual...</option>
+                        </select>
+                        <input type="date" id="filter-custom-date-input" class="popover-date-input" style="display: none; margin-top: 0.35rem;">
+                      </div>
+                      <div class="popover-field">
+                        <label for="filter-shift-select">Shift Kerja HACCP:</label>
+                        <select id="filter-shift-select" class="popover-select">
+                          <option value="all" selected>Semua Shift (24 Jam Penuh)</option>
+                          <option value="pagi_sore">Shift Pagi - Sore (07:00 – 23:00)</option>
+                          <option value="shift1">Shift 1: Pagi (07:00 – 15:00)</option>
+                          <option value="shift2">Shift 2: Siang/Sore (15:00 – 23:00)</option>
+                          <option value="shift3">Shift 3: Malam (23:00 – 07:00)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="popover-footer">
+                      <button class="btn-popover-reset" id="btn-reset-date-filter">Reset Default</button>
+                      <button class="btn-popover-apply" id="btn-apply-date-filter">Terapkan Filter</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tb-table-scroll">
+                <table class="scada-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 105px;">Timestamp &darr;</th>
+                      <th style="width: 70px; text-align: right;">Suhu</th>
+                      <th style="width: 70px; text-align: right;">RH</th>
+                      <th style="width: 85px; text-align: center;">Status</th>
+                      <th>Lokasi &amp; Catatan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="telemetry-table-body">
+                    <!-- Entri baris telemetri real-time di-generate dinamis oleh JS -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="scada-table-footer">
+                <div class="footer-count-text" id="telemetry-pagination-info">
+                  Menampilkan 0 data telemetri
+                </div>
+                <div class="pagination-buttons" id="telemetry-pagination-buttons">
+                  <button class="btn-scada-page" id="btn-telem-prev" disabled>Sebelumnya</button>
+                  <button class="btn-scada-page page-num active" disabled>1</button>
+                  <button class="btn-scada-page" id="btn-telem-next" disabled>Selanjutnya</button>
+                </div>
+                <!-- Hidden helper elements -->
+                <span id="total-telemetry-count" style="display: none;">0</span>
+                <span id="deviation-count-label" style="display: none;">0</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- FILTER & SEARCH TOOLBAR -->
-        <div class="table-toolbar-scada">
-          <div class="toolbar-search-box">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="filter-telemetry-search" placeholder="Cari Sensor ID, ruang, catatan..." class="scada-search-input">
+        <!-- FULL-WIDTH DOCK: AI INTELLIGENCE & HACCP COMPLIANCE (WIDGET 7) -->
+        <div class="tb-ai-dock">
+          <div class="ai-dock-col">
+            <span class="ai-dock-title">AI Engine: Z-Score Anomaly Detector</span>
+            <div class="ai-dock-val">
+              <span id="val-ai-score">0.25 |Z|</span>
+              <span class="badge-status-pill normal" id="ai-status-badge">Z-Score Normal</span>
+            </div>
+            <span class="ai-dock-desc" id="ai-diagnosis-desc">
+              Sirkulasi udara dan kompresor beroperasi dalam batas toleransi HACCP. Tidak terdeteksi risiko kerusakan bahan pangan.
+            </span>
           </div>
 
-          <div class="toolbar-filter-pills">
-            <button class="filter-pill active" data-filter="all" id="btn-filter-all">Semua</button>
-            <button class="filter-pill" data-filter="NORMAL" id="btn-filter-normal">Normal (0)</button>
-            <button class="filter-pill" data-filter="WARNING" id="btn-filter-warning">Peringatan (0)</button>
+          <div class="ai-dock-col">
+            <span class="ai-dock-title">Prediksi Termal 15 Menit &amp; Drift Rate</span>
+            <div class="ai-dock-val text-cyan" id="val-ai-prediction">3.6°C (Aman)</div>
+            <span class="ai-dock-desc font-mono" id="ai-time-countdown">Kondisi Termal Terkendali</span>
           </div>
 
-          <div class="date-shift-container">
-            <div class="toolbar-date-shift" id="btn-toggle-date-filter" role="button" tabindex="0" title="Klik untuk mengubah filter tanggal & shift kerja">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span class="date-shift-text" id="current-shift-label">Live Telemetri | Semua Shift</span>
-              <button class="btn-icon-filter" id="btn-icon-filter" title="Atur Filter Shift">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                </svg>
-              </button>
-            </div>
-
-            <!-- Popover Dropdown Filter Tanggal & Shift -->
-            <div class="date-filter-popover" id="date-filter-popover" hidden>
-              <div class="popover-header">
-                <span class="popover-title">Filter Tanggal &amp; Shift Operasional</span>
-                <button class="btn-popover-close" id="btn-close-date-popover" aria-label="Tutup">&times;</button>
-              </div>
-              <div class="popover-body">
-                <div class="popover-field">
-                  <label for="filter-date-select">Pilih Periode / Tanggal:</label>
-                  <select id="filter-date-select" class="popover-select">
-                    <option value="all" selected>Semua Tanggal (Live &amp; Historis)</option>
-                    <option value="today">Hari Ini (Live Streaming Saja)</option>
-                    <option value="24/10/2024">24 Okt 2024 (Data Audit Standar)</option>
-                    <option value="custom">Pilih Tanggal Manual...</option>
-                  </select>
-                  <input type="date" id="filter-custom-date-input" class="popover-date-input" style="display: none; margin-top: 0.35rem;">
-                </div>
-
-                <div class="popover-field">
-                  <label for="filter-shift-select">Shift Kerja HACCP:</label>
-                  <select id="filter-shift-select" class="popover-select">
-                    <option value="all" selected>Semua Shift (24 Jam Penuh)</option>
-                    <option value="pagi_sore">Shift Pagi - Sore (07:00 – 23:00)</option>
-                    <option value="shift1">Shift 1: Pagi (07:00 – 15:00)</option>
-                    <option value="shift2">Shift 2: Siang/Sore (15:00 – 23:00)</option>
-                    <option value="shift3">Shift 3: Malam (23:00 – 07:00)</option>
-                  </select>
-                </div>
-              </div>
-              <div class="popover-footer">
-                <button class="btn-popover-reset" id="btn-reset-date-filter">Reset Default</button>
-                <button class="btn-popover-apply" id="btn-apply-date-filter">Terapkan Filter</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TABEL STREAMING TELEMETRI SCADA (HACCP LOG STREAMING) -->
-        <div class="card scada-card table-wrapper-scada">
-          <div class="table-responsive">
-            <table class="scada-table">
-              <thead>
-                <tr>
-                  <th style="width: 130px;">WAKTU / JAM</th>
-                  <th style="width: 170px;">LOKASI RUANGAN</th>
-                  <th style="width: 120px;">SENSOR ID</th>
-                  <th style="width: 90px; text-align: right;">SUHU</th>
-                  <th style="width: 110px; text-align: right;">KELEMBAPAN</th>
-                  <th style="width: 140px; text-align: center;">BATAS NORMAL</th>
-                  <th style="width: 110px; text-align: center;">STATUS</th>
-                  <th>CATATAN / TINDAKAN</th>
-                </tr>
-              </thead>
-              <tbody id="telemetry-table-body">
-                <!-- Entri baris telemetri real-time di-generate dinamis oleh JS -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Pagination Footer -->
-          <div class="scada-table-footer">
-            <div class="footer-count-text" id="telemetry-pagination-info">
-              Menampilkan 0 data telemetri
-            </div>
-            <div class="footer-controls">
-              <div class="rows-select-wrap">
-                <span class="subtext-muted">BARIS:</span>
-                <span class="font-mono font-bold">10</span>
-              </div>
-              <div class="pagination-buttons" id="telemetry-pagination-buttons">
-                <button class="btn-scada-page" id="btn-telem-prev" disabled>Sebelumnya</button>
-                <button class="btn-scada-page page-num active" disabled>1</button>
-                <button class="btn-scada-page" id="btn-telem-next" disabled>Selanjutnya</button>
-              </div>
-            </div>
+          <div class="ai-dock-col">
+            <span class="ai-dock-title">Diagnosis Penyebab &amp; Rekomendasi CAPA</span>
+            <div class="font-bold text-main" id="ai-diagnosis-title">Kondisi Pendinginan Normal</div>
+            <p class="ai-dock-desc" id="capa-action-text">Lanjutkan pemantauan berkala. Tidak diperlukan intervensi mekanis saat ini.</p>
+            <!-- Hidden helper elements to maintain script compatibility -->
+            <span id="ai-box-badge" style="display: none;">Stabil</span>
+            <div id="ai-alert-box" style="display: none;"></div>
+            <div id="chart-ai-container" style="display: none;"></div>
+            <button id="btn-toggle-chart-view" style="display: none;"></button>
           </div>
         </div>
       </section>

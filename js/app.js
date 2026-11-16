@@ -16,10 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const telemetryPageSize = 10;
 
   // ==========================================================================
-  // 1. Inisialisasi Chart.js (Batas Kritis HACCP & Real-time Drift)
+  // 1. Inisialisasi Chart.js Dual-Widget (Temperature & Humidity ThingsBoard)
   // ==========================================================================
   const chartCanvas = document.getElementById('sensorTelemetryChart');
+  const humidityCanvas = document.getElementById('humidityTelemetryChart');
   let telemetryChart = null;
+  let humidityChart = null;
 
   function initChart() {
     if (!chartCanvas || typeof Chart === 'undefined') return;
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const temps = dataPoints.map(d => d.temperature);
 
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const gridColor = isDark ? '#243042' : '#dce7ee';
+    const gridColor = isDark ? '#1e3352' : '#cbd7e4';
     const textColor = isDark ? '#94a3b8' : '#64748b';
 
     telemetryChart = new Chart(ctx, {
@@ -42,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             label: 'Suhu Terukur (°C)',
             data: temps,
-            borderColor: '#0284c7',
-            backgroundColor: 'rgba(2, 132, 199, 0.08)',
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.08)',
             borderWidth: 2,
             fill: true,
-            tension: 0.3,
+            tension: 0.25,
             pointRadius: 2,
             pointHoverRadius: 5
           },
@@ -77,18 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
         interaction: { intersect: false, mode: 'index' },
         plugins: {
           legend: {
-            display: true,
-            labels: {
-              boxWidth: 12,
-              color: textColor,
-              font: { family: 'Plus Jakarta Sans', size: 11 }
-            }
+            display: false
           },
           tooltip: {
-            backgroundColor: isDark ? '#131923' : '#ffffff',
+            backgroundColor: isDark ? '#101c2e' : '#ffffff',
             titleColor: isDark ? '#f1f5f9' : '#0f172a',
             bodyColor: isDark ? '#94a3b8' : '#475569',
-            borderColor: isDark ? '#243042' : '#cbd5e1',
+            borderColor: isDark ? '#1e3352' : '#cbd5e1',
             borderWidth: 1,
             padding: 8
           }
@@ -96,13 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
         scales: {
           x: {
             grid: { color: gridColor },
-            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } }
+            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 6 }
           },
           y: {
             grid: { color: gridColor },
             ticks: {
               color: textColor,
-              font: { family: 'JetBrains Mono', size: 10 },
+              font: { family: 'JetBrains Mono', size: 9 },
               callback: value => value + '°C'
             }
           }
@@ -111,7 +108,175 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function initHumidityChart() {
+    if (!humidityCanvas || typeof Chart === 'undefined') return;
+    const ctx = humidityCanvas.getContext('2d');
+    const currentZone = window.appStore.getCurrentZone();
+    const dataPoints = window.appStore.zoneData[window.appStore.currentZoneId] || [];
+
+    const labels = dataPoints.map(d => d.timeLabel);
+    const rhs = dataPoints.map(d => d.humidity);
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? '#1e3352' : '#cbd7e4';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+
+    humidityChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Humidity, %',
+            data: rhs,
+            borderColor: '#00e5ff',
+            backgroundColor: 'rgba(0, 229, 255, 0.08)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.25,
+            pointRadius: 2,
+            pointHoverRadius: 5
+          },
+          {
+            label: 'Batas Max (%)',
+            data: Array(labels.length).fill(currentZone.rhMax || 90),
+            borderColor: '#f59e0b',
+            borderWidth: 1.2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Batas Min (%)',
+            data: Array(labels.length).fill(currentZone.rhMin || 75),
+            borderColor: '#0284c7',
+            borderWidth: 1.2,
+            borderDash: [2, 2],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 250 },
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: isDark ? '#101c2e' : '#ffffff',
+            titleColor: isDark ? '#f1f5f9' : '#0f172a',
+            bodyColor: isDark ? '#94a3b8' : '#475569',
+            borderColor: isDark ? '#1e3352' : '#cbd5e1',
+            borderWidth: 1,
+            padding: 8
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 6 }
+          },
+          y: {
+            min: 0,
+            max: 100,
+            grid: { color: gridColor },
+            ticks: {
+              color: textColor,
+              font: { family: 'JetBrains Mono', size: 9 },
+              callback: value => value + '%'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ==========================================================================
+  // 1b. Inisialisasi Segmentasi Tank Gauge Vertikal 24-Bar ThingsBoard
+  // ==========================================================================
+  const NUM_GAUGE_SEGMENTS = 24;
+
+  function initVerticalGauges() {
+    const tempContainer = document.getElementById('temp-gauge-segments');
+    const rhContainer = document.getElementById('rh-gauge-segments');
+
+    if (tempContainer && tempContainer.children.length === 0) {
+      tempContainer.innerHTML = '';
+      for (let i = NUM_GAUGE_SEGMENTS - 1; i >= 0; i--) {
+        const seg = document.createElement('div');
+        seg.className = 'gauge-bar-segment inactive';
+        seg.dataset.index = i;
+        tempContainer.appendChild(seg);
+      }
+    }
+
+    if (rhContainer && rhContainer.children.length === 0) {
+      rhContainer.innerHTML = '';
+      for (let i = NUM_GAUGE_SEGMENTS - 1; i >= 0; i--) {
+        const seg = document.createElement('div');
+        seg.className = 'gauge-bar-segment inactive';
+        seg.dataset.index = i;
+        rhContainer.appendChild(seg);
+      }
+    }
+  }
+
+  function updateVerticalGauges(temp, humidity, currentZone) {
+    const tempContainer = document.getElementById('temp-gauge-segments');
+    const rhContainer = document.getElementById('rh-gauge-segments');
+
+    // 1. Skala Suhu (-25°C s.d. 50°C, Rentang 75°C)
+    if (tempContainer) {
+      const minScale = -25;
+      const maxScale = 50;
+      const clamped = Math.max(minScale, Math.min(maxScale, temp));
+      const fraction = (clamped - minScale) / (maxScale - minScale);
+      const activeCount = Math.round(fraction * NUM_GAUGE_SEGMENTS);
+
+      let colorClass = 'temp-normal';
+      if (temp < 0) {
+        colorClass = 'temp-cold';
+      } else if (currentZone && temp > currentZone.tempMax) {
+        colorClass = temp > (currentZone.tempMax + 3) ? 'temp-crit' : 'temp-warn';
+      }
+
+      const segments = tempContainer.querySelectorAll('.gauge-bar-segment');
+      segments.forEach(seg => {
+        const idx = parseInt(seg.dataset.index, 10);
+        if (idx < activeCount) {
+          seg.className = `gauge-bar-segment active ${colorClass}`;
+        } else {
+          seg.className = 'gauge-bar-segment inactive';
+        }
+      });
+    }
+
+    // 2. Skala Kelembapan (0% s.d. 100%)
+    if (rhContainer) {
+      const clamped = Math.max(0, Math.min(100, humidity));
+      const fraction = clamped / 100;
+      const activeCount = Math.round(fraction * NUM_GAUGE_SEGMENTS);
+      const colorClass = clamped > 80 ? 'rh-cyan' : 'rh-blue';
+
+      const segments = rhContainer.querySelectorAll('.gauge-bar-segment');
+      segments.forEach(seg => {
+        const idx = parseInt(seg.dataset.index, 10);
+        if (idx < activeCount) {
+          seg.className = `gauge-bar-segment active ${colorClass}`;
+        } else {
+          seg.className = 'gauge-bar-segment inactive';
+        }
+      });
+    }
+  }
+
   initChart();
+  initHumidityChart();
+  initVerticalGauges();
 
   // ==========================================================================
   // 2. Render Tabel Telemetri SCADA Streaming (Persis Desain Gambar)
@@ -191,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     if (items.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8">
+      tbody.innerHTML = `<tr><td colspan="5">
         <div class="table-standby-state">
           <div class="standby-radar" aria-hidden="true"></div>
           <div class="standby-title">Perangkat ESP-12E Siaga (Standby)</div>
@@ -234,24 +399,22 @@ document.addEventListener('DOMContentLoaded', () => {
       tr.innerHTML = `
         <td class="font-mono">
           <div>${row.time}</div>
-          <div style="font-size: 0.68rem; color: var(--text-dim);">${row.date}</div>
+          <div style="font-size: 0.65rem; color: var(--text-dim);">${row.date}</div>
         </td>
-        <td>
-          <span class="table-room-dot">
-            <span class="chip-dot ${row.dotClass}"></span>
-            ${row.roomName}
-          </span>
+        <td class="font-mono font-bold" style="text-align: right; color: ${row.status === 'WARNING' ? 'var(--status-warning)' : 'var(--text-main)'};">
+          ${row.temperature.toFixed(1)}°C
         </td>
-        <td class="font-mono">
-          <span class="sensor-id-pill">${row.sensorId}</span>
+        <td class="font-mono" style="text-align: right; color: var(--accent-cyan);">
+          ${row.humidity.toFixed(1)}%
         </td>
-        <td class="font-mono font-bold" style="text-align: right;">${row.temperature.toFixed(1)} °C</td>
-        <td class="font-mono" style="text-align: right;">${row.humidity.toFixed(1)} % RH</td>
-        <td class="font-mono" style="text-align: center; color: var(--text-dim);">${row.limitLabel}</td>
         <td style="text-align: center;">${statusBadge}</td>
         <td>
-          <div class="notes-cell" title="${row.notes}">
-            ${row.notes}
+          <div style="font-weight: 600; font-size: 0.72rem; color: var(--text-main); display: flex; align-items: center; gap: 0.3rem;">
+            <span class="chip-dot ${row.dotClass}" style="width: 6px; height: 6px;"></span>
+            <span>${row.roomName}</span>
+          </div>
+          <div class="notes-cell font-mono" style="font-size: 0.65rem; color: var(--text-muted);" title="${row.sensorId}: ${row.notes}">
+            ${row.sensorId} &bull; ${row.notes}
           </div>
         </td>
       `;
@@ -457,7 +620,44 @@ document.addEventListener('DOMContentLoaded', () => {
         compRateEl.textContent = `${rate}%`;
         compRateEl.className = rate < 95 ? 'font-mono text-warning' : 'font-mono text-success';
       }
+
+      // Rerata Kelembapan untuk Widget Humidity Level
+      const avgRhEl = document.getElementById('avg-rh');
+      if (avgRhEl && series.length > 0) {
+        const sumRh = series.reduce((acc, d) => acc + (d.humidity || 0), 0);
+        avgRhEl.textContent = `${(sumRh / series.length).toFixed(1)}%`;
+      }
     }
+
+    // Perbarui Tampilan Tank Gauge Vertikal 24 Segmen
+    updateVerticalGauges(latestPoint.temperature, latestPoint.humidity, currentZone);
+
+    // Perbarui Status LED Fisik GPIO 12/13/15
+    const ledGreen = document.getElementById('led-green-indicator');
+    const ledYellow = document.getElementById('led-yellow-indicator');
+    const ledRed = document.getElementById('led-red-indicator');
+    if (ledGreen && ledYellow && ledRed) {
+      ledGreen.classList.remove('active');
+      ledYellow.classList.remove('active');
+      ledRed.classList.remove('active');
+      if (analysisResult.status === 'CRITICAL') {
+        ledRed.classList.add('active');
+      } else if (analysisResult.status === 'WARNING') {
+        ledYellow.classList.add('active');
+      } else {
+        ledGreen.classList.add('active');
+      }
+    }
+  }
+
+  // Inisialisasi tampilan awal meteran instrumen SCADA
+  const initialSeriesData = window.appStore.zoneData[window.appStore.currentZoneId] || [];
+  if (initialSeriesData.length > 0) {
+    const lastPt = initialSeriesData[initialSeriesData.length - 1];
+    const initAnalysis = window.appAI.analyze(initialSeriesData, window.appStore.getCurrentZone());
+    updateDashboardUI(initAnalysis, lastPt);
+  } else {
+    updateVerticalGauges(3.5, 85.0, window.appStore.getCurrentZone());
   }
 
   // ==========================================================================
@@ -552,22 +752,34 @@ document.addEventListener('DOMContentLoaded', () => {
       updateDashboardUI(latestIncomingAnalysis, latestIncomingPoint);
     }
 
-    // Perbarui Chart hanya jika panel grafik sedang terlihat (Hemat GPU/CPU)
-    const chartAiContainer = document.getElementById('chart-ai-container');
-    const isChartVisible = !chartAiContainer || chartAiContainer.style.display !== 'none';
-    if (telemetryChart && isChartVisible) {
+    const monitorView = document.getElementById('view-monitoring');
+    const isMonitorVisible = !monitorView || monitorView.style.display !== 'none';
+
+    // Perbarui Chart Dual-Widget jika tampilan monitoring sedang aktif
+    if (isMonitorVisible) {
       const currentZone = window.appStore.getCurrentZone();
       const series = window.appStore.zoneData[window.appStore.currentZoneId] || [];
-      telemetryChart.data.labels = series.map(d => d.timeLabel);
-      telemetryChart.data.datasets[0].data = series.map(d => d.temperature);
-      telemetryChart.data.datasets[1].data = Array(series.length).fill(currentZone.tempMax);
-      telemetryChart.data.datasets[2].data = Array(series.length).fill(currentZone.tempMin);
-      telemetryChart.update('none');
+      const labels = series.map(d => d.timeLabel);
+
+      if (telemetryChart) {
+        telemetryChart.data.labels = labels;
+        telemetryChart.data.datasets[0].data = series.map(d => d.temperature);
+        telemetryChart.data.datasets[1].data = Array(series.length).fill(currentZone.tempMax);
+        telemetryChart.data.datasets[2].data = Array(series.length).fill(currentZone.tempMin);
+        telemetryChart.update('none');
+      }
+
+      if (humidityChart) {
+        humidityChart.data.labels = labels;
+        humidityChart.data.datasets[0].data = series.map(d => d.humidity);
+        humidityChart.data.datasets[1].data = Array(series.length).fill(currentZone.rhMax || 90);
+        humidityChart.data.datasets[2].data = Array(series.length).fill(currentZone.rhMin || 75);
+        humidityChart.update('none');
+      }
     }
 
     // Render tabel hanya untuk tampilan yang sedang aktif agar hemat siklus render DOM
-    const monitorView = document.getElementById('view-monitoring');
-    if (!monitorView || monitorView.style.display !== 'none') {
+    if (isMonitorVisible) {
       renderTelemetryTable();
     }
 
@@ -768,7 +980,17 @@ document.addEventListener('DOMContentLoaded', () => {
       telemetryChart.data.datasets[1].data = Array(series.length).fill(currentZone.tempMax);
       telemetryChart.data.datasets[2].data = Array(series.length).fill(currentZone.tempMin);
       telemetryChart.update();
+    }
 
+    if (humidityChart && series) {
+      humidityChart.data.labels = series.map(d => d.timeLabel);
+      humidityChart.data.datasets[0].data = series.map(d => d.humidity);
+      humidityChart.data.datasets[1].data = Array(series.length).fill(currentZone.rhMax || 90);
+      humidityChart.data.datasets[2].data = Array(series.length).fill(currentZone.rhMin || 75);
+      humidityChart.update();
+    }
+
+    if (series && series.length > 0) {
       const analysis = window.appAI.analyze(series, currentZone);
       updateDashboardUI(analysis, series[series.length - 1]);
     }
@@ -864,43 +1086,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tombol Kendali Mute / Silence Buzzer Fisik
+  // Tombol Kendali Mute / Silence Buzzer Fisik & Saklar GPIO 0
   let isBuzzerMuted = false;
   const btnBuzzerMute = document.getElementById('btn-toggle-buzzer-mute');
+  const gpioBuzzerSwitch = document.getElementById('gpio-buzzer-switch');
   const buzzerIcon = document.getElementById('buzzer-btn-icon');
   const buzzerText = document.getElementById('buzzer-btn-text');
 
-  if (btnBuzzerMute) {
-    btnBuzzerMute.addEventListener('click', () => {
-      isBuzzerMuted = !isBuzzerMuted;
-      const cmdStr = isBuzzerMuted ? 'MUTE_BUZZER' : 'UNMUTE_BUZZER';
+  function updateBuzzerControlsUI() {
+    if (buzzerIcon) buzzerIcon.textContent = isBuzzerMuted ? '🔊' : '🔇';
+    if (buzzerText) buzzerText.textContent = isBuzzerMuted ? 'Unmute Buzzer' : 'Mute Buzzer';
+    if (btnBuzzerMute) {
+      if (isBuzzerMuted) btnBuzzerMute.classList.add('active');
+      else btnBuzzerMute.classList.remove('active');
+    }
+    if (gpioBuzzerSwitch) {
+      gpioBuzzerSwitch.checked = !isBuzzerMuted;
+    }
+  }
 
+  function setBuzzerMuteState(muted, notify = true) {
+    isBuzzerMuted = muted;
+    const cmdStr = isBuzzerMuted ? 'MUTE_BUZZER' : 'UNMUTE_BUZZER';
+    updateBuzzerControlsUI();
+
+    if (notify) {
       if (isBuzzerMuted) {
-        if (buzzerIcon) buzzerIcon.textContent = '🔊';
-        if (buzzerText) buzzerText.textContent = 'Unmute Buzzer';
-        btnBuzzerMute.classList.add('active');
         showToast('🔇 Buzzer fisik di-mute (senyap)');
       } else {
-        if (buzzerIcon) buzzerIcon.textContent = '🔇';
-        if (buzzerText) buzzerText.textContent = 'Mute Buzzer';
-        btnBuzzerMute.classList.remove('active');
         showToast('🔊 Buzzer fisik aktif normal');
       }
+    }
 
-      // Kirim via USB jika terhubung
-      if (serialService && serialService.isConnected) {
-        serialService.sendCommand(cmdStr);
-      }
+    // Kirim via USB jika terhubung
+    if (serialService && serialService.isConnected) {
+      serialService.sendCommand(cmdStr);
+    }
 
-      // Kirim via Wi-Fi HTTP Gateway
-      fetch('/api/esp/command', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          buzzerMuted: isBuzzerMuted,
-          command: cmdStr
-        })
-      }).catch(() => {});
+    // Kirim via Wi-Fi HTTP Gateway
+    fetch('/api/esp/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        buzzerMuted: isBuzzerMuted,
+        command: cmdStr
+      })
+    }).catch(() => {});
+  }
+
+  if (btnBuzzerMute) {
+    btnBuzzerMute.addEventListener('click', () => {
+      setBuzzerMuteState(!isBuzzerMuted, true);
+    });
+  }
+
+  if (gpioBuzzerSwitch) {
+    gpioBuzzerSwitch.addEventListener('change', () => {
+      // Checked = Buzzer Aktif (Buzzer Not Muted)
+      setBuzzerMuteState(!gpioBuzzerSwitch.checked, true);
     });
   }
 
@@ -1112,16 +1355,24 @@ document.addEventListener('DOMContentLoaded', () => {
       document.documentElement.setAttribute('data-theme', newTheme);
       showToast(`Beralih ke mode ${newTheme === 'dark' ? 'Gelap' : 'Terang'}`);
 
+      const isDark = newTheme === 'dark';
+      const gridColor = isDark ? '#1e3352' : '#cbd7e4';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
       if (telemetryChart) {
-        const isDark = newTheme === 'dark';
-        const gridColor = isDark ? '#243042' : '#dce7ee';
-        const textColor = isDark ? '#94a3b8' : '#64748b';
         telemetryChart.options.scales.x.grid.color = gridColor;
         telemetryChart.options.scales.y.grid.color = gridColor;
         telemetryChart.options.scales.x.ticks.color = textColor;
         telemetryChart.options.scales.y.ticks.color = textColor;
-        telemetryChart.options.plugins.legend.labels.color = textColor;
         telemetryChart.update();
+      }
+
+      if (humidityChart) {
+        humidityChart.options.scales.x.grid.color = gridColor;
+        humidityChart.options.scales.y.grid.color = gridColor;
+        humidityChart.options.scales.x.ticks.color = textColor;
+        humidityChart.options.scales.y.ticks.color = textColor;
+        humidityChart.update();
       }
     });
   }

@@ -1,47 +1,52 @@
 /* ==========================================================================
    PANTAUPANGAN - SCADA COLD CHAIN & INDUSTRIAL IOT CONSOLE
-   Design Direction: Precision Engineering & Industrial Instrumentation
-   Anti-Slop: High Contrast, Purposeful Hierarchy, Zero Fluff
+   Theme Inspiration: ThingsBoard Professional IoT Instrumentation
+   Layout: Multi-Widget SCADA (Dual Time-Series, Digital Tank Gauges, Timeseries Table, GPIO Controller)
    ========================================================================== */
 
 :root {
-   /* --- MODE GELAP INDUSTRIAL (Default SCADA Control Room) --- */
-   --bg-body: #070b12;
-   --bg-card: #0d131f;
-   --bg-card-hover: #121929;
-   --bg-elevated: #131b2c;
-   --bg-inset: #090e17;
+   /* --- MODE GELAP THINGSBOARD (Default SCADA Control Room) --- */
+   --tb-header-bg: #1b3860;
+   --tb-sidebar-bg: #142844;
+   --tb-sidebar-active: #224574;
 
-   --border-color: #1a2436;
-   --border-subtle: #121926;
+   --bg-body: #0a121e;
+   --bg-card: #101c2e;
+   --bg-card-hover: #16243a;
+   --bg-elevated: #152238;
+   --bg-inset: #09101b;
+   --bg-gauge: #060b13;
+
+   --border-color: #1e3352;
+   --border-subtle: #142338;
    --border-focus: #0ea5e9;
-   --border-hover: #26354f;
+   --border-hover: #294770;
 
    --text-main: #f1f5f9;
    --text-secondary: #94a3b8;
    --text-muted: #64748b;
    --text-dim: #475569;
 
-   /* Palette Teknis Fungsional */
+   /* Palette Teknis Fungsional ThingsBoard */
    --accent-cyan: #0ea5e9;
    --accent-cyan-hover: #0284c7;
-   --accent-cyan-glow: rgba(14, 165, 233, 0.15);
+   --accent-cyan-glow: rgba(14, 165, 233, 0.25);
    --accent-blue: #38bdf8;
+   --accent-magenta: #e879f9;
 
    --status-normal: #10b981;
-   --status-normal-bg: rgba(16, 185, 129, 0.12);
-   --status-normal-border: rgba(16, 185, 129, 0.3);
+   --status-normal-bg: rgba(16, 185, 129, 0.14);
+   --status-normal-border: rgba(16, 185, 129, 0.35);
 
    --status-warning: #f59e0b;
-   --status-warning-bg: rgba(245, 158, 11, 0.12);
+   --status-warning-bg: rgba(245, 158, 11, 0.14);
    --status-warning-border: rgba(245, 158, 11, 0.35);
 
    --status-critical: #ef4444;
-   --status-critical-bg: rgba(239, 68, 68, 0.14);
-   --status-critical-border: rgba(239, 68, 68, 0.4);
+   --status-critical-bg: rgba(239, 68, 68, 0.18);
+   --status-critical-border: rgba(239, 68, 68, 0.45);
 
-   --row-warning-bg: rgba(245, 158, 11, 0.06);
-   --row-warning-border: rgba(245, 158, 11, 0.25);
+   --row-warning-bg: rgba(245, 158, 11, 0.08);
 
    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
    --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Consolas, monospace;
@@ -49,24 +54,28 @@
    --radius-xs: 2px;
    --radius-sm: 4px;
    --radius-md: 6px;
-   --radius-lg: 8px;
 
-   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
-   --shadow-popover: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+   --shadow-popover: 0 12px 28px -5px rgba(0, 0, 0, 0.65), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="light"] {
-   /* --- MODE TERANG (Cleanroom Laboratory Console) --- */
-   --bg-body: #f3f5f8;
+   /* --- MODE TERANG THINGSBOARD (Cleanroom Industrial Laboratory) --- */
+   --tb-header-bg: #1c3c6a;
+   --tb-sidebar-bg: #183155;
+   --tb-sidebar-active: #244b82;
+
+   --bg-body: #ebf1f6;
    --bg-card: #ffffff;
    --bg-card-hover: #f8fafc;
-   --bg-elevated: #f8fafc;
-   --bg-inset: #eef2f6;
+   --bg-elevated: #f4f7fb;
+   --bg-inset: #e2eaf2;
+   --bg-gauge: #0b111a;
 
-   --border-color: #cbd5e1;
-   --border-subtle: #e2e8f0;
+   --border-color: #cbd7e4;
+   --border-subtle: #e0e9f2;
    --border-focus: #0284c7;
-   --border-hover: #94a3b8;
+   --border-hover: #9bb2c9;
 
    --text-main: #0f172a;
    --text-secondary: #475569;
@@ -75,7 +84,7 @@
 
    --accent-cyan: #0284c7;
    --accent-cyan-hover: #0369a1;
-   --accent-cyan-glow: rgba(2, 132, 199, 0.1);
+   --accent-cyan-glow: rgba(2, 132, 199, 0.15);
    --accent-blue: #0284c7;
 
    --status-normal: #059669;
@@ -91,10 +100,9 @@
    --status-critical-border: #fecaca;
 
    --row-warning-bg: #fffbeb;
-   --row-warning-border: #fef3c7;
 
-   --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06);
-   --shadow-popover: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+   --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08);
+   --shadow-popover: 0 12px 28px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
 }
 
 /* ==========================================================================
@@ -154,18 +162,18 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .font-bold { font-weight: 700; }
-.text-highlight { color: var(--accent-cyan); }
+.text-cyan { color: var(--accent-cyan); }
 .text-success { color: var(--status-normal); }
 .text-warning { color: var(--status-warning); }
 .text-danger { color: var(--status-critical); }
-.subtext-muted { color: var(--text-muted); font-size: 0.75rem; }
+.subtext-muted { color: var(--text-muted); font-size: 0.72rem; }
 
 /* ==========================================================================
-   1. TOPBAR HEADER (SCADA TOPBAR)
+   1. TOPBAR HEADER (THINGSBOARD NAVY HEADER)
    ========================================================================== */
 .scada-topbar {
-  background-color: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--tb-header-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   height: 52px;
   display: flex;
   align-items: center;
@@ -175,6 +183,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   top: 0;
   z-index: 50;
   gap: 1rem;
+  color: #ffffff;
 }
 
 .topbar-left {
@@ -184,7 +193,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex-shrink: 0;
 }
 
-/* Authentic Cold-Chain Emblem */
+/* Brand & Breadcrumbs */
 .brand-block {
   display: flex;
   align-items: center;
@@ -195,39 +204,47 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .brand-icon-wrap {
   width: 32px;
   height: 32px;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-cyan);
+  color: #38bdf8;
   flex-shrink: 0;
 }
 
-.brand-text {
+.tb-breadcrumbs {
   display: flex;
   flex-direction: column;
 }
 
-.brand-title {
+.tb-breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  color: #93c5fd;
+  font-family: var(--font-mono);
+}
+
+.tb-breadcrumb-trail a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tb-breadcrumb-trail a:hover {
+  color: #ffffff;
+}
+
+.tb-dashboard-title {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: -0.01em;
 }
 
-.brand-subtitle {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  font-weight: 600;
-  color: var(--accent-cyan);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* Topbar Status Strip */
+/* Topbar Chips / Selector Bar */
 .topbar-chips {
   display: flex;
   align-items: center;
@@ -239,44 +256,31 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.25rem 0.6rem;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  padding: 0.25rem 0.65rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-xs);
+  font-size: 0.72rem;
+  color: #e2e8f0;
   white-space: nowrap;
 }
 
 .status-chip strong {
-  color: var(--text-main);
-}
-
-.chip-label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
+  color: #ffffff;
 }
 
 .location-select {
   background: transparent;
   border: none;
-  color: var(--text-main);
-  font-size: 0.75rem;
+  color: #ffffff;
+  font-size: 0.72rem;
   font-weight: 500;
   cursor: pointer;
-  padding-right: 0.25rem;
-}
-
-.location-select:focus {
-  outline: none;
 }
 
 .location-select option {
-  background-color: var(--bg-card);
-  color: var(--text-main);
+  background-color: var(--tb-header-bg);
+  color: #ffffff;
 }
 
 .chip-dot {
@@ -287,22 +291,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .dot-green {
-  background-color: var(--status-normal);
-  box-shadow: 0 0 6px var(--status-normal);
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
 }
-
-.dot-yellow {
-  background-color: var(--status-warning);
-  box-shadow: 0 0 6px var(--status-warning);
-}
-
-.dot-red {
-  background-color: var(--status-critical);
-  box-shadow: 0 0 6px var(--status-critical);
-}
-
-.dot-cyan { background-color: var(--accent-cyan); }
-.dot-blue { background-color: #3b82f6; }
 
 /* Topbar Actions */
 .topbar-actions {
@@ -312,58 +303,44 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex-shrink: 0;
 }
 
-/* Button Standards */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-sm);
+  padding: 0.38rem 0.75rem;
+  border-radius: var(--radius-xs);
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.btn-scada-primary {
-  background-color: var(--accent-cyan);
+.btn-tb-primary {
+  background-color: #0284c7;
   color: #ffffff;
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid #38bdf8;
 }
 
-.btn-scada-primary:hover {
-  background-color: var(--accent-cyan-hover);
-  border-color: var(--accent-cyan-hover);
+.btn-tb-primary:hover {
+  background-color: #0369a1;
 }
 
-.btn-scada-outline {
-  background-color: var(--bg-elevated);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+.btn-tb-outline {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-scada-outline:hover {
-  background-color: var(--bg-card-hover);
-  border-color: var(--border-hover);
+.btn-tb-outline:hover {
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
-.btn-scada-usb {
-  background-color: var(--bg-elevated);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-}
-
-.btn-scada-usb:hover {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-}
-
-.btn-scada-usb.connected {
-  background-color: var(--status-normal-bg);
-  color: var(--status-normal);
-  border-color: var(--status-normal-border);
+.btn-tb-outline.connected {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #6ee7b7;
 }
 
 .btn-icon {
@@ -372,25 +349,23 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-elevated);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
+  color: #ffffff;
 }
 
 .btn-icon:hover {
-  color: var(--text-main);
-  border-color: var(--border-hover);
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Sun/Moon Toggle */
 [data-theme="dark"] .icon-sun { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
 [data-theme="light"] .icon-sun { display: none; }
 [data-theme="light"] .icon-moon { display: block; }
 
 /* ==========================================================================
-   2. BODY CONTAINER & SIDEBAR
+   2. BODY CONTAINER & SIDEBAR (THINGSBOARD DEEP BLUE RAIL)
    ========================================================================== */
 .scada-body-container {
   display: flex;
@@ -398,68 +373,28 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   min-height: calc(100vh - 52px);
 }
 
-/* Sidebar Rail */
 .scada-sidebar {
-  width: 220px;
-  background-color: var(--bg-card);
-  border-right: 1px solid var(--border-color);
+  width: 200px;
+  background-color: var(--tb-sidebar-bg);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 0.85rem 0.65rem;
+  padding: 0.85rem 0.5rem;
   flex-shrink: 0;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  color: #cbd5e1;
 }
 
 .sidebar-section-label {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  color: var(--text-dim);
+  color: #64748b;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0 0.5rem;
 }
 
-/* Physical Node Card */
-.sidebar-plant-card {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-}
-
-.plant-card-icon {
-  color: var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.plant-card-info {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.plant-card-title {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.plant-card-sub {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-}
-
-/* Nav Menu */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -472,76 +407,76 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   align-items: center;
   gap: 0.65rem;
   padding: 0.55rem 0.65rem;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
+  border-radius: var(--radius-xs);
+  color: #94a3b8;
+  font-size: 0.78rem;
   font-weight: 500;
   text-align: left;
   border-left: 2px solid transparent;
 }
 
 .nav-item:hover {
-  background-color: var(--bg-card-hover);
-  color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
 }
 
 .nav-item.active {
-  background-color: var(--bg-elevated);
-  color: var(--text-main);
+  background-color: var(--tb-sidebar-active);
+  color: #ffffff;
   font-weight: 600;
-  border-left-color: var(--accent-cyan);
+  border-left-color: #38bdf8;
 }
 
 .nav-item.active svg {
-  color: var(--accent-cyan);
+  color: #38bdf8;
 }
 
-/* Sidebar Footer */
+/* Sidebar Hardware Pod */
 .sidebar-footer {
   margin-top: auto;
 }
 
 .footer-status-card {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
   padding: 0.65rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  font-size: 0.68rem;
 }
 
 .footer-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.68rem;
 }
 
 .footer-label {
   font-family: var(--font-mono);
-  color: var(--text-dim);
-  font-size: 0.625rem;
+  color: #64748b;
+  font-size: 0.6rem;
   text-transform: uppercase;
 }
 
 .footer-val {
-  color: var(--text-secondary);
+  color: #cbd5e1;
 }
 
 .badge-pill-green {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
-  color: var(--status-normal);
-  background-color: var(--status-normal-bg);
-  border: 1px solid var(--status-normal-border);
+  font-size: 0.6rem;
+  color: #34d399;
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   padding: 0.1rem 0.35rem;
   border-radius: var(--radius-xs);
 }
 
 .footer-divider {
   height: 1px;
-  background-color: var(--border-color);
+  background-color: rgba(255, 255, 255, 0.08);
   margin: 0.25rem 0;
 }
 
@@ -549,92 +484,51 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-dim);
+  font-size: 0.58rem;
+  color: #64748b;
 }
 
 /* ==========================================================================
-   3. MAIN CONTENT AREA
+   3. MAIN CONTENT AREA (THINGSBOARD DASHBOARD CANVAS)
    ========================================================================== */
 .scada-main-content {
   flex: 1;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   background-color: var(--bg-body);
 }
 
 .content-view {
   display: none;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 1rem;
 }
 
 .content-view.active {
   display: flex !important;
 }
 
-/* View Header Bar */
-.view-header-bar {
+/* Top Sub-Bar Controls (HACCP Preset, Mute, Refresh) */
+.tb-controls-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  padding: 0.5rem 0.85rem;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-card);
   flex-wrap: wrap;
 }
 
-.view-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.live-dot-pulse {
-  width: 9px;
-  height: 9px;
-  background-color: var(--status-normal);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--status-normal);
-  animation: pulse-ring 2s infinite ease-out;
-  flex-shrink: 0;
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.view-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-
-.view-subtitle {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.view-actions-group {
+.tb-preset-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.preset-haccp-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
 }
 
 .preset-label {
@@ -642,21 +536,22 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--text-muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .scada-select {
-  background: transparent;
-  border: none;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
   color: var(--text-main);
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-xs);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  padding-right: 0.5rem;
 }
 
 .scada-select:focus {
-  outline: none;
+  border-color: var(--border-focus);
 }
 
 .scada-select option {
@@ -664,67 +559,278 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: var(--text-main);
 }
 
-.scada-input {
-  background-color: var(--bg-inset);
-  border: 1px solid var(--border-color);
+.btn-scada-outline {
+  background-color: var(--bg-elevated);
   color: var(--text-main);
-  padding: 0.45rem 0.65rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  border-radius: var(--radius-xs);
 }
 
-.scada-input:focus {
-  border-color: var(--border-focus);
+.btn-scada-outline:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-scada-outline.active {
+  background-color: var(--status-critical-bg);
+  border-color: var(--status-critical-border);
+  color: var(--status-critical);
 }
 
 /* ==========================================================================
-   4. SCADA METRIC CARDS (PRECISION INSTRUMENT GAUGES)
+   4. THINGSBOARD MULTI-WIDGET DASHBOARD GRID
    ========================================================================== */
-.metrics-scada-grid {
+.tb-dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1.35fr 0.85fr 1.6fr;
   gap: 0.85rem;
+  align-items: stretch;
 }
 
+/* ThingsBoard Widget Card Standard */
 .card.scada-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 1rem;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
 }
 
-.card-kpi-header {
+.tb-widget-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.tb-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.4rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-elevated);
 }
 
-.kpi-label {
+.tb-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.tb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tb-icon-action {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tb-icon-action:hover {
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   5. TIME-SERIES CHART WIDGETS (WIDGET 1 & 2)
+   ========================================================================== */
+.tb-chart-card {
+  height: 250px;
+}
+
+.tb-chart-body {
+  flex: 1;
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.tb-chart-body canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.tb-chart-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.85rem;
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.tb-chart-footer strong {
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   6. VERTICAL DIGITAL TANK GAUGES (WIDGET 3 & 4)
+   ========================================================================== */
+.tb-gauge-card {
+  background-color: var(--bg-gauge) !important;
+  border-color: #1a2a40 !important;
+  height: 250px;
+}
+
+.tb-gauge-card .tb-card-header {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tb-gauge-card .tb-card-title {
+  color: #e2e8f0;
+}
+
+.tb-gauge-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.85rem;
+}
+
+/* Big Digital Readout at Top */
+.tb-digital-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.tb-digital-val {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.tb-digital-unit {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Vertical Gauge Scale & Segments */
+.tb-gauge-meter-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.tb-gauge-scale-left,
+.tb-gauge-scale-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 125px;
+  font-size: 0.6rem;
+  color: #64748b;
+}
+
+.tb-gauge-scale-left {
+  text-align: right;
+}
+
+.tb-gauge-scale-right {
+  text-align: left;
+}
+
+.haccp-mark-high { color: #f87171; font-weight: 700; }
+.haccp-mark-low { color: #38bdf8; font-weight: 700; }
+.scale-label-danger { color: #ef4444; font-weight: 700; }
+.scale-label-haccp { color: #38bdf8; font-weight: 600; }
+.scale-label-safe { color: #10b981; font-weight: 700; }
+
+.tb-gauge-segments {
+  width: 44px;
+  height: 125px;
+  background-color: #04080e;
+  border: 1px solid #1a2a40;
+  border-radius: var(--radius-xs);
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gauge-bar-segment {
+  width: 100%;
+  height: 3px;
+  border-radius: 1px;
+  transition: all 0.2s ease;
+}
+
+.gauge-bar-segment.inactive {
+  background-color: #0d1724;
+  opacity: 0.5;
+}
+
+/* Glowing Lit Segments */
+.gauge-bar-segment.active.temp-cold {
+  background-color: #00f0ff;
+  box-shadow: 0 0 5px #00f0ff;
+}
+
+.gauge-bar-segment.active.temp-normal {
+  background-color: #10b981;
+  box-shadow: 0 0 5px #10b981;
+}
+
+.gauge-bar-segment.active.temp-warn {
+  background-color: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+}
+
+.gauge-bar-segment.active.temp-crit {
+  background-color: #ef4444;
+  box-shadow: 0 0 7px #ef4444;
+}
+
+.gauge-bar-segment.active.rh-cyan {
+  background-color: #00e5ff;
+  box-shadow: 0 0 5px #00e5ff;
+}
+
+.gauge-bar-segment.active.rh-blue {
+  background-color: #0099ff;
+  box-shadow: 0 0 5px #0099ff;
+}
+
+.tb-gauge-footer-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: #94a3b8;
 }
 
+/* Status Badges */
 .badge-status-pill {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.625rem;
   font-weight: 600;
   padding: 0.15rem 0.45rem;
   border-radius: var(--radius-xs);
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  line-height: 1;
 }
 
 .badge-status-pill.normal {
@@ -745,260 +851,189 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border: 1px solid var(--status-critical-border);
 }
 
-.badge-status-pill.blue {
-  color: var(--accent-cyan);
-  background-color: var(--accent-cyan-glow);
-  border: 1px solid rgba(14, 165, 233, 0.3);
-}
-
-.card-kpi-body {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  margin: 0.25rem 0 0.5rem 0;
-}
-
-.kpi-value {
-  font-size: 2.1rem;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.kpi-unit {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.kpi-value-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.card-kpi-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.45rem;
-  border-top: 1px solid var(--border-subtle);
-  font-size: 0.72rem;
-}
-
-.kpi-footer-muted {
-  color: var(--text-dim);
-}
-
-.kpi-footer-val {
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
 /* ==========================================================================
-   5. CHART & AI PANEL
+   7. HARDWARE CONTROL WIDGET (ESP8266 NODEMCU & GPIO)
    ========================================================================== */
-.chart-and-ai-panel {
-  margin-top: 0.25rem;
+.tb-control-card {
+  padding: 0;
 }
 
-.chart-ai-grid {
+.tb-control-body {
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.gpio-switch-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 0.85rem;
-}
-
-.chart-box-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.chart-box-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: -0.01em;
-}
-
-.chart-box-desc {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.chart-tags {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  font-size: 0.72rem;
-  color: var(--text-secondary);
-  background-color: var(--bg-elevated);
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-color);
-}
-
-.chart-tags strong {
-  color: var(--text-main);
-}
-
-.chart-canvas-wrapper {
-  position: relative;
-  height: 240px;
-  width: 100%;
-}
-
-/* AI Diagnostics Box */
-.ai-diagnostic-box {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.card-header-clean {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 0.45rem;
-}
-
-.ai-stat-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  padding: 0.2rem 0;
-}
-
-.ai-reasoning-card {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.65rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.ai-reason-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-}
-
-.status-pill-small {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 0.1rem 0.35rem;
-  border-radius: var(--radius-xs);
-}
-
-.status-pill-small.normal {
-  color: var(--status-normal);
-  background-color: var(--status-normal-bg);
-}
-
-.ai-reason-text {
-  font-size: 0.72rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.ai-time-countdown {
-  font-size: 0.7rem;
-  color: var(--accent-cyan);
-  font-weight: 600;
-  text-align: right;
-  margin-top: 0.2rem;
-}
-
-.capa-notice-card {
-  background-color: var(--bg-inset);
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem;
-  font-size: 0.72rem;
-}
-
-.capa-title {
-  font-weight: 700;
-  color: var(--text-main);
-  display: block;
-  margin-bottom: 0.2rem;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  text-transform: uppercase;
-}
-
-.capa-body {
-  color: var(--text-muted);
-  line-height: 1.35;
-}
-
-/* ==========================================================================
-   6. TABLE TOOLBAR & SCADA STREAMING TABLE
-   ========================================================================== */
-.table-toolbar-scada {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
-  flex-wrap: wrap;
 }
 
-.toolbar-search-box {
+.gpio-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  padding: 0.5rem 0.65rem;
+}
+
+.gpio-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.gpio-pin {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.gpio-desc {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ThingsBoard Slider Switch */
+.tb-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.tb-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tb-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #334155;
+  transition: 0.2s;
+  border-radius: 20px;
+}
+
+.tb-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .tb-slider {
+  background-color: #0284c7;
+}
+
+input:checked + .tb-slider:before {
+  transform: translateX(18px);
+}
+
+/* GPIO LED Indicators */
+.gpio-led-cluster {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  background-color: var(--bg-card);
+}
+
+.led-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  opacity: 0.35;
+  transition: all 0.2s ease;
+}
+
+.led-green { background-color: #10b981; }
+.led-yellow { background-color: #f59e0b; }
+.led-red { background-color: #ef4444; }
+
+.led-dot.active {
+  opacity: 1;
+}
+
+.led-green.active { box-shadow: 0 0 8px #10b981; }
+.led-yellow.active { box-shadow: 0 0 8px #f59e0b; }
+.led-red.active { box-shadow: 0 0 8px #ef4444; }
+
+.tb-control-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.45rem;
+}
+
+/* ==========================================================================
+   8. TIMESERIES TABLE WIDGET (WIDGET 5 - RIGHT COLUMN)
+   ========================================================================== */
+.tb-table-widget {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tb-table-header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tb-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--bg-inset);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-xs);
+  padding: 0.25rem 0.5rem;
   flex: 1;
-  max-width: 340px;
-  color: var(--text-dim);
+  max-width: 220px;
 }
 
-.toolbar-search-box svg {
-  flex-shrink: 0;
-}
-
-.scada-search-input {
+.tb-search-input {
   background: transparent;
   border: none;
   color: var(--text-main);
+  font-size: 0.72rem;
   width: 100%;
 }
 
-.scada-search-input:focus {
+.tb-search-input:focus {
   outline: none;
-}
-
-.scada-search-input::placeholder {
-  color: var(--text-dim);
 }
 
 .toolbar-filter-pills {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .filter-pill {
-  padding: 0.35rem 0.65rem;
-  background-color: var(--bg-card);
+  padding: 0.25rem 0.5rem;
+  background-color: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -1008,143 +1043,22 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .filter-pill.active {
-  background-color: var(--accent-cyan);
-  border-color: var(--accent-cyan);
+  background-color: #0284c7;
+  border-color: #0284c7;
   color: #ffffff;
 }
 
-.date-shift-container {
-  position: relative;
-}
-
-.toolbar-date-shift {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.toolbar-date-shift:hover {
-  border-color: var(--border-hover);
-  color: var(--text-main);
-}
-
-.btn-icon-filter {
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-}
-
-/* Date Popover */
-.date-filter-popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  width: 280px;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-popover);
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-}
-
-.date-filter-popover[hidden] {
-  display: none !important;
-}
-
-.popover-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.popover-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.btn-popover-close {
-  color: var(--text-dim);
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.popover-body {
-  padding: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.popover-field label {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.3rem;
-}
-
-.popover-select, .popover-date-input {
-  width: 100%;
-  background-color: var(--bg-inset);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 0.35rem 0.5rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-}
-
-.popover-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.85rem;
-  border-top: 1px solid var(--border-subtle);
-  background-color: var(--bg-elevated);
-}
-
-.btn-popover-reset {
-  color: var(--text-muted);
-  font-size: 0.72rem;
-}
-
-.btn-popover-apply {
-  background-color: var(--accent-cyan);
-  color: #ffffff;
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-xs);
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-/* ==========================================================================
-   7. SCADA TABLE DESIGN
-   ========================================================================== */
-.card.scada-card.table-wrapper-scada {
-  padding: 0;
-  overflow: hidden;
-}
-
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
+/* Timeseries Table */
+.tb-table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 430px;
 }
 
 .scada-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   text-align: left;
 }
 
@@ -1152,24 +1066,23 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-color: var(--bg-elevated);
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 0.65rem 0.85rem;
+  padding: 0.5rem 0.65rem;
   border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 5;
   white-space: nowrap;
 }
 
 .scada-table td {
-  padding: 0.65rem 0.85rem;
+  padding: 0.45rem 0.65rem;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-main);
   vertical-align: middle;
-}
-
-.scada-table tbody tr {
-  transition: background-color 0.1s ease;
 }
 
 .scada-table tbody tr:hover {
@@ -1180,27 +1093,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-color: var(--row-warning-bg);
 }
 
-.table-room-dot {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-weight: 500;
-}
-
-.sensor-id-pill {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  background-color: var(--bg-inset);
-  padding: 0.15rem 0.4rem;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-color);
-}
-
 .notes-cell {
   color: var(--text-secondary);
-  font-size: 0.75rem;
-  max-width: 320px;
+  font-size: 0.72rem;
+  max-width: 180px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1212,20 +1108,19 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
-  gap: 0.65rem;
+  padding: 3rem 1rem;
+  gap: 0.5rem;
 }
 
 .standby-radar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 2px solid var(--accent-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
   animation: radar-sweep 2.5s infinite linear;
-  position: relative;
 }
 
 .standby-radar::after {
@@ -1238,68 +1133,49 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 @keyframes radar-sweep {
   0% { transform: rotate(0deg); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
-  50% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
+  50% { box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
   100% { transform: rotate(360deg); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
 }
 
 .standby-title {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-main);
 }
 
 .standby-desc {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
-  max-width: 480px;
+  max-width: 280px;
   text-align: center;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
-/* Table Footer & Pagination */
+/* Pagination Footer */
 .scada-table-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 1rem;
+  padding: 0.45rem 0.75rem;
   background-color: var(--bg-elevated);
   border-top: 1px solid var(--border-color);
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.footer-count-text {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
-}
-
-.footer-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.rows-select-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
 }
 
 .pagination-buttons {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .btn-scada-page {
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.45rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-secondary);
 }
 
@@ -1309,80 +1185,75 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .btn-scada-page:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .btn-scada-page.page-num.active {
-  background-color: var(--accent-cyan);
-  border-color: var(--accent-cyan);
+  background-color: #0284c7;
+  border-color: #0284c7;
   color: #ffffff;
   font-weight: 700;
 }
 
 /* ==========================================================================
-   8. VIEW 2: AUDIT TRAIL SHA-256
+   9. AI & HACCP COMPLIANCE BAR (BOTTOM FULL-WIDTH DOCK)
+   ========================================================================== */
+.tb-ai-dock {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  padding: 0.75rem 1rem;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.8fr;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+}
+
+.ai-dock-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ai-dock-title {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.ai-dock-val {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ai-dock-desc {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   10. VIEW 2, 3, 4 (AUDIT, CLOUD, GATEWAY)
    ========================================================================== */
 .audit-toolbar-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
   background-color: var(--bg-elevated);
   border-bottom: 1px solid var(--border-color);
 }
 
-.audit-hash-code {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--accent-cyan);
-  background-color: var(--bg-inset);
-  padding: 0.15rem 0.4rem;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-color);
-}
-
-/* ==========================================================================
-   9. VIEW 3: CLOUD INSPECTOR & SUPABASE
-   ========================================================================== */
-.cloud-conn-card {
-  padding: 1rem 1.25rem;
-}
-
-.cloud-conn-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.85rem;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.cloud-conn-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.cloud-db-badge-icon {
-  width: 32px;
-  height: 32px;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-cyan);
-}
-
-.cloud-conn-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-main);
+.metrics-scada-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
 }
 
 .cloud-props-grid {
@@ -1391,7 +1262,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   gap: 0.75rem;
   background-color: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   padding: 0.75rem;
 }
 
@@ -1406,71 +1277,14 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-dim);
-  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .cloud-prop-val {
   font-size: 0.78rem;
   color: var(--text-main);
-  word-break: break-all;
 }
 
-.cloud-drawer {
-  margin-top: 0.85rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.cloud-drawer-grid {
-  display: grid;
-  grid-template-columns: 2fr 2fr 1.5fr auto;
-  gap: 0.75rem;
-  align-items: flex-end;
-}
-
-.cloud-drawer-label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-bottom: 0.35rem;
-  letter-spacing: 0.04em;
-}
-
-.cloud-table-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background-color: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.cloud-table-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.cloud-table-title {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.cloud-table-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-/* ==========================================================================
-   10. VIEW 4: HARDWARE & PINOUT HEALTH
-   ========================================================================== */
 .gateway-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1478,14 +1292,14 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .gateway-detail-card {
-  padding: 1.15rem;
+  padding: 1rem;
 }
 
 .gateway-info-list {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  margin-top: 0.85rem;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
   font-size: 0.75rem;
 }
 
@@ -1493,7 +1307,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 0.45rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -1506,7 +1320,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .wiring-spec-list li {
-  padding: 0.45rem 0.6rem;
+  padding: 0.4rem 0.6rem;
   background-color: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xs);
@@ -1539,9 +1353,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .modal-window {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   width: 90%;
-  max-width: 520px;
+  max-width: 500px;
   box-shadow: var(--shadow-popover);
   display: flex;
   flex-direction: column;
@@ -1551,45 +1365,46 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--tb-header-bg);
+  color: #ffffff;
 }
 
 .modal-title {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-main);
 }
 
 .btn-close {
-  color: var(--text-muted);
+  color: #94a3b8;
   font-size: 1.25rem;
   line-height: 1;
 }
 
 .btn-close:hover {
-  color: var(--text-main);
+  color: #ffffff;
 }
 
 .modal-body {
-  padding: 1.25rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .form-field label {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
 
 .form-select, .form-input {
@@ -1597,21 +1412,17 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-color: var(--bg-inset);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  padding: 0.45rem 0.65rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.78rem;
-}
-
-.form-select:focus, .form-input:focus {
-  border-color: var(--border-focus);
+  padding: 0.38rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
 }
 
 .modal-summary-box {
   background-color: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem;
-  font-size: 0.75rem;
+  border-radius: var(--radius-xs);
+  padding: 0.65rem;
+  font-size: 0.72rem;
   display: flex;
   justify-content: space-between;
 }
@@ -1621,7 +1432,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1rem;
   border-top: 1px solid var(--border-color);
   background-color: var(--bg-elevated);
 }
@@ -1629,11 +1440,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 /* Toast */
 .toast-container {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: 1.25rem;
+  right: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
   z-index: 110;
   pointer-events: none;
 }
@@ -1642,14 +1453,14 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   pointer-events: auto;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.65rem 1rem;
-  font-size: 0.78rem;
+  border-radius: var(--radius-xs);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.75rem;
   color: var(--text-main);
   box-shadow: var(--shadow-popover);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   animation: toast-in 0.2s ease-out;
 }
 
@@ -1661,20 +1472,14 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 /* ==========================================================================
    12. RESPONSIVENESS (MOBILE / TABLET BREAKPOINTS)
    ========================================================================== */
-@media (max-width: 1024px) {
-  .metrics-scada-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 1200px) {
+  .tb-dashboard-grid {
+    grid-template-columns: 1fr 1fr;
   }
-  .chart-ai-grid {
-    grid-template-columns: 1fr;
+  .tb-table-widget {
+    grid-column: span 2;
   }
-  .cloud-props-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .cloud-drawer-grid {
-    grid-template-columns: 1fr;
-  }
-  .gateway-grid {
+  .tb-ai-dock {
     grid-template-columns: 1fr;
   }
 }
@@ -1699,16 +1504,16 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   }
   .nav-item.active {
     border-left-color: transparent;
-    border-bottom-color: var(--accent-cyan);
+    border-bottom-color: #38bdf8;
   }
   .sidebar-footer {
     display: none;
   }
-  .metrics-scada-grid {
+  .tb-dashboard-grid {
     grid-template-columns: 1fr;
   }
-  .form-grid {
-    grid-template-columns: 1fr;
+  .tb-table-widget {
+    grid-column: span 1;
   }
   .topbar-chips {
     display: none;
