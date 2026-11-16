@@ -219,52 +219,21 @@
     
     <!-- SIDEBAR KIRI (THINGSBOARD AUTHENTIC NAVIGATION RAIL) -->
     <aside class="scada-sidebar tb-nav-rail">
-      <!-- Menu Navigasi Samping Kiri (Exact ThingsBoard Items) -->
+      <!-- Menu Navigasi Samping Kiri (Modul Fungsional Utama) -->
       <nav class="sidebar-nav" aria-label="ThingsBoard Menu">
         
-        <!-- 1. HOME -->
-        <button class="nav-item" data-view="monitoring" id="nav-btn-home" title="Home Overview">
+        <!-- 1. DASHBOARDS (Monitoring Suhu, Kelembapan, & SCADA - ACTIVE) -->
+        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring" title="Arduino DHT22 Live SCADA Dashboard">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
           </svg>
-          <span class="nav-text">HOME</span>
+          <span class="nav-text">DASHBOARDS</span>
         </button>
 
-        <!-- 2. RULE CHAINS -->
-        <button class="nav-item" data-action="rules" id="nav-btn-rules" title="Rule Chains &amp; HACCP Triggers">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="6" cy="6" r="3"></circle>
-            <circle cx="6" cy="18" r="3"></circle>
-            <circle cx="18" cy="12" r="3"></circle>
-            <line x1="8.59" y1="7.49" x2="15.42" y2="10.51"></line>
-            <line x1="8.59" y1="16.51" x2="15.42" y2="13.49"></line>
-          </svg>
-          <span class="nav-text">&lt;&middot;&gt; RULE CHAINS</span>
-        </button>
-
-        <!-- 3. CUSTOMERS -->
-        <button class="nav-item" data-action="customers" id="nav-btn-customers" title="Customers / Auditor Entities">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <span class="nav-text">CUSTOMERS</span>
-        </button>
-
-        <!-- 4. ASSETS -->
-        <button class="nav-item" data-action="assets" id="nav-btn-assets" title="Cold Storage Assets">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-          <span class="nav-text">ASSETS</span>
-        </button>
-
-        <!-- 5. DEVICES (Hardware & Gateway Health) -->
+        <!-- 2. DEVICES (Hardware NodeMCU ESP-12E, GPIO & Serial Stream) -->
         <button class="nav-item" data-view="gateway" id="nav-btn-gateway" title="ESP8266 NodeMCU &amp; GPIO Devices">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="4" y="4" width="16" height="16" rx="2"></rect>
@@ -281,7 +250,7 @@
           <span class="nav-text">DEVICES</span>
         </button>
 
-        <!-- 6. ENTITY VIEWS (Cloud Database Inspector) -->
+        <!-- 3. ENTITY VIEWS (External Cloud Database Inspector / Supabase REST) -->
         <button class="nav-item" data-view="cloud" id="nav-btn-cloud" title="Supabase Cloud Entity Views">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -291,29 +260,7 @@
           <span class="nav-text">ENTITY VIEWS</span>
         </button>
 
-        <!-- 7. WIDGETS LIBRARY -->
-        <button class="nav-item" data-action="widgets" id="nav-btn-widgets" title="ThingsBoard Widgets Library">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
-          </svg>
-          <span class="nav-text">WIDGETS LIBRARY</span>
-        </button>
-
-        <!-- 8. DASHBOARDS (Monitoring Suhu & Telemetri - ACTIVE) -->
-        <button class="nav-item active" data-view="monitoring" id="nav-btn-monitoring" title="Arduino DHT22 Live Dashboard">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
-          </svg>
-          <span class="nav-text">DASHBOARDS</span>
-        </button>
-
-        <!-- 9. AUDIT LOGS (HACCP Digital Audit Trail) -->
+        <!-- 4. AUDIT LOGS (HACCP Digital Audit Trail & SHA-256 Ledger) -->
         <button class="nav-item" data-view="audit" id="nav-btn-audit" title="HACCP Compliance Audit Logs">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>

@@ -1036,14 +1036,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.appMQTT && window.appMQTT.refreshTerminalUI) {
           window.appMQTT.refreshTerminalUI();
         }
-      } else if (action === 'rules') {
-        showToast('Rule Chains: Engine HACCP aktif (Ambang Batas Chilled & Deep Freezer)');
-      } else if (action === 'customers') {
-        showToast('Customers: Tenant Administrator / Auditor BPOM RI');
-      } else if (action === 'assets') {
-        showToast('Assets: Cold Storage Facility Unit A1 (Active)');
-      } else if (action === 'widgets') {
-        showToast('Widgets Library: 6 Active Widgets (Charts, Gauges, Table, GPIO)');
       }
     });
   });
