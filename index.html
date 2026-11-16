@@ -56,12 +56,12 @@
               <rect x="14" y="12" width="7" height="9" rx="1"></rect>
               <rect x="3" y="16" width="7" height="5" rx="1"></rect>
             </svg>
-            <span id="header-breadcrumb-sub">ESP8266 DHT11: Temperature &amp; Humidity Demo Dashboard</span>
+            <span id="header-breadcrumb-sub">DHT11: Temperature &amp; Humidity Demo Dashboard</span>
           </span>
         </div>
       </div>
 
-      <!-- TIER 1 RIGHT: Quick Actions & Tenant User Profile -->
+      <!-- TIER 1 RIGHT: Quick Actions -->
       <div class="tb-global-right">
         <!-- Location preset selector (Uji Stand Expo) -->
         <div class="tb-location-pill" title="Lokasi Pengujian Stand Expo">
@@ -115,59 +115,30 @@
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
-
-        <!-- Fullscreen Button -->
-        <button class="tb-icon-btn" id="btn-fullscreen-toggle" title="Mode Layar Penuh SCADA">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-          </svg>
-        </button>
-
-        <!-- User Profile Pill: tenant administrator -->
-        <div class="tb-user-profile" title="Tenant Administrator">
-          <div class="tb-user-avatar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-          </div>
-          <span class="tb-username">tenant administrator</span>
-        </div>
       </div>
     </div>
 
     <!-- TIER 2: DASHBOARD CONTEXT TOOLBAR (#204576) -->
     <div class="tb-dashboard-toolbar">
       <div class="tb-toolbar-left">
-        <h1 class="tb-toolbar-title" id="tb-dashboard-title">ESP8266 DHT11: Temperature &amp; Humidity Demo Dashboard</h1>
+        <h1 class="tb-toolbar-title" id="tb-dashboard-title">DHT11: Temperature &amp; Humidity Demo Dashboard</h1>
       </div>
 
       <div class="tb-toolbar-right">
         <!-- HACCP Entity / Room Preset Dropdown -->
         <div class="tb-toolbar-select-wrap">
           <select id="select-active-room-filter" class="tb-toolbar-select font-mono" title="Pilih Standar HACCP">
-            <option value="chilled_room" selected>ESP8266 DHT11: Temperature &amp; Hu... &#x25BC;</option>
+            <option value="chilled_room" selected>DHT11: Temperature &amp; Hu... &#x25BC;</option>
             <option value="dry_storage">Ruang Ambient (18.0°C ~ 32.0°C) &#x25BC;</option>
             <option value="frozen_room">Deep Freezer (-22.0°C ~ -18.0°C) &#x25BC;</option>
           </select>
         </div>
 
-        <!-- Device Selector Chip: ESP8266 NodeMCU -->
-        <div class="tb-toolbar-chip" id="top-chip-gateway" title="Perangkat Keras ESP8266 NodeMCU Siaga">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-            <rect x="9" y="9" width="6" height="6"></rect>
-            <line x1="9" y1="1" x2="9" y2="4"></line>
-            <line x1="15" y1="1" x2="15" y2="4"></line>
-            <line x1="9" y1="20" x2="9" y2="23"></line>
-            <line x1="15" y1="20" x2="15" y2="23"></line>
-            <line x1="20" y1="9" x2="23" y2="9"></line>
-            <line x1="20" y1="14" x2="23" y2="14"></line>
-            <line x1="1" y1="9" x2="4" y2="9"></line>
-            <line x1="1" y1="14" x2="4" y2="14"></line>
-          </svg>
+        <!-- Hidden Gateway Status Elements for Script Compatibility -->
+        <span id="top-chip-gateway" style="display: none;">
           <span class="chip-dot dot-green" id="top-gateway-dot"></span>
-          <span id="top-gateway-text">ESP8266 NodeMCU</span>
-        </div>
+          <span id="top-gateway-text">NodeMCU Siaga</span>
+        </span>
 
         <!-- Realtime Timerange Button -->
         <button class="tb-toolbar-btn font-mono" id="btn-toggle-date-filter-top" title="Pilih Rentang Waktu Telemetri">
@@ -179,10 +150,10 @@
           <span class="tb-btn-arrow">&#x25BC;</span>
         </button>
 
-        <!-- Mute Buzzer Button -->
-        <button id="btn-toggle-buzzer-mute" class="tb-toolbar-icon-action" title="Matikan / Nyalakan Suara Buzzer Fisik NodeMCU">
+        <!-- Hidden Buzzer Controls for Script Compatibility -->
+        <button id="btn-toggle-buzzer-mute" style="display: none;">
           <span id="buzzer-btn-icon">🔇</span>
-          <span id="buzzer-btn-text" style="display:none">Mute Buzzer</span>
+          <span id="buzzer-btn-text">Mute Buzzer</span>
         </button>
 
         <!-- Refresh Telemetry Button -->
@@ -201,7 +172,7 @@
           </svg>
         </button>
 
-        <!-- Fullscreen Widget Layout Toggle -->
+        <!-- Single Fullscreen Widget Layout Toggle -->
         <button class="tb-toolbar-icon-action" id="btn-tb-fullscreen" title="Layar Penuh Dashboard">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 3 21 3 21 9"></polyline>
@@ -317,10 +288,10 @@
               </div>
             </div>
 
-            <!-- Widget 6: ESP8266 NODEMCU & GPIO Control -->
+            <!-- Widget 6: NodeMCU & GPIO Control -->
             <div class="card scada-card tb-control-card">
               <div class="tb-card-header">
-                <span class="tb-card-title">ESP8266 NODEMCU &amp; GPIO</span>
+                <span class="tb-card-title">NodeMCU &amp; GPIO Control</span>
                 <div class="tb-card-actions">
                   <span class="tb-icon-action">&#x26F6;</span>
                 </div>

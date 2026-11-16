@@ -1015,8 +1015,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (view === 'monitoring') {
         switchView('monitoring');
-        if (breadcrumbSub) breadcrumbSub.textContent = 'ESP8266 DHT11: Temperature & Humidity Demo Dashboard';
-        if (toolbarTitle) toolbarTitle.textContent = 'ESP8266 DHT11: Temperature & Humidity Demo Dashboard';
+        if (breadcrumbSub) breadcrumbSub.textContent = 'DHT11: Temperature & Humidity Demo Dashboard';
+        if (toolbarTitle) toolbarTitle.textContent = 'DHT11: Temperature & Humidity Demo Dashboard';
         if (zone) setActiveZone(zone);
       } else if (view === 'audit') {
         switchView('audit');
