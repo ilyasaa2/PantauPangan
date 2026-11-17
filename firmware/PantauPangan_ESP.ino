@@ -35,11 +35,11 @@
 // ============================================================================
 // 1. Konfigurasi Nirkabel Multi-Hotspot Wi-Fi (Auto-Failover / Auto-Connect)
 // ============================================================================
-// Hotspot 1 (Pengguna):
+// Hotspot 1 :
 const char* WIFI_SSID_1 = "Huh";
 const char* WIFI_PASS_1 = "cobonyambungga";
 
-// Hotspot 2 (Teman / Cadangan):
+// Hotspot 2 :
 const char* WIFI_SSID_2 = "000";
 const char* WIFI_PASS_2 = "00000000";
 

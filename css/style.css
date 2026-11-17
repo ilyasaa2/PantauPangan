@@ -1029,10 +1029,41 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: 0.75rem;
   color: var(--text-muted);
   cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 3px;
+  transition: all 0.15s ease;
+  user-select: none;
 }
 
 .tb-icon-action:hover {
-  color: var(--text-main);
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.tb-icon-action.active {
+  color: var(--accent-cyan) !important;
+  background-color: rgba(0, 229, 255, 0.15) !important;
+}
+
+/* Widget Fullscreen / Maximize Mode (ThingsBoard Style) */
+.card.tb-widget-maximized {
+  position: fixed !important;
+  top: 48px !important;
+  left: 195px !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 1060 !important;
+  height: calc(100vh - 48px) !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.85) !important;
+}
+
+@media (max-width: 992px) {
+  .card.tb-widget-maximized {
+    left: 0 !important;
+  }
 }
 
 /* ==========================================================================
@@ -1075,7 +1106,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .tb-gauge-card {
   background-color: var(--bg-gauge) !important;
   border-color: #1a2a40 !important;
-  height: 250px;
+  flex: 1;
+  min-height: 270px;
 }
 
 .tb-gauge-card .tb-card-header {
@@ -1092,8 +1124,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.85rem;
+  justify-content: space-evenly;
+  padding: 0.75rem 0.85rem;
 }
 
 /* Big Digital Readout at Top */
@@ -1131,8 +1163,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 125px;
-  font-size: 0.6rem;
+  height: 155px;
+  font-size: 0.65rem;
   color: #64748b;
 }
 
@@ -1151,8 +1183,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .scale-label-safe { color: #10b981; font-weight: 700; }
 
 .tb-gauge-segments {
-  width: 44px;
-  height: 125px;
+  width: 46px;
+  height: 155px;
   background-color: #04080e;
   border: 1px solid #1a2a40;
   border-radius: var(--radius-xs);
@@ -1164,7 +1196,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .gauge-bar-segment {
   width: 100%;
-  height: 3px;
+  height: 4px;
   border-radius: 1px;
   transition: all 0.2s ease;
 }

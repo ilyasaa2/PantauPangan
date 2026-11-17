@@ -1063,6 +1063,49 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnFs1) btnFs1.addEventListener('click', toggleFullScreenMode);
   if (btnFs2) btnFs2.addEventListener('click', toggleFullScreenMode);
 
+  // Per-Widget Maximize / Fullscreen Toggle (ThingsBoard style)
+  const widgetActionBtns = document.querySelectorAll('.tb-icon-action');
+  widgetActionBtns.forEach(btn => {
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
+    btn.setAttribute('title', 'Perbesar Widget (Fullscreen)');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.card');
+      if (!card) return;
+
+      const isMax = card.classList.toggle('tb-widget-maximized');
+      btn.classList.toggle('active', isMax);
+      btn.title = isMax ? 'Perkecil Widget (Esc)' : 'Perbesar Widget (Fullscreen)';
+
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        if (telemetryChart) telemetryChart.resize();
+        if (humidityChart) humidityChart.resize();
+      }, 50);
+    });
+  });
+
+  // ESC to exit maximized widget
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const maxCard = document.querySelector('.card.tb-widget-maximized');
+      if (maxCard) {
+        maxCard.classList.remove('tb-widget-maximized');
+        const actionBtn = maxCard.querySelector('.tb-icon-action');
+        if (actionBtn) {
+          actionBtn.classList.remove('active');
+          actionBtn.title = 'Perbesar Widget (Fullscreen)';
+        }
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+          if (telemetryChart) telemetryChart.resize();
+          if (humidityChart) humidityChart.resize();
+        }, 50);
+      }
+    }
+  });
+
   // ==========================================================================
   // 9. Filter & Search Toolbar Tabel Streaming
   // ==========================================================================
