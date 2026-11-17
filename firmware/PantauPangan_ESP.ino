@@ -34,8 +34,8 @@
 // ============================================================================
 // 1. Konfigurasi Nirkabel Wi-Fi Hotspot
 // ============================================================================
-const char* WIFI_SSID = "000";
-const char* WIFI_PASS = "00000000";
+const char* WIFI_SSID = "Huh";
+const char* WIFI_PASS = "cobonyambungga";
 
 // Alamat IP Gateway Laptop (IP Wi-Fi Laptop pada Hotspot "000": 172.20.10.3)
 String laptopServerIP = "172.20.10.3";
