@@ -27,17 +27,25 @@
 #include <LiquidCrystal_I2C.h>
 #include <DHT.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
 // ============================================================================
-// 1. Konfigurasi Nirkabel Wi-Fi Hotspot
+// 1. Konfigurasi Nirkabel Multi-Hotspot Wi-Fi (Auto-Failover / Auto-Connect)
 // ============================================================================
-const char* WIFI_SSID = "Huh";
-const char* WIFI_PASS = "cobonyambungga";
+// Hotspot 1 (Pengguna):
+const char* WIFI_SSID_1 = "Huh";
+const char* WIFI_PASS_1 = "cobonyambungga";
 
-// Alamat IP Gateway Laptop (IP Wi-Fi Laptop pada Hotspot "000": 172.20.10.3)
+// Hotspot 2 (Teman / Cadangan):
+const char* WIFI_SSID_2 = "000";
+const char* WIFI_PASS_2 = "00000000";
+
+ESP8266WiFiMulti wifiMulti;
+
+// Alamat IP Gateway Laptop (Default: 172.20.10.3, atau terdeteksi dinamis via UDP Beacon / Serial)
 String laptopServerIP = "172.20.10.3";
 const int SERVER_PORT = 3000;
 bool isWiFiConnected = false;
@@ -198,20 +206,19 @@ void setup() {
   // Inisialisasi Sensor DHT11
   dht.begin();
 
-  // Koneksi Nirkabel Wi-Fi Hotspot HP
+  // Koneksi Nirkabel Wi-Fi Multi-Hotspot
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print(F("WiFi: Hotspot "));
+  lcd.print(F("WiFi: Multi-AP  "));
   lcd.setCursor(0, 1);
   lcd.print(F("Menghubungkan..."));
 
   WiFi.mode(WIFI_STA);
-  WiFi.setAutoReconnect(true);
-  WiFi.persistent(true);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  wifiMulti.addAP(WIFI_SSID_1, WIFI_PASS_1);
+  wifiMulti.addAP(WIFI_SSID_2, WIFI_PASS_2);
 
   unsigned long wifiStart = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - wifiStart < 12000)) {
+  while (wifiMulti.run() != WL_CONNECTED && (millis() - wifiStart < 14000)) {
     delay(300);
     digitalWrite(PIN_LED_YEL, !digitalRead(PIN_LED_YEL)); // Kedip kuning saat mencari sinyal
   }
@@ -223,7 +230,9 @@ void setup() {
 
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print(F("WiFi Terhubung! "));
+    String activeSsid = WiFi.SSID();
+    if (activeSsid.length() == 0) activeSsid = "WiFi Terhubung!";
+    lcd.print(activeSsid.substring(0, 16));
     lcd.setCursor(0, 1);
     lcd.print(WiFi.localIP().toString());
     digitalWrite(PIN_LED_GRN, HIGH);
@@ -363,7 +372,7 @@ void loop() {
     Serial.println(F("}"));
 
     // B. Transmisi Nirkabel Wi-Fi HTTP POST ke Laptop (Jika Terhubung)
-    if (WiFi.status() == WL_CONNECTED) {
+    if (wifiMulti.run() == WL_CONNECTED) {
       if (!isWiFiConnected) {
         isWiFiConnected = true;
         udpBeacon.begin(UDP_BEACON_PORT);
