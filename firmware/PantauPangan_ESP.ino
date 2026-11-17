@@ -37,8 +37,8 @@
 const char* WIFI_SSID = "000";
 const char* WIFI_PASS = "00000000";
 
-// Alamat IP Gateway Laptop (Default: IP Wi-Fi Laptop saat ini 192.168.0.104, atau via UDP/Serial)
-String laptopServerIP = "192.168.0.104";
+// Alamat IP Gateway Laptop (IP Wi-Fi Laptop pada Hotspot "000": 172.20.10.3)
+String laptopServerIP = "172.20.10.3";
 const int SERVER_PORT = 3000;
 bool isWiFiConnected = false;
 bool hasDiscoveredServer = false;
@@ -206,10 +206,12 @@ void setup() {
   lcd.print(F("Menghubungkan..."));
 
   WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   unsigned long wifiStart = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - wifiStart < 7000)) {
+  while (WiFi.status() != WL_CONNECTED && (millis() - wifiStart < 12000)) {
     delay(300);
     digitalWrite(PIN_LED_YEL, !digitalRead(PIN_LED_YEL)); // Kedip kuning saat mencari sinyal
   }
@@ -362,7 +364,10 @@ void loop() {
 
     // B. Transmisi Nirkabel Wi-Fi HTTP POST ke Laptop (Jika Terhubung)
     if (WiFi.status() == WL_CONNECTED) {
-      isWiFiConnected = true;
+      if (!isWiFiConnected) {
+        isWiFiConnected = true;
+        udpBeacon.begin(UDP_BEACON_PORT);
+      }
       WiFiClient client;
       HTTPClient http;
       String endpointUrl = "http://" + laptopServerIP + ":" + String(SERVER_PORT) + "/api/telemetry";

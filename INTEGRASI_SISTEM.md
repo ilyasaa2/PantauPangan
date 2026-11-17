@@ -12,8 +12,8 @@
 
 | Komponen Metadata | Keterangan & Spesifikasi Ilmiah / Teknis |
 | :--- | :--- |
-| **Mata Kuliah Utama 1** | **Teknologi Sistem Terintegrasi (TSI / TST)** — Integrasi multi-protokol (I2C, 1-Wire, UART, UDP, HTTP, SSE, HTTPS Cloud), *Bi-directional Closed-Loop Control*, *Failover Redundancy*, & *Dual-Persistence*. |
-| **Mata Kuliah Utama 2** | **Kecerdasan Buatan (Artificial Intelligence - AI)** — Deteksi Anomali Statistik Dinamis (*Sliding-Window Z-Score*), Prediksi Tren Kenaikan Suhu (*Least Squares Linear Regression*), Estimasi *Time-to-Breach*, dan *Rule-Based Expert System Root Cause Diagnosis*. |
+| **Mata Kuliah Utama 1** | **Teknologi Sistem Terintegrasi (TSI / TST)** - Integrasi multi-protokol (I2C, 1-Wire, UART, UDP, HTTP, SSE, HTTPS Cloud), *Bi-directional Closed-Loop Control*, *Failover Redundancy*, & *Dual-Persistence*. |
+| **Mata Kuliah Utama 2** | **Kecerdasan Buatan (Artificial Intelligence - AI)** - Deteksi Anomali Statistik Dinamis (*Sliding-Window Z-Score*), Prediksi Tren Kenaikan Suhu (*Least Squares Linear Regression*), Estimasi *Time-to-Breach*, dan *Rule-Based Expert System Root Cause Diagnosis*. |
 | **Mata Kuliah Pendukung** | **Internet of Things (IoT) & Embedded Systems**, **Keamanan Informasi & Kriptografi Data**, **Rekayasa Basis Data & Cloud Computing**, serta **Manajemen Mutu & Regulasi Pangan (HACCP)**. |
 | **Regulasi & Standar Acuan**| **BPOM RI** (Standar CDOB/CPPOB), **Codex Alimentarius HACCP CXC 1-1969**, dan **FDA 21 CFR Part 11 / Prinsip ALCOA+**. |
 | **Perangkat Keras (Hardware)**| NodeMCU ESP-12E (ESP8266), Expansion Shield Baseboard HW-389, Sensor DHT11, LCD 1602 I2C (PCF8574T), Active Buzzer 5V, Tri-Color LED (Merah, Kuning, Hijau), Adaptor 5V 3A Jack DC. |
@@ -28,41 +28,41 @@ Berikut adalah diagram alur menyeluruh mulai dari akuisisi sensor fisik pada edg
 ```mermaid
 flowchart TD
     subgraph NODE ["1. Physical Hardware Edge Layer (Stand Pameran)"]
-        PWR["Adaptor Eksternal 5V 3A\nJack DC Shield"] --> SHIELD["NodeMCU Expansion Shield HW-389"]
-        SHIELD --> ESP["NodeMCU ESP-12E (ESP8266 V3)\nMikrokontroler 80 MHz"]
-        DHT["Sensor DHT11\nSuhu & Kelembapan"] -->|Digital Pin D5 / GPIO 14\n1-Wire Protocol| ESP
-        ESP -->|I2C SDA D2 & SCL D1\nAlamat 0x27| LCD["LCD 1602 I2C (PCF8574T)\nMulti-Page Carousel UI"]
-        ESP -->|Digital Out D6| LED_G["LED Hijau (Aman / Normal)"]
-        ESP -->|Digital Out D7| LED_Y["LED Kuning (Peringatan / Warning)"]
-        ESP -->|Digital Out D8| LED_R["LED Merah (Bahaya / Kritis HACCP)"]
-        ESP -->|Digital Out D3| BUZZ["Active Buzzer 5V (Alarm Lokal)"]
+        PWR["Adaptor Eksternal 5V 3A<br/>Jack DC Shield"] --> SHIELD["NodeMCU Expansion Shield HW-389"]
+        SHIELD --> ESP["NodeMCU ESP-12E (ESP8266 V3)<br/>Mikrokontroler 80 MHz"]
+        DHT["Sensor DHT11<br/>Suhu & Kelembapan"] -->|"Digital Pin D5 / GPIO 14<br/>1-Wire Protocol"| ESP
+        ESP -->|"I2C SDA D2 & SCL D1<br/>Alamat 0x27"| LCD["LCD 1602 I2C (PCF8574T)<br/>Multi-Page Carousel UI"]
+        ESP -->|"Digital Out D6"| LED_G["LED Hijau (Aman / Normal)"]
+        ESP -->|"Digital Out D7"| LED_Y["LED Kuning (Peringatan / Warning)"]
+        ESP -->|"Digital Out D8"| LED_R["LED Merah (Bahaya / Kritis HACCP)"]
+        ESP -->|"Digital Out D3"| BUZZ["Active Buzzer 5V (Alarm Lokal)"]
     end
 
     subgraph TRANSMISI ["2. Komunikasi Data Dua Arah (Bi-Directional Transport)"]
-        ESP <-->|UART Serial 115200 Baud\nWeb Serial API (navigator.serial)| USBSERIAL["Laptop Host SCADA\n(Chrome / Edge Browser)"]
-        ESP -.->|Wi-Fi HTTP POST /api/telemetry\nJSON Telemetri Tiap 2.0s| API_SERVER["Node.js Gateway Backend\nPort 3000"]
-        API_SERVER -.->|UDP Broadcast Port 3001\nAuto-Discovery Beacon| ESP
-        API_SERVER -.->|Server-Sent Events SSE\nStreaming Asinkron /api/events| USBSERIAL
-        USBSERIAL -->|Kirim Perintah SET_ZONE & MUTE_BUZZER\nUbah Batas Kritis Seketika (<10ms)| ESP
+        ESP <-->|"UART Serial 115200 Baud<br/>Web Serial API navigator.serial"| USBSERIAL["Laptop Host SCADA<br/>Chrome / Edge Browser"]
+        ESP -.->|"Wi-Fi HTTP POST /api/telemetry<br/>JSON Telemetri Tiap 2.0s"| API_SERVER["Node.js Gateway Backend<br/>Port 3000"]
+        API_SERVER -.->|"UDP Broadcast Port 3001<br/>Auto-Discovery Beacon"| ESP
+        API_SERVER -.->|"Server-Sent Events SSE<br/>Streaming Asinkron /api/events"| USBSERIAL
+        USBSERIAL -->|"Kirim Perintah SET_ZONE & MUTE_BUZZER<br/>Ubah Batas Kritis Seketika sub-10ms"| ESP
     end
 
     subgraph ENGINE ["3. Pemrosesan Data & Kecerdasan Buatan (Host Engine)"]
         USBSERIAL --> INGEST["Ingestion Parser JSON & State Manager"]
-        INGEST --> RAM_DB["In-Memory RAM Cache\nLatensi Sub-Millisecond (<0.01 ms)"]
-        INGEST --> AI["AI Anomaly & Predictive Engine\nZ-Score & Linear Regression Drift"]
-        INGEST --> HASH["Cybersecurity Engine\nSHA-256 Tamper-Proof Chain"]
+        INGEST --> RAM_DB["In-Memory RAM Cache<br/>Latensi Sub-Millisecond sub-0.01 ms"]
+        INGEST --> AI["AI Anomaly & Predictive Engine<br/>Z-Score & Linear Regression Drift"]
+        INGEST --> HASH["Cybersecurity Engine<br/>SHA-256 Tamper-Proof Chain"]
     end
 
     subgraph PERSISTENCE ["4. Arsitektur Dual-Persistence (Offline-Resilient & Cloud)"]
-        RAM_DB -->|Background Auto-Flush Non-Blocking\nTiap 10 Detik| LOCAL_DISK["Penyimpanan Lokal Disk\ndata/telemetry_db.json & audit_db.json"]
-        RAM_DB -->|Asynchronous HTTPS REST Queue\nNon-Blocking Worker| CLOUD_DB["Database Cloud Eksternal\nPostgreSQL / Supabase REST"]
+        RAM_DB -->|"Background Auto-Flush Non-Blocking<br/>Tiap 10 Detik"| LOCAL_DISK["Penyimpanan Lokal Disk<br/>data/telemetry_db.json & audit_db.json"]
+        RAM_DB -->|"Asynchronous HTTPS REST Queue<br/>Non-Blocking Worker"| CLOUD_DB["Database Cloud Eksternal<br/>PostgreSQL / Supabase REST"]
     end
 
     subgraph DASHBOARD ["5. Antarmuka SCADA Industri (4 Menu Fungsional)"]
-        AI --> VIEW_MON["View 1: Live Telemetry & SCADA\nGrafik Chart.js, Preset HACCP, & Alarm"]
-        HASH --> VIEW_AUDIT["View 2: HACCP Digital Audit Trail\nBuku Besar BPOM, Verifikasi Hash, & Ekspor PDF"]
-        CLOUD_DB --> VIEW_CLOUD["View 3: Cloud Database Inspector\nLive Feed HTTP 201 Created & Latency Sync"]
-        NODE --> VIEW_HW["View 4: Hardware & Gateway Health\nPinout Shield HW-389 & Status Aktuator"]
+        AI --> VIEW_MON["View 1: Live Telemetry & SCADA<br/>Grafik Chart.js, Preset HACCP, & Alarm"]
+        HASH --> VIEW_AUDIT["View 2: HACCP Digital Audit Trail<br/>Buku Besar BPOM, Verifikasi Hash, & Ekspor PDF"]
+        CLOUD_DB --> VIEW_CLOUD["View 3: Cloud Database Inspector<br/>Live Feed HTTP 201 Created & Latency Sync"]
+        ESP --> VIEW_HW["View 4: Hardware & Gateway Health<br/>Pinout Shield HW-389 & Status Aktuator"]
     end
 ```
 
@@ -126,7 +126,7 @@ Sistem PantauPangan menggabungkan 7 protokol komunikasi data heterogen:
 | 1 | **I2C Bus Protocol** | Hardware Edge | Pin D1 (SCL) & D2 (SDA), `0x27` | Mengirim perintah byte ke modul LCD 1602 via IC expander PCF8574T. |
 | 2 | **1-Wire Digital** | Hardware Edge | Pin D5 (GPIO 14) | Akuisisi sinyal digital pulsa waktu mikrodetik dari sensor DHT11. |
 | 3 | **UART Serial (115200)** | Transport Edge-to-Host | Port USB COM (`navigator.serial`) | Transmisi telemetri dua arah kabel berkecepatan tinggi antara ESP dan Web Browser. |
-| 4 | **UDP Broadcast (Port 3001)**| Network Transport | `255.255.255.255:3001` | *Auto-Discovery Beacon*—ESP menemukan alamat IP Gateway secara dinamis tanpa hardcode. |
+| 4 | **UDP Broadcast (Port 3001)**| Network Transport | `255.255.255.255:3001` | *Auto-Discovery Beacon* - ESP menemukan alamat IP Gateway secara dinamis tanpa hardcode. |
 | 5 | **HTTP REST (Port 3000)** | Network Transport | `POST /api/telemetry` & `/api/esp/command` | Transmisi telemetri via jaringan Wi-Fi LAN / Hotspot saat mode wireless aktif. |
 | 6 | **Server-Sent Events (SSE)** | Application Transport | `GET /api/events` | *Real-time uni-directional push* dari backend Node.js ke antarmuka SCADA web. |
 | 7 | **HTTPS REST Cloud** | Cloud Transport | Supabase RESTful API | Sinkronisasi data ke cloud database eksternal untuk pemantauan terpusat. |
@@ -173,7 +173,7 @@ Sistem menerapkan evaluasi statistik dinamis berbasis jendela geser (*sliding wi
 $$\mu = \frac{1}{N} \sum_{i=1}^{N} x_i \quad , \quad \sigma = \sqrt{\frac{1}{N-1} \sum_{i=1}^{N} (x_i - \mu)^2} \quad , \quad Z = \frac{x - \mu}{\sigma}$$
 
 * **$|Z| \le 2.2$:** Kondisi Termal Stabil (**NORMAL**).
-* **$|Z| > 2.2$:** Peringatan Anomali Termal (**WARNING**)—mendeteksi lonjakan atau penurunan drastis di luar pola mikroklimat wajar ruangan meskipun batas kritis absolut belum tertembus.
+* **$|Z| > 2.2$:** Peringatan Anomali Termal (**WARNING**) - mendeteksi lonjakan atau penurunan drastis di luar pola mikroklimat wajar ruangan meskipun batas kritis absolut belum tertembus.
 
 ### 5.2. Prediksi Laju Tren Suhu & Estimasi Pelanggaran Kritis
 Menggunakan metode **Regresi Linier Sederhana (Least Squares Linear Regression)** pada 10 titik data sampling terakhir untuk menghitung gradien laju perubahan suhu ($m = \frac{\Delta T}{\Delta t}$ dalam °C/menit):
